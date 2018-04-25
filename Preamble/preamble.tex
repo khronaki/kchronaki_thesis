@@ -8,9 +8,24 @@
 %\usepackage{mathtools}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
-\usepackage{color}
+\usepackage{fancyhdr}
 \usepackage{listings}
+\usepackage{amsmath}
+\usepackage{balance}
+\usepackage{epsfig}
+\usepackage{subfig}
+\usepackage{color}
+\usepackage{epstopdf}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{pifont}
+\usepackage{multirow}
+\usepackage{url}
 
+%\usepackage[sort]{cite}
+%\usepackage{biblatex}
+\usepackage{soul}
 \ifsetCustomMargin
   \RequirePackage[left=37mm,right=30mm,top=35mm,bottom=30mm]{geometry}
   \setFancyHdr % To apply fancy header after geometry package is loaded
@@ -58,7 +73,7 @@
 % uncommenting the following line
 % This is for people stuck with older versions of texlive
 %\usepackage{sty/caption/subcaption}
-\usepackage{subcaption}
+%\usepackage{subcaption}
 
 % ********************************** Tables ************************************
 \usepackage{booktabs} % For professional looking tables
@@ -120,17 +135,23 @@
 
 % Uncomment the section below. Requires titlesec package.
 
-%\RequirePackage{titlesec}
-%\newcommand{\PreContentTitleFormat}{\titleformat{\chapter}[display]{\scshape\Large}
-%{\Large\filleft{\chaptertitlename} \Huge\thechapter}
-%{1ex}{}
-%[\vspace{1ex}\titlerule]}
-%\newcommand{\ContentTitleFormat}{\titleformat{\chapter}[display]{\scshape\huge}
-%{\Large\filleft{\chaptertitlename} \Huge\thechapter}{1ex}
-%{\titlerule\vspace{1ex}\filright}
-%[\vspace{1ex}\titlerule]}
-%\newcommand{\PostContentTitleFormat}{\PreContentTitleFormat}
-%\PreContentTitleFormat
+\RequirePackage{titlesec}
+\newcommand{\PreContentTitleFormat}{\titleformat{\chapter}[display]{\scshape\Huge\bfseries}
+{\Huge\filleft{\chaptertitlename} \Huge\thechapter\bfseries}
+{2ex}{}
+[\vspace{2ex}\titlerule]}
+\newcommand{\ContentTitleFormat}{\titleformat{\chapter}[display]{\scshape\huge}
+{\Large\filleft{\chaptertitlename} \Huge\thechapter}{1ex}
+{\titlerule\vspace{1ex}\filright}
+[\vspace{1ex}\titlerule]}
+\newcommand{\PostContentTitleFormat}{\PreContentTitleFormat}
+\PreContentTitleFormat
+
+{\titleformat{\section}{\scshape\Large\bfseries}{\thesection}{1em}{}
+
+{\titleformat{\subsection}{\scshape\bfseries}{\thesection}{1em}{}
+
+{\titleformat{\subsubsection}{\scshape\itshape}{}{1em}{}
 
 
 % ******************************************************************************

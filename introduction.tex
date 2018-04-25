@@ -2,19 +2,18 @@
 %*********************************** First Chapter *****************************
 %*******************************************************************************
 
-\chapter{Introduction}  %Title of the First Chapter
-
-\ifpdf
-    \graphicspath{{Chapter1/Figs/Raster/}{Chapter1/Figs/PDF/}{Chapter1/Figs/}}
-\else
-    \graphicspath{{Chapter1/Figs/Vector/}{Chapter1/Figs/}}
-\fi
-
- 
+%
+%\ifpdf
+%    \graphicspath{{Chapter1/Figs/Raster/}{Chapter1/Figs/PDF/}{Chapter1/Figs/}}
+%\else
+%    \graphicspath{{Chapter1/Figs/Vector/}{Chapter1/Figs/}}
+%\fi
+%
+% 
+\chapter{Introduction}
 Energy efficiency has become the main challenge for future High Performance Computer (HPC) designs motivating prolific research to face the \textit{Power Wall}~\cite{Kogge_Exascale_TR08}.
 The use of asymmetric multi-core architectures is an approach towards increasing energy efficiency~\cite{Fedorova2009,Greenhalgh2011,Kumar:ISCA2004,Balakrishnan:ISCA2005} in the HPC domain.
 These architectures feature different types of processing cores that target different performance and power optimization points.
-
 %are originally designed for the mobile processor market and offer an appealing approach to increase energy efficiency in the HPC domain~\cite{Kumar:ISCA2004,Balakrishnan:ISCA2005}.
 
 
@@ -23,7 +22,6 @@ These architectures feature different types of processing cores that target diff
 
 %The use of asymmetric multi-core architectures is an approach towards increasing energy efficiency~\cite{Kumar:ISCA2004,Balakrishnan:ISCA2005}. 
 Asymmetric multi-cores have been successfully deployed in the mobile domain, where simple in-order cores (\emph{little}) have been combined with aggressive out-of-order cores (\emph{big}) to build these systems. In a first generation of asymmetric multi-cores, the system could switch from low power to high responding operation modes, activating or de-activating the cluster of big or little cores accordingly~\cite{ARM}. In a second generation of asymmetric multi-core processors, all the cores can run simultaneously to further improve the peak performance of these systems~\cite{samsung}.
-
 Many researchers are pushing towards building future parallel systems with asymmetric multicores~\cite{Suleman:APLOS2009,Fedorova2009, Greenhalgh2011, Joao:ASPLOS2012,Joao:ISCA2013} and even mobile chips~\cite{ARM4HPC_SC13}. 
 However it is unclear if current parallel scientific applications will benefit from these platforms.
 Load balancing and scheduling are two of the main challenges in utilizing such heterogeneous platforms as the programmer has to consider the system's asymmetry from the very beginning to obtain an efficient parallelization. 
