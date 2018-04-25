@@ -1,0 +1,104 @@
+%*******************************************************************************
+%*********************************** First Chapter *****************************
+%*******************************************************************************
+
+\chapter{Introduction}  %Title of the First Chapter
+
+\ifpdf
+    \graphicspath{{Chapter1/Figs/Raster/}{Chapter1/Figs/PDF/}{Chapter1/Figs/}}
+\else
+    \graphicspath{{Chapter1/Figs/Vector/}{Chapter1/Figs/}}
+\fi
+
+ 
+Energy efficiency has become the main challenge for future High Performance Computer (HPC) designs motivating prolific research to face the \textit{Power Wall}~\cite{Kogge_Exascale_TR08}.
+The use of asymmetric multi-core architectures is an approach towards increasing energy efficiency~\cite{Fedorova2009,Greenhalgh2011,Kumar:ISCA2004,Balakrishnan:ISCA2005} in the HPC domain.
+These architectures feature different types of processing cores that target different performance and power optimization points.
+
+%are originally designed for the mobile processor market and offer an appealing approach to increase energy efficiency in the HPC domain~\cite{Kumar:ISCA2004,Balakrishnan:ISCA2005}.
+
+
+%The use of heterogeneous multi-core architectures is an approach towards increasing energy efficiency~\cite{Fedorova2009,Greenhalgh2011}. These architectures feature different types of processing cores that can be specialized for different types of computation, such as the combination of multi-cores, Graphics Processing Units (GPUs), and different accelerators. 
+%Another approach is the use of asymmetric multi-cores with different types of processing cores that target different performance and power optimization points.
+
+%The use of asymmetric multi-core architectures is an approach towards increasing energy efficiency~\cite{Kumar:ISCA2004,Balakrishnan:ISCA2005}. 
+Asymmetric multi-cores have been successfully deployed in the mobile domain, where simple in-order cores (\emph{little}) have been combined with aggressive out-of-order cores (\emph{big}) to build these systems. In a first generation of asymmetric multi-cores, the system could switch from low power to high responding operation modes, activating or de-activating the cluster of big or little cores accordingly~\cite{ARM}. In a second generation of asymmetric multi-core processors, all the cores can run simultaneously to further improve the peak performance of these systems~\cite{samsung}.
+
+Many researchers are pushing towards building future parallel systems with asymmetric multicores~\cite{Suleman:APLOS2009,Fedorova2009, Greenhalgh2011, Joao:ASPLOS2012,Joao:ISCA2013} and even mobile chips~\cite{ARM4HPC_SC13}. 
+However it is unclear if current parallel scientific applications will benefit from these platforms.
+Load balancing and scheduling are two of the main challenges in utilizing such heterogeneous platforms as the programmer has to consider the system's asymmetry from the very beginning to obtain an efficient parallelization. 
+
+To tackle these issues the programmer has to be aware of the platform's asymmetry and modify the code of the application accordingly so that it achieves load balance. 
+In this scenario, the portability of applications is very limited and the existing scientific applications that are developed to target homogeneous multi-cores face significant performance degradation. 
+
+The first step of this thesis will be to characterize the maturity of the asymmetric platforms when running scientific applications and how different scheduling options affect performance and energy efficiency.
+We evaluate for the first time the suitability of currently available mobile asymmetric multi-core platforms for general purpose computing. 
+We compare three scheduling approaches each of them taking place on a different level of the software stack. 
+
+First, is the \textit{application-based scheduling}, where the application is threaded statically by the programmer. 
+We demonstrate that out-of-the box parallel applications are not portable to asymmetric multi-cores.
+The asymmetry of the system can lead to load imbalance and the user has to define generic and highly sophisticated load balancing mechanisms within the application that need to serve symmetric or asymmetric systems. 
+Additionally, our characterization evaluates the impact of an \textit{OS scheduler} (GTS)~\cite{samsung} that is aware of the platform's characteristics and dynamically migrates the threads to the appropriate type of core to increase performance.
+%This solution offers portability to the parallel scientific applications but it lacks some flexibility as thread migration can be an expensive operation both in terms of performance and energy.
+Finally, we suggest the use of a \textit{task-based} programming model~\cite{OpenMP4.0:Manual2013, OmpSs_PPL11, Zuckerman:EXADAPT2011, Bauer.2012.SC, Vandierendonck:PACT2011};
+task-based programming models with dynamic scheduling allow the specification of inter-task dependencies that enable automatic scheduling and synchronization by the runtime system.
+We compare these options on the PARSECSs benchmark suite~\cite{Chasapis:TACO2016} as it offers a set of highly parallel scientific applications.
+This study will give us a complete picture of the state of the art high-level scheduling approaches in terms of performance and energy efficiency on our ARM big.LITTLE~\cite{ARM} 8-core asymmetric system.
+More details about this part of work can be found in Section~\ref{sec:asymmetric}.
+
+Having the proof that the \textit{task-based} scheduling approach is the most sophisticated one, we plan to further improve it by making it aware of the system's asymmetry.
+This task, is carried out with the introduction of three asymmetry-aware scheduling policies within a task-based programming model.
+These scheduling policies have the knowledge of the types of cores of the system and, according to the application characteristics, they schedule tasks either on the fast or the slow cores of the system.
+More specifically, our task-based scheduling policies separate the tasks into groups of critical and non-critical tasks.
+Then the fast cores are responsible for the execution of the critical tasks while the slow cores execute the non-critical tasks.
+The main difference between these scheduling policies, apart from the implementation, is the critical task consideration and it is described in more detail in Section~\ref{sec:scheduling}.
+
+We further plan to modify the runtime system of the task-based programming model so that it takes advantage of the asymmetry of the platform.
+Specifically, we plan to explore the use of assistant cores for the runtime activity. 
+Since in some cases the runtime introduces overheads, it is useful to devote one core for this activity (symbiotic core).
+For this, we plan to first evaluate all the available possibilities of the static assignment of the runtime thread to one core of the system.
+This way we will be aware of the performance and energy outcome of executing the runtime activity on a big or on a little core.
+We then plan to implement mechanisms for dynamic runtime thread migration according to the current execution circumstances.
+This would involve the application's characteristics, such as number of tasks or whether the application is dependency intensive (has many dependencies between tasks).
+
+Finally, we plan to incorporate our scheduling and thread migration techniques into a novel asymmetry-aware task-based runtime system.
+This runtime system will provide high performance and energy efficiency to the future asymmetric multi-cores and will combine the mechanisms of the use of symbiotic cores together with the scheduling policies to offer high adaptivity and portability to the current parallel applications.
+The runtime will use one assistant runtime thread that will migrate to either a fast or a slow core of the system according to the current circumstances and, at the same time, will perform scheduling according to the task criticality.
+We expect that this will significantly boost the portability, performance and energy efficiency of parallel scientific applications on the new asymmetric multi-core systems.
+We describe the above steps in more detail in Chapter~\ref{chapter:plan}.
+
+
+%First, we demonstrate that out-of-the-box parallel applications do not run efficiently on asymmetric multi-cores. Fully exploiting the computational power of these processors is challenging as the asymmetry in the system can lead to load imbalance, undermining the scalability of the parallel application. Consequently, only applications that incorporate user-defined load balancing mechanisms can benefit immediately from asymmetric multi-cores.
+%Thus we perform a broad range of experiments and observe the behaviour of a scientific benchmark suite.
+
+%After the exploration of the behaviour of the scientific applications on such a system, we plan to improve the existing approaches. 
+%First, takes place the implementation of scheduling policies within the task-based programming model.
+%Second, is the implementation of the runtime thread that dynamically migrates to the appropriate core type that will serve as symbiotic core.
+
+
+%As none of the scheduling options is designed to serve as an efficient solution towards running scientific applications on asymmetric systems, in this thesis we implement different scheduling policies within a modern task-based programming model that are aware of the architecture.
+
+
+
+
+%The first step of this thesis is to characterize the maturity of these platforms their efficiency in running scientific applications and to explore the available options for obtaining load balancing on such systems.
+%These options consist of first, relying on the application for effectively schedule the work among the available cores, second, use an operating system (OS) scheduler that is aware of the asymmetry of the platform or use a task-based programming model with dynamic scheduling.
+%This leads to the exploration of three possible levels of the software stack to be responsible for achieving load balancing on the asymmetric system: application level, OS level and runtime system level.
+
+
+
+%The use of task-based programming models with dynamic scheduling is an answer to tackle load imbalance. Some of these programming models allow the specification of inter-task dependencies that enable automatic scheduling and synchronization by the runtime system. OmpSs~\cite{OmpSs_PPL11,OmpSs} is an example of this type of programming models. It maintains a dynamic directed-acyclic graph of tasks with their current state. Whenever a task's dependencies are satisfied, it becomes ready to be scheduled to an available core. 
+
+%The mapping of ready tasks to different types of cores on a heterogeneous system becomes a challenge when considering the reduction of the total execution time. Some task-based applications expose a complex dependency graph in which tasks in the critical path determine the total application duration. This opens an opportunity to accelerate the overall application by running critical tasks on fast cores. Some previous works~\cite{DCPS, LDCP, HEFT, CrPathDup} tackled this issue using static scheduling over the whole dependency graph to statically map tasks to processors on a heterogeneous system. However, they required the knowledge of profiling information and most of them were evaluated on synthetic randomly-generated task dependency graphs (TDGs).
+
+%However, there are no previous works on exploring this possibility in a dynamically scheduled environment.
+
+%There are previous works~\cite{xx} on scheduling of task-based applications onto heterogeneous systems. Their approach is to schedule tasks in the critical path to fast cores but all of them target statically-scheduled applications.
+
+%In this paper, we propose a criticality-aware \textit{dynamic} task scheduler that dynamically assigns critical tasks to fast cores to improve performance in a heterogeneous system with fast and slow cores. Compared to previous proposals, this scheduler is based on information discoverable at runtime, is implementable and works without the need of an oracle or profiling. Furthermore, our evaluation is based on a real heterogeneous multi-core platform with real applications and, therefore, using real TDGs.
+
+%The contributions of this paper are the following: 
+%\begin{itemize}
+% \item{A novel criticality-aware task scheduler (CATS) that dynamically assigns critical tasks to fast cores in a heterogeneous multi-core. Tasks are defined to be critical if they are part of the longest path in the in-flight dynamic state of the dependency graph. The flexibility and work stealing policy of our scheduler are configurable. Flexibility increases the number of tasks considered critical. Work stealing may be uni- or bi-directional: only fast cores can steal from slow cores, or slow cores can also steal from fast cores.}
+% \item{An evaluation of our implementation of CATS in the OmpSs programming model compared to a dynamic implementation of Heterogeneous Earliest Finish Time \cite{HEFT} and the default OmpSs scheduler. We evaluate the effectiveness of CATS on different numbers of cores and shares of fast and slow cores on an Odroid-XU3 development board featuring an eight-core Samsung Exynos 5422 chip with ARM big.LITTLE architecture including four Cortex-A15 and four Cortex-A7 cores. We also evaluate the effectiveness of CATS on different speed ratios between fast and slow cores using simulation of heterogeneous multi-cores with up to 128 cores. The results show that CATS improves overall performance up to 1.3$\times$ on the real eight-core platform, and up to 2.7$\times$ on a simulated 128-core~system.}
+%\end{itemize}
