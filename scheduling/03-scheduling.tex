@@ -1,15 +1,3 @@
-The efficient scheduling problem has been intensively studied for asymmetric systems.
-In this section we describe four scheduling approaches that target such systems.
-The first three are based on separating the tasks into groups of critical and non-critical tasks and assign each group to one core type: the critical tasks to the fast cores and the non-critical tasks to the slow cores.
-The difference between these three approaches is the way of considering a task critical.
-First is the Criticality-Aware scheduler (CATS)\cite{Chronaki:ICS2015}, which detects the critical tasks based on their \textit{bottom level}.
-Secondly, the Critical Path scheduler (CPATH), proposed in this paper, that detects the critical path of the dynamic (TDG) with the help of \textit{bottom cost} based priorities.
-The Hybrid Criticality scheduler (HYBRID), proposed in this paper, uses both bottom level and bottom cost based priorities.
-Last, we describe a dynamic implementation of HEFT scheduler (dHEFT)~\cite{HEFT}, that for every task it detects the processor that finishes its execution at the earliest possible time.
-All of the described schedulers operate at runtime on the dynamic snapshots of the TDG. 
-CPATH, HYBRID and dHEFT perform on-line profiling of the task execution time without considering inter-task communication costs, given the uncertainty of data movement latency that hides in the cache hierarchy of an asymmetric multi-core system with prefetching. 
-%but none of these schedulers track the inter-task communication costs.
-
 
 \lstset{basicstyle=\footnotesize\ttfamily,
         emphstyle=\bfseries,
@@ -19,8 +7,8 @@ CPATH, HYBRID and dHEFT perform on-line profiling of the task execution time wit
         moredelim=*[l][\bfseries]{\#},
         literate={...}{\dots}3
 } 
-\subsection{Criticality-Aware Task Scheduler}
-\label{sec.cats}
+\section{Criticality-Aware Task Scheduler}
+\label{sec.scheduling.cats}
 The Criticality-Aware Task Scheduling generally applies to task-based programming models supporting task dependencies, but for simplicity we explain it in the context of the OmpSs programming model.
 CATS uses bottom-level longest-path priorities and consists of three steps:
 %\begin{itemize}
@@ -145,7 +133,8 @@ If tasks in an application are imbalanced, i.e., the majority are non-critical a
 \input{scheduling/cpath.tex}
 
 \input{scheduling/hybrid.tex}
-\subsection{Dynamic Heterogeneous Earliest Finish Time Scheduler}
+\section{Dynamic Heterogeneous Earliest Finish Time Scheduler}
+\label{sec.scheduling.heft}
 The Heterogeneous Earliest Finish Time (HEFT) algorithm~\cite{HEFT} is a static scheduling approach for asymmetric systems.
 HEFT consists of two compile-time phases that use profiling information: the \textit{task prioritizing phase} and the \textit{processor selection phase}.
 In the first phase, the algorithm assigns priorities to the tasks based on their \textit{upward rank}, that is, the length of the critical path from a given task to the exit task including task computation and communication costs~\cite{HEFT}.

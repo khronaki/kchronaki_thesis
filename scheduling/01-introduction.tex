@@ -1,41 +1,47 @@
-The use of asymmetric multi-core architectures forms an appealing solution in high-performance computing to tackle the power wall.
-These architectures increase energy efficiency~\cite{Fedorova2009,Greenhalgh2011,Casas2015} by featuring different types of processing cores designed to target performance or power optimization.
+%Too generig... this should be in the main introduction
+%The use of asymmetric multi-core architectures forms an appealing solution in high-performance computing to tackle the power wall.
+%These architectures increase energy efficiency~\cite{Fedorova2009,Greenhalgh2011,Casas2015} by featuring different types of processing cores designed to target performance or power optimization.
 
-To effectively utilize such systems taking into account their heterogeneity, load balancing and scheduling become two of the main challenges~\cite{Li4}.
+In the previous chapter we showed that the most efficient way to utilize an AMC with HPC applications is by performing scheduling in the runtime system level, i.e. using a parallel programmind model.
+In this capter our goal is to enhance the current parallel programming models and make them more efficient when it comes to AMCs.
+
+To effectively utilize AMC systems taking into account their heterogeneity, load balancing and scheduling become two of the main challenges~\cite{Li4}.
 An approach towards these challenges is the use of task-based programming models~\cite{OmpSs_PPL11,OpenMP,StarSs,starpu}.
 The modern task-based programming models schedule tasks dynamically according to the availability of resources. They also allow the specification of dependencies between tasks, enabling the runtime system to automatically perform scheduling and synchronization decisions.
 
-Even though task-based programming models is a powerful mechanism, the efficient mapping of ready tasks to different types of cores on an asymmetric system remains a challenge.
-% when considering the reduction of the total execution time. 
+Even though task-based programming models is a powerful mechanism, the efficient mapping of ready tasks to different types of cores on an asymmetric system remains a challenge when considering the reduction of the total execution time. 
 Task-based parallel applications expose different characteristics that can affect the total application duration such as complex task dependency graphs (TDGs) with long critical paths or different levels of task cost variability.
-%Some task-based applications expose a complex dependency graph in which tasks in the critical path determine the total application duration. 
+In such cases it is very common that the tasks in the critical path determine the total application duration. 
 These characteristics influence researchers to develop smart scheduling techniques within a task-based programming model and accelerate the overall application.
 %This opens an opportunity to accelerate the overall application 
-The criticality-aware schedulers detect the critical tasks of an application and increase performance by running critical tasks on fast cores. Some previous works~\cite{DCPS, LDCP, HEFT, CrPathDup} tackled this issue using static scheduling over the whole TDG to statically map tasks to processors on a heterogeneous system. However, they required the knowledge of profiling information and most of them were evaluated on synthetic randomly-generated TDGs. 
+The criticality-aware schedulers detect the critical tasks of an application and increase performance by running critical tasks on fast cores. 
+Some previous works~\cite{DCPS, LDCP, HEFT, CrPathDup} tackled this issue using static scheduling over the whole TDG to statically map tasks to processors on a heterogeneous system. 
+However, they required the knowledge of profiling information and most of them were evaluated on synthetic randomly-generated TDGs. 
 %More recent works~\cite{Chronaki:ICS2015} tackle this issue through dynamic task scheduling.
 
 %However, there are no previous works on exploring this possibility in a dynamically scheduled environment.
 
 %There are previous works~\cite{xx} on scheduling of task-based applications onto heterogeneous systems. Their approach is to schedule tasks in the critical path to fast cores but all of them target statically-scheduled applications.
 
-In this paper, we propose two novel dynamic task schedulers that detect the critical path of the in-flight dynamic snapshot of the TDG. 
-Moreover, we make a study of the potential of the proposed dynamic scheduling techniques compared to existing dynamic heterogeneous schedulers~\cite{Chronaki:ICS2015,HEFT}.
-Specifically we compare our approaches to the the criticality aware task scheduler (CATS)~\cite{Chronaki:ICS2015} as well as a dynamic implementation of the heterogeneous earliest finish time scheduler (HEFT)~\cite{HEFT}.
-We implement these scheduling policies in the OmpSs~\cite{OmpSs_PPL11,OmpSs} programming model that supports dynamic scheduling and dependency tracking.
+This chapter presents three novel dynamic task schedulers that detect the critical path of the in-flight dynamic snapshot of the TDG. 
+Furthermore, this chapter shows the potential of the proposed dynamic scheduling techniques compared to a state-of-the-art dynamic heterogeneous scheduler~\cite{HEFT}.
+Specifically we compare our approaches against the a dynamic implementation of the heterogeneous earliest finish time scheduler (HEFT)~\cite{HEFT}.
+We implement these scheduling policies in the OmpSs~\cite{OmpSs_PPL11,OmpSs} programming model that supports dynamic scheduling and dependency tracking as described in chapter~\ref{chapter.background.TB}.
 
 
 %we make a study of the potential of dynamic task scheduling techniques such as the criticality aware task scheduler (CATS)~\cite{Chronaki:ICS2015} and a dynamic implementation of the heterogeneous earliest finish time scheduler (HEFT)~\cite{HEFT} as well as we propose two novel dynamic task schedulers that detect the critical path of the task dependency graph.
 
 %propose a criticality-aware \textit{dynamic} task scheduler that dynamically assigns critical tasks to fast cores to improve performance in a heterogeneous system with fast and slow cores. Compared to previous proposals, this scheduler is based on information discoverable at runtime, is implementable and works without the need of an oracle or profiling. Furthermore, our evaluation is based on a real heterogeneous multi-core platform with real applications and, therefore, using real TDGs.
-Compared to previous works, all the scheduling policies described and evaluated in this paper are based on information discoverable at runtime, are implementable and work on a real asymmetric multi-core platform with real applications and therefore, using real TDGs.
-The contributions of this paper are the following: 
+Compared to previous works, all the scheduling policies described and evaluated in this chapter are based on information discoverable at runtime, are implementable and work on a real asymmetric multi-core platform with real applications and therefore, using real TDGs.
+The contributions of this chapter are the following: 
 \begin{itemize}
- \item{The Critical Path scheduler (CPATH) that dynamically assigns the tasks that belong to the critical path of the TDG to the fast cores of the system. To do so, CPATH tracks the execution time of the tasks, assigns cost-based priorities and, according to these priorities it detects the critical tasks.}
- \item{The Hybrid Criticality scheduler (HYBRID) that incorporates the features of CPATH and CATS~\cite{Chronaki:ICS2015} by assigning to the fast cores tasks that belong either to the critical path or to the longest path of the TDG, depending on the runtime circumstances. HYBRID uses mixed priorities that are cost-based or level-based. This technique also keeps track of the task costs but if this information is not available it uses the mechanisms of CATS that dynamically detects the longest dependency chain of the in-flight dynamic state of the TDG}
+ \item{The novel Criticality-Aware Task Scheduler (CATS) that dynamically assigns critical tasks to fast cores in an AMC system. Tasks are defined to be critical if they are part of the \textit{longest path} in the in-flight dynamic state of the dependency graph. The flexibility and work stealing policy of this scheduler are configurable. Flexibility increases the number of tasks considered critical. Work stealing may be uni- or bi-directional: only fast cores can steal from slow cores, or slow cores can also steal from fast cores.}
+ \item{The Critical Path scheduler (CPATH) that dynamically assigns the tasks that belong to the \textit{critical path} of the TDG to the fast cores of the system. To do so, CPATH tracks the execution time of the tasks, assigns cost-based priorities and, according to these priorities it detects the critical tasks.}
+ \item{The Hybrid Criticality scheduler (HYBRID) that incorporates the features of CATS and CPATH by assigning to the fast cores tasks that belong \textit{either to the critical path or to the longest path} of the TDG, depending on the runtime circumstances. HYBRID uses mixed priorities that are cost-based or level-based. This technique also keeps track of the task costs but if this information is not available it uses the mechanisms of CATS that dynamically detects the longest dependency chain of the in-flight dynamic state of the TDG}
  
 % Two novel critical path based task schedulers that dynamically assign the tasks that belong to the critical path to the fast cores in a heterogeneous multi-core. First, is the Critical Path scheduler (CPATH scheduler) that keeps track of the task costs and discovers the critical path of the TDG according to these costs. In addition, the Hybrid criticality scheduler (HYBRID) also keeps track of the task costs but if this information is not available it uses the mechanisms of CATS~\cite{Chronaki:ICS2015} that dynamically detects the longest dependency chain of the in-flight dynamic state of the dependency graph.}
  % \item{A novel criticality-aware task scheduler (CATS) that dynamically assigns critical tasks to fast cores in a heterogeneous multi-core. Tasks are defined to be critical if they are part of the longest path in the in-flight dynamic state of the dependency graph. The flexibility and work stealing policy of our scheduler are configurable. Flexibility increases the number of tasks considered critical. Work stealing may be uni- or bi-directional: only fast cores can steal from slow cores, or slow cores can also steal from fast cores.}
- \item{An evaluation of the proposed CPATH and HYBRID schedulers compared to the state of the art heterogeneous schedulers CATS~\cite{Chronaki:ICS2015} and HEFT~\cite{HEFT}, all of them implemented in the OmpSs programming model. Moreover we evaluate these approaches next to the default FIFO scheduler that serves as our baseline.
+ \item{An evaluation of CATS, CPATH and HYBRID schedulers compared to the state of the art heterogeneous scheduler HEFT~\cite{HEFT}, all of them implemented in the OmpSs programming model. Moreover we evaluate these approaches next to the default FIFO scheduler that serves as our baseline.
 %We use five scientific benchmarks and we perform our experiments on an Odroid-XU3 development board that features an eight-core Samsung Exynos 5422 chip with ARM big.LITTLE architecture including four Cortex-A15 and four Cortex-A7 cores.
 %In addition, our evaluation contains the results on simulated heterogeneous systems that consist of 16 or 32 cores. 
 The results show that all heterogeneous schedulers improve overall performance reaching up to 45\% improvement. Furthermore, we describe their features such as the high per-task overheads of CPATH, the inability of dHEFT to improve performance when the task number increases as well as the benefit of HYBRID scheduler compared to CATS when task cost variability increases.
