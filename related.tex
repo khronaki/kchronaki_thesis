@@ -1,5 +1,87 @@
 \chapter{Related Work}
 
+%\mm{The past work has predominantly considered sequential applications and has mostly been simulation-based, which limits the size of possible workloads and the ability to accurately measure performance and energy. We found that our conclusions differ as a result of these differences in experimental methods.}
+
+There has been a lot of studies on AMC systems. Some works focus on the system design, while other works explore the challenges that appear in efficiently utilizing such a heterogeneous system.
+Kumar et al~\cite{Kumar_micro_2003} present the idea of an AMC system and proposed a feedback-based way to dynamically migrate processes among the different cores. 
+%Their approach led to energy savings but at the cost of performance degradation. 
+To determine the core that most effectively executed a workload, Kumar et al~\cite{Kumar:ISCA2004} proposed the use of sampling. This method minimizes the execution time of each single thread and increases performance. Other studies focused on the pipeline design of such AMCs and the area that should be devoted to each component in the system~\cite{Balakrishnan:ISCA2005, Morad_area_based}. Other works on AMCs focus on hardware support for critical section detection~\cite{Suleman:APLOS2009} or bottleneck detection~\cite{Joao:ASPLOS2012,Joao:ISCA2013}.
+%Other authors proposed hardware support to detect critical sections of a parallel application and schedule the most critical ones on the big cores~\cite{Suleman:APLOS2009, Joao:ASPLOS2012,Joao:ISCA2013}. 
+These approaches are orthogonal to the ones evaluated in this paper and could benefit from them to further improve the final performance of the system.
+
+Process scheduling on AMCs is one of the most challenging topics in this area of study.
+Bias scheduling~\cite{Koufaty_bias} is an OS scheduler that characterizes the running 
+threads according to their memory or execution intensity. 
+It then schedules the computation intensive threads to the big cores of the system while the memory intensive threads to the little cores of the system.
+The experimental evaluation is done on Intel Xeon processors and the heterogeneous system is emulated by changing the configuration of three out of the four cores of the processor.
+Cong et al propose the Energy-Efficient~\cite{Cong_quickIA} OS scheduler based on energy estimation. The evaluation is performed on the Intel QuickIA~\cite{quickIA} platform that integrates an Intel Xeon with an Atom processor. 
+%Code instrumentation is used to schedule different phases of the application on each processor. However, the separate core and memory subsystems in these architectures incur power and performance overheads for application migration, which makes dynamic mapping ineffective for fine-grained migration
+Van Craeynest et al.~\cite{VanCraeynest_fairness} propose the fairness-aware OS scheduler that focuses on AMC architectures. 
+%They focus on heterogeneous single-ISA architectures and they use some of the applications evaluated in our paper but their research lacks the real heterogeneous system; instead they simulate a heterogeneous processor with big and little cores to estimate performance and fairness (not energy).
+The performance impact estimation (PIE) scheduler~\cite{VanCraeynest_PIE} is based on the impact of MLP and ILP on the overall CPI and focuses on improving performance.
+The scheduler predicts the impact of each different core-type of the system on the MLP, ILP and it assumes hardware support for CPI. 
+%The evaluation of this paper is performed through simulation by mimicking a heterogeneous system like ARM big.LITTLE. Further there are no energy or power measurements.
+Rodrigues et al~\cite{Rodrigues_thread_scheduling} propose a thread scheduling technique that estimates power and performance when deciding to assign a thread to a specific core of the heterogeneous system. 
+%However their evaluation is based on simulated results and not on a real platform. They have info for power.
+Finally, Energy-Aware Scheduling (EAS) is an on-going effort in the Linux community to introduce 
+the energy factor in the OS scheduler~\cite{EAS, EAS_Linux}. It is based on performance and power 
+profiling to set performance and power capacities and let the Linux completely fair scheduler 
+assign slots to processes considering the different core capacities. EAS is not yet part 
+of the Linux kernel and, therefore, GTS is the most sophisticated state of the art scheduling method 
+in production on current big.LITTLE processors.
+
+
+
+
+
+%Van Craeynest et al. [33] proposed the PIE model for heterogeneous multi-core with big out-of-order and small in-order cores. The PIE model uses simple analytical models to predict how core architecture affects exploitable ILP and MLP and its impact on CPI. Scheduling using the PIE model assumes hardware support for computing CPI stacks as well as a few model inputs. The hardware cost is limited to roughly 15 bytes of storage. Again, all of this prior work focused on optimizing system throughput while running multi-program workloads, and none looked into optimizing fairness nor multithreaded application scheduling.
+
+%Moreover, there have been many works for the efficient task scheduling on heterogeneous systems.
+%In the literature there exist numerous dynamic or static scheduling algorithms for heterogeneous multi-cores with comprehensive experimental evaluation.
+
+Similar to OS scheduling approaches there have been many task scheduling approaches that are directed for utilizing AMCs.
+The Levelized Min Time~\cite{Hetero95} heuristic first clusters the tasks that can execute in parallel (\textit{levels}) and then it assigns priorities to them, according to their execution time.
+The Dynamic Level Scheduling algorithm~\cite{Hetero93} assigns the tasks to the processors according to their \textit{dynamic level} (DL).
+% which is \textit{DL(n) = SL(n) - earliest exec time(n)}. 
+%Random graph generators on simulated heterogeneous processors. 
+Heterogeneous Economical Duplication (HED)~\cite{Dup09} duplicates the tasks in order to be executed on more than one cores but it then
+%performs task duplication in an economical manner as it 
+removes the redundant duplicates if they do not affect the makespan. 
+CATS scheduler~\cite{Chronaki:ICS2015} is designed for AMCs like big.LITTLE and dynamically schedules the \textit{critical} tasks to the big cores of the system to increase performance. 
+Topcuoglu et al proposed the Heterogeneous Earliest Finish Time (HEFT) scheduler that statically assigns each task to the processor that will finish it at the earliest possible time. To do so, it keeps records with the task costs for each processor type.
+%The Heterogeneous Earliest Finish Time (HEFT) algorithm \cite{HEFT} maintains a list of tasks sorted in decreasing order of their \textit{upward rank}. At each schedule step, HEFT assigns the task with the highest \textit{upward rank} to the processor that finishes the execution of the task at the earliest possible time. Lack of desktop applications and no mention of real heterogeneous system.
+They also proposed the Critical Path on a Processor (CPOP) algorithm \cite{HEFT} that maintains a list of tasks and statically identifies and schedules the tasks belonging to the critical path  to the processor that minimizes the sum of their execution times. 
+%Critical Path on a Processor (CPOP) algorithm \cite{HEFT} also maintains a list of tasks but, in this case, tasks are sorted decreasingly according to their \textit{upward rank + downward rank}. 
+%The tasks with the highest \textit{upward rank + downward rank} are the tasks that belong to the critical path and these are sent to the \textit{critical path processor} that is the one that minimizes the sum of their execution times. Lack of desktop applications and no mention of real heterogeneous system.
+The Longest Dynamic Critical Path (LDCP) algorithm \cite{LDCP} identifies the tasks that belong to the critical path and schedules them with higher priority.
+
+%computes the critical path at each schedule step by scheduling the tasks with the highest \textit{URank} (upward rank) first. 
+%Every time a task is scheduled, the \textit{computation cost matrix} is updated with the new timing values for the task. 
+
+%More related work can be found in \cite{CrParTree, CrPathDup}
+
+All these works reflect the remarkable research that is taking place on AMCs. 
+However we consider that their experimental evaluation is limited for three main reasons:
+i)~The evaluation is done through a simulator or emulation of an AMC 
+\cite{Kumar_micro_2003, Morad_area_based, Balakrishnan:ISCA2005, 
+	Koufaty_bias, VanCraeynest_fairness, VanCraeynest_PIE, Rodrigues_thread_scheduling, Hetero93, 
+	Hetero95, Dup09, Suleman:APLOS2009, Joao:ASPLOS2012,Joao:ISCA2013};
+ii)~The evaluated applications are either random task dependency graph generators or scientific 
+kernels and micro-benchmarks \cite{Hetero93,HEFT,LDCP}.
+iii)~Their evaluation does not focus on power and energy consumption 
+\cite{Kumar:ISCA2004, 
+	VanCraeynest_fairness, VanCraeynest_PIE, Hetero95, Chronaki:ICS2015}.
+
+% \begin{itemize}
+%   \item Their experimental evaluation is done through a simulator or emulation of an asymmetric system \cite{Kumar_micro_2003, Kumar:ISCA2004, Morad_area_based, Balakrishnan:ISCA2005, Koufaty_bias, VanCraeynest_fairness, VanCraeynest_PIE, Rodrigues_thread_scheduling, Hetero93, Hetero95, Dup09, Suleman:APLOS2009, Joao:ASPLOS2012,Joao:ISCA2013}.
+%   \item The evaluated applications are either random task dependency graph generators or scientific kernels and micro-benchmarks \cite{Hetero93, Chronaki:ICS2015, HEFT, LDCP}.
+%   \item Their evaluation does not focus on power and energy consumption \cite{Kumar:ISCA2004, VanCraeynest_fairness, VanCraeynest_PIE, Hetero93, Hetero95, Chronaki:ICS2015}.
+% \end{itemize}
+This paper includes a unique evaluation of performance, power and energy on a real AMC of real parallel applications.
+This paper also reflects the impact of using different big and little core counts which is not present in previous works \cite{Cong_quickIA}.
+
+
+
 There has been a lot of studies on asymmetric multi-core systems. Some works focus on the design of the system, while other works explore the challenges that appear in efficiently utilizing such a heterogeneous system.
 Kumar et al~\cite{Kumar_micro_2003} present the idea of an asymmetric multi-core system and proposed a feedback-based way to dynamically migrate processes among the different cores. 
 %Their approach led to energy savings but at the cost of performance degradation. 

@@ -142,29 +142,7 @@ For all the scheduling approaches we present their speedup over the execution on
 
 We use five scientific applications implemented in the OmpSs programming model: Cholesky factorization, QR factorization, Heat diffusion, Integral Histogram and Bodytrack. These benchmarks are accessible in the BSC Application Repository~\cite{BAR} and in the PARSECSs library~\cite{Chasapis:TACO2016}. 
 
-\textbf{Cholesky factorization} is a dense matrix operation that is used for solving linear equations in linear least square systems.
-%It takes as input one symmetric and positive square matrix \textit{A} and calculates a triangular matrix \textit{L}, where \textit{LL}$^T$\textit{=A}.
-The OmpSs implementation of Cholesky blocks the input matrix into square blocks of floats and each task is responsible for performing the factorization on one block.
-
-\textbf{QR Factorization} is a linear algebra algorithm that is used to solve the linear least squares problem \cite{QR}. 
-%QR decomposes a matrix \textit{A} of size \textit{m$\times$m} into the product of two matrices, \textit{Q} and \textit{R}, such that \textit{A = QR}. In this equation, \textit{Q} is an orthogonal matrix and \textit{R} is an upper triangular matrix. 
-We evaluate the performance of a blocked, communication avoiding QR implementation in OmpSs. 
-%Each OmpSs task processes one block of the input matrix. The first set of tasks factorizes the blocks of the main diagonal of the matrix, and produces a Householder reflector for each block. This reflector is the input of the second set of tasks that apply it to the blocks that reside on the right of the diagonal block. What is next, is the factorization of the combination of a diagonal block with a block beneath the diagonal and finally the resulting Householder reflector is applied on the right of the combined blocks. 
-We use an input blocked matrix of 8192$\times$8192 doubles forming 16$\times$16 blocks.
-
-%\subsubsection{Heat Diffusion}
-\textbf{Heat diffusion} uses the Gauss-Seidel method to compute the heat distribution on a matrix from \textit{x} heat sources. Heat diffusion implements an iterative solver of the equation that invokes the Gauss-Seidel method until the desired convergence is reached. We use a matrix of 8192$\times$8192 doubles and block size of 512$\times$512.
-
-%In the specific implementation~\cite{BAR} the number of iterations can be set as an argument in order to control the workload of the experiments. The code splits the matrix into blocks and creates one task per block for the Gauss-Seidel computation. 
-
-%\subsubsection{Integral Histogram}
-\textbf{Integral histogram} is a method to compute a cumulative histogram for each pixel of an image. %With this algorithm, the histogram of a Cartesian data space is computed in constant time. 
-The OmpSs implementation performs 
-%a blocked cross-weave scan for each block of the image. 
-%It consists of 
-a horizontal and a vertical scan that transmit histograms to the blocks that reside on the right or below the current block.
-%The horizontal scan processes one image block at a time and transmits the histograms to the block on the right. The vertical scan processes one block and transmits the histograms to the block below the current block. 
-Due to these transmissions, the application introduces many task dependencies. We use as input an image of 4096$\times$4096 pixels and block size of 512$\times$512.
+\kc{Added in the background}
 
 %\subsubsection{Bodytrack}
 \textbf{Bodytrack} is an application that tracks a marker-less human body using multiple cameras through an image sequence. 

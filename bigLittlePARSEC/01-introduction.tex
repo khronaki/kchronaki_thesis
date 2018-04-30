@@ -1,34 +1,6 @@
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \mm{Idea for the Introduction}
-% 
-% Heterogeneous multicores are a reality in the mobile world.
-% 
-% Systems composed of big and little cores can switch from low power to high responding operation modes.
-% 
-% Many researchers are pushing towards building future desktop and HPC systems with mobile chips.
-% 
-% In this paper, we explore the maturity of these platforms for parallel desktop applications, as well as of the programming models used to program them.
-
-%The conventional wisdom in the high-performance computing (HPC) community predicts the power budget of the first exaFLOPS machines to be of a few tens of megawatts~\cite{Kogge_Exascale_TR08}. Should this prediction be correct, the energy efficiency of such machine needs to be around 20-30 times higher than that of the top supercomputers today. This makes energy efficiency, among others such as reliability, storage and networking, one of the main issues for the design of exascale computing technology.
-
-%Using heterogeneous processing elements is one of the approaches to increase energy efficiency. Different types of processors can be specialized for different types of computation, such as the combination of chip-multiprocessors (CMP) and discrete compute-capable graphics processing units (GPUs). Another approach towards heterogeneity is the use of different processors designed targeting different performance and power optimization points, such as the combination of faster and slower cores in a CMP (e.g., ARM big.LITTLE~\cite{Greenhalgh2011}).
-
-
-%Heterogeneity in supercomputing nowadays comes mainly from the use of compute accelerators. Generally, general-purpose chip multiprocessors (CMPs) made out of homogeneous cores are combined together with compute-capable graphics processing units (GPUs) that serve as accelerators for compute-intensive parts of an application. This provides a platform in which some parts of the application will run faster on the CMP, and others on the GPU.
-
-%The STI Cell/B.E.~\cite{IntroCell_IBMRandD05} has been one of the major processors with heterogeneous processing elements on the same chip. It was targeted to the gaming market and its compute capabilities attracted HPC users and vendors. It was substantially adopted in supercomputing and was the most energy efficient HPC technology for some years before being discontinued and becoming obsolete. There are no other recent examples of heterogeneous CMPs used in supercomputing. However, heterogeneous CMPs are mainstream in embedded multimedia and mobile processing. Apart from the processor-accelerator scheme using VLIW/DSP cores~\cite{Viper_IEEEDandT01} or GPUs, some heterogeneous CMPs integrate different types of general-purpose cores~\cite{Greenhalgh2011}. Some works envision the adoption of such mobile technology in HPC for energy efficiency~\cite{ARM4HPC_SC13,Abdurachmanov2013}. In this scenario, a heterogeneous CMP with general-purpose fast and slow cores imposes several challenges regarding scheduling that are different to the current accelerator-based heterogeneous systems. Contrarily to the latter, different parts of an HPC application will constantly run faster on fast cores and slower on slow cores.
-
-%Using heterogeneous processing elements is one of the approaches to increase energy efficiency~\cite{Fedorova2009}. Different types of processors can be specialized for different types of computation, such as the combination of chip-multiprocessors (CMP) and discrete compute-capable graphics processing units (GPUs). Another approach towards heterogeneity is the use of different processors designed targeting different performance and power optimization points, such as the combination of faster and slower cores in a CMP (e.g., ARM big.LITTLE~\cite{Greenhalgh2011}).
-
 % <ISPASS17>
-The future of parallel computing is highly restricted by energy efficiency~\cite{Kogge_Exascale_TR08}. 
 Energy efficiency has become the main challenge for future processor designs, motivating prolific research to face the \emph{power wall}. 
 Using heterogeneous processing elements is one of the approaches to increase energy efficiency~\cite{CompCores,hetServers}. 
-%Different types of processors can be specialized for different types of computation, such as the combination of general-purpose cores with accelerators such as Graphics Processing Units (GPUs). 
-%Another approach towards heterogeneity is the use of asymmetric multi-cores (AMCs).
-%An interesting approach towards energy efficiency is the use of asymmetric multi-core (AMC) systems.
 Asymmetric multi-core (AMC) systems is an interesting case of heterogeneous systems to utilize for energy efficiency.
 These systems maintain different types of cores that support the same instruction-set architecture. 
 The different core types are designed to target different (performance or power) optimization points~\cite{Kumar:ISCA2004,Balakrishnan:ISCA2005,Pangaea}. 
@@ -41,12 +13,11 @@ The Sunway TaihuLight supercomputer topped the Top500 list in 2016 using AMCs.
 In this setup, big cores, that offer support for speculation to exploit Instruction-Level Parallelism (ILP), run the master tasks such as the OS and runtime system.
 Little cores are equipped with wide Single Instruction Multiple Data (SIMD) units and lean pipeline structures for energy efficient execution of compute-intensive code. 
 
-%Previous experiences have shown that load balancing and scheduling are fundamental challenges that must be addressed to effectively exploit all the resources in these platforms~\cite{Suleman:APLOS2009,Fedorova2009,Greenhalgh2011,Joao:ASPLOS2012,Joao:ISCA2013,ARM4HPC_SC13}. 
 Like in other heterogeneous systems, load balancing and scheduling are fundamental challenges that must be addressed to effectively exploit all the resources in AMC platforms~\cite{Suleman:APLOS2009,Fedorova2009,Greenhalgh2011,Joao:ASPLOS2012,Joao:ISCA2013,ARM4HPC_SC13}. 
 Mobile applications rely on multi-programmed workloads to balance the load in the system, while supercomputer applications rely on hand-tuned code to extract maximum performance. 
 However, these approaches are not always suitable for general-purpose parallel applications.
 
-In this paper, we evaluate several execution models on an AMC using the PARSEC benchmark suite~\cite{PARSEC3}. 
+In this chapter, we evaluate several execution models on an AMC using the PARSEC benchmark suite~\cite{PARSEC3}. 
 This suite includes parallel applications from multiple domains such as finance, computer vision, physics, image processing and video encoding. 
 We quantify the performance loss of executing the applications \textit{as-is} on all cores in the system. 
 These applications were developed on homogeneous platforms and are bound to suffer from load imbalance on parallel regions that statically distribute the work evenly across cores without considering their performance disparity.
@@ -62,29 +33,20 @@ We evaluate the impact of using an inherently load-balanced execution model such
 Recent examples~\cite{Ayguade:TPDS2009, OpenMP4.0:Manual2013, OmpSs_PPL11, vectorMulticore, Bauer.2012.SC,rollback,Vandierendonck:PACT2011, Vandierendonck:Hyperq,spawn} include clauses to specify inter-task dependencies and remove most barriers which are the major source of load imbalance on AMCs.
 Another approach of scheduling in the runtime system is to change the existing statically-scheduled work-sharing constructs for the applications implemented in OpenMP to use dynamic scheduling. 
 
-This paper provides the first to our knowledge comprehensive evaluation of representative parallel applications on a real AMC platform: the Odroid-XU3 development board with ARM big.LITTLE architecture.
+This chapter provides a comprehensive evaluation of representative parallel applications on a real AMC platform: the Odroid-XU3 development board with ARM big.LITTLE architecture.
 We analyze the effectiveness of the aforementioned scheduling solutions in terms of performance, power and energy.
 We show why parallel applications are not ready to run on AMCs and how OS and runtime schedulers can overcome these issues depending on the application characteristics.
 Further we point out in which aspects the built-in OS scheduler falls short to effectively utilize the AMC.
 Finally, we show how the runtime system approach overcomes these issues, and improves the OS and static threading approaches by 13\% and 23\% respectively.
 
-%that the commonly used OS scheduler for AMCs 
-%how a runtime-based approach outperforms a commercially available product 
-
-% the effectiveness of these solutions at different levels of the software stack with a comprehensive evaluation of representative parallel applications on a real AMC platform: the Odroid-XU3 development board. 
-%This platform features an eight-core Samsung Exynos 5422 chip with ARM big.LITTLE architecture with four out-of-order Cortex-A15 and four in-order Cortex-A7 cores.
-
-The rest of this document is organized as follows: Section~\ref{sec:background} describes the evaluated AMC processor, while Section~\ref{sec:scheduling} provides information on 
-scheduling at the OS and runtime system levels. 
-Section~\ref{sec:experimental} describes the experimental framework. 
+The rest of this chapter is organized as follows: Section~\ref{sec:scheduling} provides information on 
+scheduling at the OS and runtime system levels while Section~\ref{sec:experimental} describes the experimental framework. 
 Section~\ref{sec:evaluation} shows the performance and energy results and associated insights.% of our experiments. 
 Finally, Section~\ref{sec:related} discusses related work and Section~\ref{sec:conclusions} concludes this work. 
 
 \iffalse
 % <PACT16>
-
-The future of parallel computing is highly restricted by energy 
-efficiency~\cite{Kogge_Exascale_TR08}. Energy efficiency has become the main 
+Energy efficiency has become the main 
 challenge for future processor designs, motivating prolific research to face the 
 \emph{power wall}. Using heterogeneous processing elements is one of the 
 approaches to increase energy efficiency. Different types of processors can 

@@ -1,0 +1,56 @@
+%applications
+In the evaluation of our contributions we use 13 scientific applications. 
+With the prevalence of many-core processors and the increasing relevance of application 
+domains that do not belong to the traditional HPC field, comes the need for programs 
+representative of current and future parallel workloads. 
+The PARSEC benchmark suite~\cite{PARSEC3,Bienia:PhD2011} features state-of-the-art, 
+computationally intensive algorithms and very diverse workloads from different areas of computing.
+In our experiments, we make use of the original PARSEC codes together with a task-based 
+implementation of nine benchmarks of the suite~\cite{Chasapis:TACO2016}. 
+Additionaly, we evaluate some representative benchmarks from the BSC Application Repository (BAR)~\cite{BAR}.
+These applications are implemented using the OmpSs programming model.
+
+Table~\ref{tab:parsec} describes the benchmarks included in the study along with their respective 
+inputs and parallelization strategy. 
+We are using native inputs, which are real input sets for native execution, except for \texttt{dedup}, as the entire input file of 672 MB and the intermediate data structures do not fit in the memory system of our platform. 
+Instead, we reduce the size of the input file to 351 MB.
+
+%We obtain these applications from the PARSECSs benchmark suite~\cite{Chasapis:TACO2016} as well as from the BSC Application Repository (BAR)~\cite{BAR}.
+%These applications are implemented using the OmpSs programming model and/or the pthreads library.
+%In our evaluations we either compare our contributions against the default OmpSs runtime or we compare the OmpSs runtime against the application-level (pthreads version) parallelism.
+%Table~\ref{tab.apps} shows the applications together with a short description and the parallelization strategy followed in their task-based implementation.
+%In the next Chapters, depending on the present evaluation we will update this Table with the appropriate information to facilitate the explanation of the results.
+
+
+\begin{table*}[h]
+	\centering
+	\scriptsize
+	\caption{Benchmarks used from the PARSEC benchmark suite and their measured performance ratio between big and little cores}
+    %\vspace{-0.2cm}
+	\setlength{\tabcolsep}{3pt}
+	\begin{tabular}{|p{2cm}|p{5.7cm}|p{4.5cm}|c|}
+	\hline
+	\textbf{Benchmark} & \multicolumn{1}{|c|}{\textbf{Description}} & \multicolumn{1}{|c|}{\textbf{Input}} & \textbf{Parallelization} \\
+	\hline \hline
+	Blackscholes & Calculates the prices of a portfolio analytically with the Black-Scholes partial differential equation. & 10,000,000 options & data-parallel \\ \hline
+	Bodytrack & Computer vision application which tracks a 3D pose of a marker-less human body with multiple cameras through an image sequence. & 4 cameras, 261 frames, 4,000 particles, 5 annealing layers & pipeline\\ \hline
+	Canneal & Simulated cache-aware annealing to optimize routing cost of a chip design. & 2.5 million elements, 6,000 steps & unstructured\\ \hline
+	Cholesky Factorization & Dense matrix operation that is used for solving linear equations in linear least square systems. & \kc{multiple} & dependencies\\ \hline
+	Dedup & Compresses a data stream with a combination of global compression and local compression in order to achieve high compression ratios. & 351 MB data & pipeline\\ \hline
+	Facesim & Takes a model of a human face and a time sequence of muscle activation and computes a visually realistic animation of the modeled face. & 100 frames, 372,126 tetrahedra & data-parallel\\ \hline
+	Ferret & Content-based similarity search of feature-rich data (audio, images, video, etc.) & 3,500 queries, 59,695 images database, find top 50 images & pipeline\\ \hline
+	Fluidanimate & Extended Smoothed Particle Hydrodynamics method to simulate an 
+incompressible fluid for interactive animations. & 500 frames, 500,000 particles & 
+data-parallel\\ \hline
+	Heat diffusion & Computes the heat distribution on a matrix from \textit{x} heat sources using the Gaus-Seidel method. & 16$\times$16 blocks of 512$\times$512 doubles & data-parallel\\ \hline
+	Integral Histogram & A method to compute a cumulative histogram for each pixel of an image represented as a Cartesian data space in constant time. & 8$\times$8 blocks of 12$\times$512 floats & dependencies \\ \hline
+	QR Factorization & A linear algebra algorithm that is used to solve the linear least squares problem \cite{QR}.& \kc{multiple} & dependencies \\ \hline
+	Streamcluster & Solves the online clustering problem. & 200K points per block, 5 block & 
+data-parallel\\ \hline
+	Swaptions & Intel RMS workload; uses the Heath-Jarrow-Morton framework to price a portfolio of swaptions. & 128 swaptions, 1 million  simulations & data-parallel\\ \hline
+%	vips & VASARI Image Processing System (VIPS), which includes fundamental image processing operations. & 18,000$\times$18,000 pixels & 127,957\\ \hline
+%	x264 & H.264/AVC (Advanced Video Coding) video encoder. & 512 frames, 1,920$\times$1,080 pixels & 29,329\\ \hline 
+	\end{tabular}
+	\label{tab:parsec}
+	%\vspace{-0.3cm}
+\end{table*}
