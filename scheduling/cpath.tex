@@ -30,7 +30,7 @@ According to the discovered task cost CPATH assigns priorities to tasks by trave
 
 %\end{itemize}
 
-\subsubsection{Task Prioritization}
+\subsection{Task Prioritization}
 %explanation of the slist (successors' list)
 
 Each task of the TDG keeps a list with its successors (\textit{slist}).
@@ -234,7 +234,7 @@ At creation time, each task is assigned a group ID which is the value of the \te
 %At creation time, tasks are separated into groups according to the detected taskwaits by assigning as group ID the value of the \texttt{twDetected} at that moment.
 If the group ID of a task is less than the current \texttt{twDetected} value then this means that a taskwait has occurred after the creation of this task.
 
-\subsubsection{Task Submission and Task-to-Core Assignment}
+\subsection{Task Submission} 
 The task submission is implemented using the same \texttt{critical} and \texttt{non-critical} ready queues as in CATS.
 Listing~\ref{submission} can be used to describe the task submission of CPATH.
 The only modification needed is in the condition of the lines 6 and 7 of Listing~\ref{submission}.
@@ -242,8 +242,12 @@ In addition to the \texttt{maxPriority}, CPATH keeps track of the \texttt{maxExe
 CPATH extends the condition of the critical task consideration by checking whether the priority of the current task is equal to \texttt{maxPriority} - \texttt{1} or if it is equal to \texttt{maxPriority} - \texttt{maxExecTime}.
 Moreover, the value of \texttt{maxExecTime} is updated accordingly to the \texttt{maxPriority}.
 
-Finally, task-to-core assignment is identical to CATS as described in Section~\ref{sec.cats.assignment}. 
-According to this, fast cores are responsible for the execution of the tasks in the critical queue and slow cores for the tasks in the non-critical queue.
+\subsection{Task-to-Core Assignment}
+Task-to-core assignment in CPATH is identical to CATS as described in Section~\ref{sec.cats.assignment}. 
+It takes place dynamically and in parallel to the previous steps.
+Depending on the core type, whenever a core becomes idle it retrieves a task from its corresponding ready queue; fast cores are responsible for the execution of the tasks in the critical queue and slow cores for the tasks in the non-critical queue.
+Each ready queue is shared among the cores of the same type so there is no need for work stealing among cores of the same type. 
+Finally, as with CATS, the work-stealing mechanism prevents load imbalance by allowing big cores to steal work from the little cores.
 
 
 

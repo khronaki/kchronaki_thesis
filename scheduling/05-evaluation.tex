@@ -1,41 +1,6 @@
-\footnotesize
-\begin{table*}
-\begin{center}
-\caption{Evaluated benchmarks and relevant characteristics}
-\label{tab.apps}
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
-\hline
-\multirow{2}{*}{\parbox{22mm}{\centering Application}} & 
-\multirow{2}{*}{Problem size} & 
-\multirow{2}{*}{\parbox{11mm}{\centering \#Tasks}} & 
-\multirow{2}{*}{\parbox{9mm}{\centering \#Task types}} & 
-\multirow{2}{*}{\parbox{18mm}{\centering Avg task exec. time (${\mu}s$)}} & 
-\multicolumn{3}{|c|}{Per task overheads (${\mu}s$)} &\\
-\cline{6-8}
-& & & & & {\parbox{10mm}{\centering CATS}} & {\parbox{10mm}{\centering CPATH}} & {\parbox{10mm}{\centering HYBRID}} &
+\section{Evaluation}
+\label{sec.scheduling.evaluation}
 
-\multirow{2}{*}{\parbox{13mm}{\centering Measured perf. ratio}} \\
-& & & & & & & & \\ %\hhline{~~~~~~}
-\hline
-
-\multirow{3}{*}{\parbox{25mm}{\centering Cholesky factorization}} & 
-8$\times$8 blocks of 1024$\times$1024 floats & 120 & & 10\,314\,660 & 81.19 &  115.29 &  112.41 &  \\                                              & 16$\times$16 blocks of 512$\times$512 floats & 816 & 4 & 1\,551\,322 & 104.76 &  238.02 &  194.28 &3.48 \\ 
-& 32$\times$32 blocks of 512$\times$512 floats & 5984 & & 1\,551\,322 & 104.76 &  238.02 &  194.28  & \\ 
-\hline{}
-QR factorization & 16$\times$16 blocks of 512$\times$512 doubles & 1\,496 & 4 & 11\,651\,079  &   1\,419.33 & 2\,580.41 &   1\,451.74 & 6.86 \\ 
-\hline
-Heat diffusion & 16$\times$16 blocks of 512$\times$512 doubles & 5\,124 & 3 & 93\,198  &   145.17  &  748.84 &  170.00& 3.68 \\
-\hline
-Int. Histogram & 8$\times$8 blocks of 512$\times$512 floats & 2\,048 & 2 & 514\,096 &  217.45 &  62.07 & 263.62  & 2.23 \\ 
-%Heat diffusion & Heat &  &  &  &  &  & \\ 
-\hline
-Bodytrack & native input (851MB) & 408\,525 &  6 & 41\,869 & 93.90 & 120.93 &  120.93 & 4.14 \\
-\hline
-\end{tabular} 
-\end{center}
-\vspace{-0.4cm}
-\end{table*}
-\normalsize
 
 \subsection{Methodology}
 
@@ -58,7 +23,11 @@ Our test bed comprises a real big.LITTLE processor and a simulated heterogeneous
 %%TODO this needs to be rephrased and more structured...
 %We implement a dynamic version of HEFT scheduler (dHEFT) in the OmpSs programming model. The implementation assumes two different types of cores (big and little) and keeps records of the tasks' execution times in each core. The original HEFT \cite{HEFT} implementation assumes the prior knowledge of the TDG as well as the costs of the tasks. In our case, since the evaluation consists of running benchmarks, best way to compare HEFT and the other approaches is to keep the scheduling idea of HEFT and transform it from a static scheduler to a dynamic scheduler. This means that during runtime dHEFT discovers the costs of the tasks, computes a mean value of the costs for each task-type, parameter-size duple for each type of processor and then finds the processor that will finish the task at the earliest possible time. A difference between the static HEFT and dHEFT is the order that the tasks are being submitted. In HEFT tasks are submitted in decreasing order of their upward rank, which is computed statically with the known task costs. Since dHEFT discovers the costs while tasks are executing, there is no priority in the task submission. In dHEFT tasks are submitted as soon as they become ready. To find the earliest possible executor, dHEFT maintains one list per core (\textit{wlist}) with the ready tasks that are waiting to be executed by this core. When a task is submitted, dHEFT first checks if there are records of prior execution of this task. If the number of records is sufficient (in our experiments we use 3 records at least) then the estimated execution time of the task is considered stable. So, the task is scheduled to the earliest executor by consulting the \textit{wlist} of all the processors. If the number of records is not sufficient for one of the processor types then the task is scheduled to the earliest executor of this processor type. In any case dHEFT creates history by storing every time the task cost in the appropriate records in order to maintain stable results in the next submissions.
 
-The Hardkernel \textbf{Odroid-XU3} development board has an 8-core Samsung Exynos 5422 chip with an ARM big.LITTLE architecture and 2GB of LPDDR3 RAM at 933MHz. The chip has four Cortex-A15 cores clocked at 1.6GHz and four Cortex-A7 cores at 800MHz. The four Cortex-A15 cores form a \textit{cluster} with a shared 2MB L2 cache, and the Cortex-A7 share a 512KB L2 cache. The two \textit{clusters} are coherent, so a single shared memory application can run on both clusters, using up to eight cores simultaneously. In our experiments, we evaluate a set of possible combinations of fast and slow cores varying the total number of cores from two to eight. For the remainder of the paper, we refer to Cortex-A15 cores as \textit{big} and to Cortex-A7 cores as \textit{little}.
+To perform our experiments, we use the Hardkernel \textbf{Odroid-XU3} development board that has an 8-core Samsung Exynos 5422 with an ARM big.LITTLE architecture. 
+This platform is described in detail in section~\ref{sec.background.arm}.
+%The Hardkernel \textbf{Odroid-XU3} development board has an 8-core Samsung Exynos 5422 chip with an ARM big.LITTLE architecture and 2GB of LPDDR3 RAM at 933MHz. The chip has four Cortex-A15 cores clocked at 1.6GHz and four Cortex-A7 cores at 800MHz. The four Cortex-A15 cores form a \textit{cluster} with a shared 2MB L2 cache, and the Cortex-A7 share a 512KB L2 cache. The two \textit{clusters} are coherent, so a single shared memory application can run on both clusters, using up to eight cores simultaneously. 
+In our experiments, we evaluate a set of possible combinations of fast and slow cores varying the total number of cores from two to eight. 
+%For the remainder of this section, we refer to Cortex-A15 cores as \textit{big} and to Cortex-A7 cores as \textit{little}.
 
 % Talking about the performance ratio of the applications before describing the applications sound a bit strange, let's move this to applications section
 %Depending on the workload, big and little cores expose different performance ratios. For example, a double precision benchmark advances a big core to be 3$\times$ faster than a little core, while for integer operations a big core is 1.9$\times$ faster than a little one \cite{Greenhalgh2011}. To get the notion of this performance ratio, we perform an execution of each application in one big core and another identical execution in one little core. The difference in performance on these two execution defines the difference in performance for big and little cores for each specific workload. Table \ref{tab.apps} shows the performance ratios explored for the benchmarks that we use.
@@ -76,9 +45,11 @@ The Hardkernel \textbf{Odroid-XU3} development board has an 8-core Samsung Exyno
 %\subsubsection{TaskSim}
 
 %Heterogeneous platforms such as ODROID-XU3 are currently limited in terms of size. We expect that future heterogeneous platforms will grow bigger with a larger amount of cores and various performance differences between fast and slow cores. 
-To evaluate heterogeneous scheduling on larger multi-core systems we use the heterogeneous multi-core TaskSim simulator~\cite{AbstrLevels_TACO12}. TaskSim allows the specification of a heterogeneous system with two different types of cores: fast and slow. We can configure the amount of cores of each type and the difference in performance between the different types (performance ratio) in the TaskSim configuration file.
-%With TaskSim we can evaluate a larger amount of cores that exceeds the resources of our real machine. 
-In our experiments, we evaluate the effectiveness of the schedulers on 8 distinct heterogeneous machine configurations. These comprise systems with 16 or 32 total number of cores, and the number of fast cores ranging from 1 to 16. We set the performance ratio between fast and slow cores to 4.5$\times$ because this is the average performance ratio observed on the real machine for the benchmarks of this evaluation.
+To evaluate heterogeneous scheduling on larger multi-core systems we use the heterogeneous multi-core TaskSim simulator~\cite{AbstrLevels_TACO12} described in section~\ref{sec.background.simulation}. TaskSim allows the specification of a heterogeneous system with two different types of cores: fast and slow. 
+We can configure the amount of cores of each type and the difference in performance between the different types (performance ratio) in the TaskSim configuration file.
+In our experiments, we evaluate the effectiveness of the schedulers on 8 distinct heterogeneous machine configurations. 
+These comprise systems with 16 or 32 total number of cores, and the number of fast cores ranging from 1 to 16. 
+We set the performance ratio between fast and slow cores to 4.5$\times$ because this is the average performance ratio observed on the real machine for the benchmarks of this evaluation.
 
 %For all these configurations, we evaluate the following performance ratios between fast and slow cores: 2$\times$, 2.5$\times$, 3$\times$, 3.5$\times$ and 4$\times$.
 
@@ -106,8 +77,45 @@ For all the scheduling approaches we present their speedup over the execution on
 \endgroup
 
 
-\subsection{Applications}
-
+\subsubsection{Applications}
+\begin{table*}
+	\scriptsize
+	\begin{center}
+		\caption{Evaluated benchmarks and relevant characteristics. The inputs of QR and Heat diffusion are arrays of doubles and the inputs of Cholesky and Int. Histogram are arrays of floats.}
+		\label{tab.apps}
+		\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+			\hline
+			\multirow{2}{*}{\parbox{10mm}{\centering Application}} & 
+			\multirow{2}{*}{\parbox{9mm}{\centering Problem size}} & 
+			\multirow{2}{*}{\parbox{9mm}{\centering \#Tasks}} & 
+			\multirow{2}{*}{\parbox{9mm}{\centering \#Task types}} & 
+			\multirow{2}{*}{\parbox{18mm}{\centering Avg task exec. time (${\mu}s$)}} & 
+			\multicolumn{3}{|c|}{Per task overheads (${\mu}s$)} &\\
+			\cline{6-8}
+			& & & & & {\parbox{10mm}{\centering CATS}} & {\parbox{10mm}{\centering CPATH}} & {\parbox{11mm}{\centering HYBRID}} &
+			
+			\multirow{2}{*}{\parbox{13mm}{\centering Measured perf. ratio}} \\
+			& & & & & & & & \\ %\hhline{~~~~~~}
+			\hline
+			
+			\multirow{3}{*}{Cholesky} 
+			& 8K 1024 & 120 & & 10\,314\,660 & 81.19 &  115.29 &  112.41 & \\                                              
+			& 8K 512 & 816 & 4 & 1\,551\,322 & 104.76 &  238.02 &  194.28 &3.48 \\ 
+			& 16K 512 & 5984 & & 1\,551\,322 & 104.76 &  238.02 &  194.28  & \\ 
+			\hline{}
+			QR & 8K 512 & 1\,496 & 4 & 11\,651\,079  &   1\,419.33 & 2\,580.41 &   1\,451.74 & 6.86 \\ 
+			\hline
+			Heat diffusion & 8K 512 & 5\,124 & 3 & 93\,198  &   145.17  &  748.84 &  170.00& 3.68 \\
+			\hline
+			Int. Histogram & 8K 512 & 2\,048 & 2 & 514\,096 &  217.45 &  62.07 & 263.62  & 2.23 \\ 
+			%Heat diffusion & Heat &  &  &  &  &  & \\ 
+			\hline
+			Bodytrack & native & 408\,525 &  6 & 41\,869 & 93.90 & 120.93 &  120.93 & 4.14 \\
+			\hline
+		\end{tabular} 
+	\end{center}
+\end{table*}
+\normalsize
 \begin{figure}[t]
 	\centering
 	\subfloat[Cholesky 8$\times$8]{
@@ -140,18 +148,19 @@ For all the scheduling approaches we present their speedup over the execution on
   %\vspace{-0.4cm}
 \end{figure}
 
-We use five scientific applications implemented in the OmpSs programming model: Cholesky factorization, QR factorization, Heat diffusion, Integral Histogram and Bodytrack. These benchmarks are accessible in the BSC Application Repository~\cite{BAR} and in the PARSECSs library~\cite{Chasapis:TACO2016}. 
+We use five scientific applications implemented in the OmpSs programming model: Cholesky factorization, QR factorization, Heat diffusion, Integral Histogram and Bodytrack, also described in Section~\ref{sec.background}. 
+These benchmarks are accessible in the BSC Application Repository~\cite{BAR} and in the PARSECSs library~\cite{Chasapis:TACO2016}. 
 
 \kc{Added in the background}
 
 %\subsubsection{Bodytrack}
-\textbf{Bodytrack} is an application that tracks a marker-less human body using multiple cameras through an image sequence. 
-The OmpSs version implements a two-stage parallel pipeline for the image processing.
-%In the first stage the implementation allows the concurrent processing of all the frames of the image sequence. 
-%The second stage is the application of a particle filter to the images in order to mark the human body.
-The two stages are synchronized through the OmpSs dataflow annotations.
+%\textbf{Bodytrack} is an application that tracks a marker-less human body using multiple cameras through an image sequence. 
+%The OmpSs version implements a two-stage parallel pipeline for the image processing.
+%%In the first stage the implementation allows the concurrent processing of all the frames of the image sequence. 
+%%The second stage is the application of a particle filter to the images in order to mark the human body.
+%The two stages are synchronized through the OmpSs dataflow annotations.
 %By allowing the parallel processing of frames, OmpSs achieves the overlapping of the I/O and serial code with the tasks. 
-We use the native input of the benchmark suite~\cite{Chasapis:TACO2016}.
+%We use the native input of the benchmark suite~\cite{Chasapis:TACO2016}.
 
 %Their different configurations and characteristics are shown in Table~\ref{tab.apps}.
 %
@@ -171,7 +180,9 @@ We use the native input of the benchmark suite~\cite{Chasapis:TACO2016}.
 %END IDEAL SPEEDUP
 
 Table \ref{tab.apps} shows the different configurations and characteristics of the applications.
-The performance ratio between big and little cores depends on the application. For example, the difference between the issue rate and throughput of double-precision floating point units of both types of cores is larger than the difference for single-precision floating point instructions. Therefore, applications with heavy double-precision operation (e.g. QR) get a larger benefit from running on the big cores, than single-precision dominated applications (e.g integral histogram), as shown in Table~\ref{tab.apps}.
+From these applications, of QR and Heat diffusion operate on doubles while Cholesky and Integral Histogram operate on floats.
+The performance ratio between big and little cores depends on the application. 
+For example, the difference between the issue rate and throughput of double-precision floating point units of both types of cores is larger than the difference for single-precision floating point instructions. Therefore, applications with heavy double-precision operation (e.g. QR) get a larger benefit from running on the big cores, than single-precision dominated applications (e.g integral histogram), as shown in Table~\ref{tab.apps}.
 
 The average per task overhead for each scheduler is negligible compared to the average task execution time shown in Table~\ref{tab.apps}. Specifically, CATS has the lowest per task overheads. Next is HYBRID and the least efficient is CPATH. This is because of the complexity of the CPATH algorithm that takes place whenever the TDG needs to be updated.
 On the other hand, CATS and HYBRID have negligible overheads caused by the task prioritization.
@@ -186,7 +197,13 @@ This is used in the next section to classify how heterogeneous each application 
 %\subsubsection{Cholesky Factorization}
 
 \subsection{Real Environment Evaluation}
-
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/8cores.pdf}
+	\caption{Speedup of CATS, CPATH, HYBRID, dHEFT and BF on 8 cores compared to the ideal}
+	\label{BFLinear}
+	\vspace{-0.4cm}
+\end{figure}
 Figure~\ref{BFLinear} shows the speedup of CATS, CPATH, HYBRID, dHEFT and BF when running the applications on all eight cores of the Odroid-XU3. Cholesky and Integral Histogram operate on single-precision data, while QR and Heat Diffusion operate on double-precision. Double-precision applications get larger speedups over one little core because they benefit from a larger performance ratio when running on a big core. In the case of Bodytrack, the out-of-order processing power of the big cores helps on the efficient execution and creates a high performance ratio between big and little cores. For most of the cases, CATS scales better than the rest of the schedulers. The shortening of the critical path by running all critical tasks on big cores effectively reduces total execution time when running on all cores. CPATH scheduler does not achieve as high speedup as the other heterogeneous scheduling approaches but it still outperforms the baseline (BF) approach.
 
 Figure~\ref{avg_all} shows the average speedup obtained for each scheduler and machine set-up. 
@@ -195,13 +212,6 @@ Specifically, CATS and HYBRID achieve a higher speedup by detecting critical tas
 We observe that their performance is approximately the same and this is due to the fact that HYBRID exploits the same CATS criticality in case the execution time of the task is not yet resolved.
 CPATH is less effective due to the additional overheads of the top-to-bottom TDG traversal.
 Since the evaluated dHEFT version is improved from previous studies~\cite{Chronaki:ICS2015}, it shows better performance, although it still does not reach the efficiency of CATS and HYBRID because of its task criticality agnosticism.
-\begin{figure}[!tl]
-	\centering
-	\includegraphics[width=0.7\textwidth]{images/8cores.pdf}
-  	\caption{Speedup of CATS, CPATH, HYBRID, dHEFT and BF on 8 cores compared to the ideal}
-  	\label{BFLinear}
-  	\vspace{-0.4cm}
-\end{figure}
 
 Moving in more detail, Figure~\ref{speedup} shows the speedup obtained for each application,  scheduler and machine set-up.
 We classify the benchmarks according to their task cost variability to easier explain the results.
@@ -257,15 +267,7 @@ CPATH and dHEFT are slightly less efficient and improve BF by 19 and 21\% respec
 For Cholesky 8$\times$8, the heterogeneous schedulers CATS, HYBRID and dHEFT constantly improve the performance of BF and reach up to 45\% improvement on 8 cores.
 It is observed here that dHEFT indeed performs better when the number of tasks is limited as this workload has 120 tasks in total.
 The additional overheads of CPATH do not compensate with increased performance in this case because there are not enough tasks to apply the better scheduling.
-\begin{figure*}[!t]
-  \includegraphics[width=\textwidth]{images/speedup_apps1.pdf}
-   \vspace{-0.4cm}
 
-  \includegraphics[width=\textwidth]{images/speedup_apps2.pdf}
-  \caption{Speedups obtained for each scheduler and each application}
-  \label{speedup}
-  \vspace{-0.4cm}
-\end{figure*}  
 %---------------- QR ------------ the highest variability and good number of tasks (1496)
 
 QR factorization is the highest task cost variability benchmark as shown in Figure~\ref{qr_dist}.
@@ -276,6 +278,15 @@ as Table~\ref{tab.apps} shows, HYBRID manages to detect critical tasks that resi
 For this benchmark, CPATH also reaches a 13\% improvement over BF since task cost matters in this case. 
 However, CPATH speedup is still limited compared to HYBRID because of the higher scheduling overheads which in this case is 1.8$\times$ higher than CATS overheads.
 dHEFT also improves BF by finding the earliest executor of each task, but the improvement is limited to 11\% which is lower than the other approaches.
+\begin{figure*}[!t]
+	\includegraphics[width=\textwidth]{images/speedup_apps1.pdf}
+	\vspace{-0.4cm}
+	
+	\includegraphics[width=\textwidth]{images/speedup_apps2.pdf}
+	\caption{Speedups obtained for each scheduler and each application}
+	\label{speedup}
+	\vspace{-0.4cm}
+\end{figure*}  
 
 %--------- SUMMARY ---------------
 

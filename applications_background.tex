@@ -1,19 +1,120 @@
 %applications
+\section{Applications}
+\label{sec.background.applications}
+
 In the evaluation of our contributions we use 13 scientific applications. 
 With the prevalence of many-core processors and the increasing relevance of application 
 domains that do not belong to the traditional HPC field, comes the need for programs 
 representative of current and future parallel workloads. 
 The PARSEC benchmark suite~\cite{PARSEC3,Bienia:PhD2011} features state-of-the-art, 
 computationally intensive algorithms and very diverse workloads from different areas of computing.
-In our experiments, we make use of the original PARSEC codes together with a task-based 
-implementation of nine benchmarks of the suite~\cite{Chasapis:TACO2016}. 
-Additionaly, we evaluate some representative benchmarks from the BSC Application Repository (BAR)~\cite{BAR}.
+In our experiments, we make use of the original PARSEC codes together with a task-based implementation of nine benchmarks of the suite~\cite{Chasapis:TACO2016}. 
+Additionally, we evaluate some representative benchmarks from the BSC Application Repository (BAR)~\cite{BAR}.
 These applications are implemented using the OmpSs programming model.
 
-Table~\ref{tab:parsec} describes the benchmarks included in the study along with their respective 
-inputs and parallelization strategy. 
-We are using native inputs, which are real input sets for native execution, except for \texttt{dedup}, as the entire input file of 672 MB and the intermediate data structures do not fit in the memory system of our platform. 
-Instead, we reduce the size of the input file to 351 MB.
+Below we provide a brief description of each application and its task-based parallelization scheme. 
+We provide more evaluation-specific characterization of the applications in the next chapters.
+
+%Table~\ref{tab:parsec} describes the benchmarks included in the study along with their respective 
+%inputs and parallelization strategy. 
+%We are using native inputs, which are real input sets for native execution, except for \texttt{dedup}, as the entire input file of 672 MB and the intermediate data structures do not fit in the memory system of our platform. 
+%Instead, we reduce the size of the input file to 351 MB.
+
+
+%We use 13 scientific applications implemented in the OmpSs programming model: Cholesky factorization, QR factorization, Heat diffusion, Integral Histogram and Bodytrack. These benchmarks are accessible in the BSC Application Repository~\cite{BAR} and in the PARSECSs library~\cite{Chasapis:TACO2016}. 
+
+
+
+
+
+
+
+
+
+
+
+\textbf{Blackscholes} is an Intel RMS benchmark that calculates the prices of a portfolio analytically with the Black-Scholes partial differential equation. 
+The OmpSs version of this benchmark is embarrassingly parallel as it equally divides the work into a certain number of independent blocks, greater than the number of available cores. 
+The independent blocks can be processed simultaneously by the available threads to apply the Black-Scholes equation.
+
+%\subsubsection{Bodytrack}
+\textbf{Bodytrack} is an application that tracks a marker-less human body using multiple cameras through an image sequence. 
+The OmpSs version implements a two-stage parallel pipeline for the image processing.
+In the first stage the implementation allows the concurrent processing of all the frames of the image sequence. 
+The second stage is the application of a particle filter to the images in order to mark the human body.
+The two stages are synchronized through the OmpSs dataflow annotations.
+By allowing the parallel processing of frames, OmpSs achieves the overlapping of the I/O and serial code with the tasks. 
+%We use the native input of the benchmark suite~\cite{Chasapis:TACO2016}.
+
+\textbf{Canneal} optimizes the routing cost of chip design by using a simulated cache-aware annealing. 
+To converge to an optimal solution, it continuously swaps elements that need to be placed in a large space. 
+In the parallel version of canneal, the elements are stored in a list that is accessed among all threads.
+The OmpSs version spawns several independent tasks to perform the swaps on random elements of the list.
+Atomic operations are used to prevent the same elements to be modified simultaneously by more than one threads.
+
+\textbf{Cholesky factorization} is a dense matrix operation that is used for solving linear equations in linear least square systems.
+It takes as input one symmetric and positive square matrix \textit{A} and calculates a triangular matrix \textit{L}, where \textit{LL}$^T$\textit{=A}.
+The OmpSs implementation of Cholesky blocks the input matrix into square blocks of floats and each task is responsible for performing the factorization on one block.
+%that call the functions of the Intel MKL library \cite{MKL}.
+
+\textbf{Dedup} is a data compression algorithm that combines global and local compression. 
+The algorithm first splits the input data into non-equal data chunks; each chunk then passes through 5 different pipeline stages. 
+The OmpSs version groups and merges the pipeline stages into two and each stage is taskified and run in a pipelined manner.
+This method helps in overlapping the communication with the computation.
+
+\textbf{Facesim} takes as input a 3D model of a human face and a time sequence of muscle activation and computes a visually realistic animation of the modeled face. 
+\kc{TODO: add info}
+
+\textbf{Ferret} is a content-based similarity search application of feature-rich data (audio, images, video, etc.).
+It takes as input a number of image queries and a database where the similarity search is performed.
+The OmpSs implementation uses pipelined parallelism with 5 pipeline stages implemented as tasks and dependency tracking between them.
+Each image query passes is used as input to this pipeline structure.
+
+\textbf{Fluidanimate} is a benchmark that uses the Extended Smoothed Particle Hydrodynamics method to simulate an incompressible fluid for interactive animations. 
+The OmpSs implementation first partitions the fluid surface into grids. 
+It then uses this data-partition within parallel do-all loops that implement the appropriate hydrodynamic methods.
+
+%\subsubsection{Heat Diffusion}
+\textbf{Heat diffusion} uses the Gauss-Seidel method to compute the heat distribution on a matrix from \textit{x} heat sources. 
+Heat diffusion implements an iterative solver of the equation that invokes the Gauss-Seidel method until the desired convergence is reached. 
+%We use a matrix of 8192$\times$8192 doubles and block size of 512$\times$512.
+%In the specific implementation~\cite{BAR} the number of iterations can be set as an argument in order to control the workload of the experiments. 
+The code splits the matrix into blocks and creates one task per block for the Gauss-Seidel computation. 
+
+%\subsubsection{Integral Histogram}
+\textbf{Integral histogram} is a method to compute a cumulative histogram for each pixel of an image. 
+With this algorithm, the histogram of a Cartesian data space is computed in constant time. 
+The OmpSs implementation performs a blocked cross-weave scan for each block of the image. 
+It consists of a horizontal and a vertical scan that transmit histograms to the blocks that reside on the right or below the current block.
+The horizontal scan processes one image block at a time and transmits the histograms to the block on the right. 
+The vertical scan processes one block and transmits the histograms to the block below the current block. 
+Due to these transmissions, the application introduces many task dependencies. 
+%We use as input an image of 4096$\times$4096 pixels and block size of 512$\times$512.
+
+%\subsubsection{QR Factorization}
+\textbf{QR Factorization} is a linear algebra algorithm that is used to solve the linear least squares problem \cite{QR}. 
+QR decomposes a matrix \textit{A} of size \textit{m$\times$m} into the product of two matrices, \textit{Q} and \textit{R}, such that \textit{A = QR}. 
+In this equation, \textit{Q} is an orthogonal matrix and \textit{R} is an upper triangular matrix. 
+We evaluate the performance of a blocked, communication avoiding QR implementation in OmpSs. 
+Each OmpSs task processes one block of the input matrix. 
+The first set of tasks factorizes the blocks of the main diagonal of the matrix, and produces a Householder reflector for each block. 
+This reflector is the input of the second set of tasks that apply it to the blocks that reside on the right of the diagonal block. 
+What is next, is the factorization of the combination of a diagonal block with a block beneath the diagonal and finally the resulting Householder reflector is applied on the right of the combined blocks. 
+%We use an input blocked matrix of 8192$\times$8192 doubles forming 16$\times$16 blocks.
+
+\textbf{Streamcluster} is a benchmark for solving the online clustering problem.
+The input of this benchmark is a stream of points.
+Streamcluster partitions them and their centers in a certain number of clusters.
+The OmpSs version creates independent tasks that operate on the input stream of data points. 
+The data is split among tasks and each task is responsible for the process of a specific part of the input.
+
+\textbf{Swaptions} is an Intel RMS workload that uses the Heath-Jarrow-Morton framework to price a portfolio of swaptions. 
+The portfolio is stored in an array; the OmpSs version generates independent tasks for the portfolio pricing and each task is responsible for one part of the array.
+
+
+
+
+
 
 %We obtain these applications from the PARSECSs benchmark suite~\cite{Chasapis:TACO2016} as well as from the BSC Application Repository (BAR)~\cite{BAR}.
 %These applications are implemented using the OmpSs programming model and/or the pthreads library.
@@ -21,7 +122,7 @@ Instead, we reduce the size of the input file to 351 MB.
 %Table~\ref{tab.apps} shows the applications together with a short description and the parallelization strategy followed in their task-based implementation.
 %In the next Chapters, depending on the present evaluation we will update this Table with the appropriate information to facilitate the explanation of the results.
 
-
+\iffalse
 \begin{table*}[h]
 	\centering
 	\scriptsize
@@ -54,3 +155,4 @@ data-parallel\\ \hline
 	\label{tab:parsec}
 	%\vspace{-0.3cm}
 \end{table*}
+\fi

@@ -1,88 +1,133 @@
-\begin{figure*}[t]%
+\subsection{Methodology}
+
+\begin{table*}[!t]
 	\centering
-	\includegraphics[width=1.0\textwidth]{figures/speedup-4.pdf}
-	\vspace{-0.5cm}
-	\caption{Execution time speedup over 1 little core for systems that consist of 4 cores in 
-total with 0, 2 and 4 big cores. Different schedulers at the application (\textit{static 
-threading}), OS  (\textit{GTS}) and runtime (\textit{task-based}) levels are considered.}
-	%\caption{Performance improvements on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
-	\label{fig:speedup4}%
-	\vspace{-0.3cm}
-\end{figure*}
+	\scriptsize
+	\caption{Benchmarks used from the PARSEC benchmark suite and their 
+		measured performance ratio between big and little cores}
+	\setlength{\tabcolsep}{3pt}
+	\begin{tabular}{|p{2cm}|p{2.5cm}|c|c|}
+		\hline
+		\textbf{Benchmark} & \multicolumn{1}{|c|}{\textbf{Input}} & \textbf{Parallelization} & \multicolumn{1}{|c|}{\textbf{Perf ratio}} \\
+		\hline \hline
+		blackscholes & 10,000,000 options & data-parallel &2.18 \\ \hline
+		bodytrack & 4 cameras, 261 frames, 4,000 particles, 5 annealing layers & pipeline & 4.16 \\ \hline
+		canneal & 2.5 million elements, 6,000 steps & unstructured & 1.73 \\ \hline
+		dedup & 351 MB data & pipeline & 2.67 \\ \hline
+		facesim & 100 frames, 372,126 tetrahedra & data-parallel & 3.40 \\ \hline
+		ferret & 3,500 queries, 59,695 images database, find top 50 images & pipeline & 3.59 \\ \hline
+		fluidanimate & 500 frames, 500,000 particles & data-parallel & 3.32 \\ \hline
+		streamcluster & 200K points per block, 5 block & data-parallel & 3.48 \\ \hline
+		swaptions & 128 swaptions, 1 million  simulations & data-parallel & 2.78 \\ \hline
+	\end{tabular}
+	\label{tab.AMC.apps}
+\end{table*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Metrics}
+%\label{sec:metrics}
+
+All the experiments in this chapter are performed on the Hardkernel Odroid XU3 described in Section~\ref{sec.background.arm}. 
+To avoid machine overheating, we make use of the \texttt{cpufreq} driver to set big cores at 1.6GHz and little cores at 800MHz. \kc{repeating the frequencies...}
+Table~\ref{tab.AMC.apps} shows the applications used in this chapter as well as their corresponding inputs, parallelization technique and performance ratio between big and little cores.
+
+To estimate the impact of the different kinds of cores, we evaluate seven AMC system configurations with different numbers of \textit{little} (L) and \textit{big} (B) cores, denoted \texttt{L+B}.
+For each configuration and benchmark, we report the average performance of five executions in the application parallel region. 
+Then, we report the application speedup over its execution time on one little core.
+Equation~\ref{eq.speedup} shows the formula to compute this speedup.
+\begingroup\makeatletter\def\f@size{9}\check@mathfonts
+\begin{equation}
+\text{Speedup(L, B, method)} = \frac{\text{Exec. time(1, 0, method)}}{\text{Exec. time(L, B, 
+		method)}}
+\label{eq.speedup}
+\end{equation}
+\endgroup
+
+%Each set-up has a given number of \textit{little} (L) and \textit{big} (B) cores, denoted (L+B). Each benchmark is run on the target set-up seven times measuring performance, 
+%power and energy of the specified region of interest\footnote{The parallel region of the benchmark, which is marked in the distributed codes}. %We select the repetition with the best performance and report all the metrics corresponding to this execution.
+
+In this platform, there are four separated current sensors to measure, in real time, the power consumption of the A15 cluster, the A7 cluster, the GPU and DRAM. 
+To gather power and energy measurements, a background daemon reads the machine power sensors periodically during the application execution with negligible overhead. 
+Sensors are read at their refresh rate, every 270ms, and the values of A7 and A15 clusters' sensors are collected.
+%and their values are written in a file. 
+With the help of timestamps, we correlate the power measurements with the application parallel region in a \emph{post-mortem} process\footnote{The parallel region duration is several orders of magnitude longer than the reading frequency of power sensors}. 
+The reported power consumption is the average power tracked during five executions of each configuration, considering the application parallel region only. 
+We then report average power in Watts along the execution. 
+
+Finally, in terms of energy and Energy Delay Product (EDP), we report the total energy and EDP of the benchmarks region of interest normalized to the run on four little cores with static threading.
+Equations~\ref{eq.energy} and~\ref{eq.edp} show the formulas for these metrics.
+\begingroup\makeatletter\def\f@size{8}\check@mathfonts
+\begin{equation}
+\text{Normalized Energy(L, B, method)} = \frac{\text{Energy(L, B, method)}}{\text{Energy(4, 0, static-threading)}}
+\label{eq.energy}
+\end{equation}
+\begin{equation}
+\text{Normalized EDP(L, B, method)} = \frac{\text{EDP(L, B, method)}}{\text{EDP(4, 0, static-threading)}}
+\label{eq.edp}
+\end{equation}
+\endgroup
 
 
 
-\begin{figure*}[t]%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Applications}
+%
+
+\begin{figure}[t]%
 	\centering
-	\includegraphics[width=1.0\textwidth]{figures/power4.pdf}
-	\vspace{-0.5cm}
-	\caption{Average power measurements on a 4-core system with 0, 2, and 4 big cores.}
-	%\caption{Performance improvements on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
-	\label{fig:power4}%
-	\vspace{-0.3cm}
-\end{figure*}
+	\includegraphics[width=1\columnwidth]{figures/ideal_speedup.pdf}
+	\caption{Ideal speedup over 1 little core according to Equation~\ref{eq.ideal}. Numbers at the bottom of x axis show the total number of cores, numbers above it show the number of big cores}
+	%Results are reported for systems with 0, 2 and 4 big cores, and a total number of cores between 4 and 8.}	
+	\label{fig:ideal}%
+\end{figure}
 
-\begin{figure*}[t]%
-	\centering
-	\includegraphics[width=1.0\textwidth]{figures/energy_EDP-4.pdf}
-	\vspace{-0.5cm}
-	\caption{Normalized energy consumption and average EDP on a 4-core system with 0, 2, and 4 big cores. Static threading on 4 little cores is the baseline in both cases. }
-	%\caption{Performance improvements on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
-	\label{fig:energy4}%
-	\vspace{-0.3cm}
-\end{figure*}
+The original codes make use of the \texttt{pthreads} parallelization model for all the selected benchmarks. The taskified applications follow the same parallelization strategy implemented with OpenMP~4.0 (similar to OmpSs) \kc{OpenMP or OmpSs?} task annotations.
+The task-based implementation is done following two basic ideas: i) remove barriers where possible, by adding explicit data-dependencies; and ii) remove application-specific load balancing mechanisms, such as application-specific pools of threads implemented in \texttt{pthreads} and delegate this responsibility to the runtime.
+%As a result, both codes achieve the same performance on homogeneous processors with a reduced number of cores~\cite{Chasapis:TACO2016}, while significantly reducing the total number of lines of code for benchmarks with application-specific load balancing mechanisms (bodytrack, dedup and ferret).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Performance Ratio Characterization}
+
+When running on the big.LITTLE processor, each benchmark exhibits different performance ratios between big and little cores. 
+These ratios tell us how many times faster a big core is compared to a little core. 
+We measure the performance ratio of each application by executing it first on one big core and then on one little core, which corresponds to Speedup(0, 1, task-based) in Equation~\ref{eq.speedup}. 
+% The equation for the performance ratio is the following:
+% \begingroup\makeatletter\def\f@size{8}\check@mathfonts
+% \begin{equation}
+%   \text{Perf\_ratio(workload)} = \frac{\text{Exec. time(workload, 1little)}}{\text{Exec. time(workload, 1big)}}
+%   \label{eq.perf_ratio}
+% \end{equation}
+% \endgroup
+Table~\ref{tab.AMC.apps} also includes the observed performance ratio for each application. Bodytrack is the application that benefits the most from running on the big core with a performance ratio of 4.16$\times$. The out-of-order execution of the big core together with an increased number of in-flight instructions significantly improves the performance of this application. In contrast, canneal is the benchmark with the lowest performance ratio, 1.73$\times$, as this is a memory-intensive benchmark that does not benefit as much from the extra computation power of the big core. In general, performance ratios are above 2.5$\times$ for seven out of nine benchmarks, reaching 3.03$\times$ on average. 
+
+% In terms of power, the average ratio is significantly higher, 5$\times$, while the observed values vary between X and Y. \mm{Explain a bit more}.
+
+Taking into account these performance ratios, we can estimate the ideal speedup of the platform for 
+each workload assuming a perfect parallelization strategy. Equation \ref{eq.ideal} shows the 
+equation for the ideal speedup over 1 little core computation according to the number of big (B) and 
+little (L) cores.
+\begingroup\makeatletter\def\f@size{8}\check@mathfonts
+\begin{equation}
+\text{Ideal speedup(workload, B, L)} = \text{B $\times$ Perf\_ratio(workload) $+$ L}
+\label{eq.ideal}
+\end{equation}
+\endgroup
 
 
-% \mm{We don't need to include Figure~\ref{fig:edp4} as its average results are already in the previous figure.}
-% \begin{figure*}[t]%
-% 	\centering
-% 	\includegraphics[width=1.0\textwidth]{figures/edp4.pdf}
-% 	\vspace{-0.3cm}
-% 	\caption{Normalized EDP on a 4-core system with 0, 2, and 4 big cores. Results are normalized with respect to static-threading EDP results with 4 little cores.}
-% 	%\caption{Performance improvements on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
-% 	\label{fig:edp4}%
-% \end{figure*}
-
-
-% \begin{figure*}[t]%
-% 	\centering
-% 	\includegraphics[width=1.0\textwidth]{figures/power-parsec}
-% 	\vspace{-0.3cm}
-% 	\caption{Average power consumption on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores.}%
-% 	\label{fig:all-power}%
-% \end{figure*}
-% 
-% \begin{figure*}[t]%
-% 	\centering
-% 	\includegraphics[width=1.0\textwidth]{figures/energy-parsec}%
-% 	\vspace{-0.3cm}
-% 	\caption{Energy consumption on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
-% 	\label{fig:all-energy}%
-% \end{figure*}
-% 
-% 
-% 
-% \begin{figure*}[t]%
-% 	\centering
-% 	\includegraphics[width=1.0\textwidth]{figures/power-parsec}
-% 	\vspace{-0.3cm}
-% 	\caption{Average power consumption on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores.}%
-% 	\label{fig:all-power}%
-% \end{figure*}
-% 
-% \begin{figure*}[t]%
-% 	\centering
-% 	\includegraphics[width=1.0\textwidth]{figures/energy-parsec}%
-% 	\vspace{-0.3cm}
-% 	\caption{Energy consumption on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
-% 	\label{fig:all-energy}%
-% \end{figure*}
+Figure~\ref{fig:ideal} shows the ideal speedup of the system for each application for the varying 
+numbers of cores. This speedup assumes that the applications are fully parallel with no barriers or 
+other synchronization points. Thus, these speedups are an upper bound of the achievable application performance.
+%As expected, benchmarks with higher performance ratios exhibit potentially higher speed-ups on the asymmetric multi-core.
 
 
 
-We measure execution time, power, energy and EDP of nine 
-applications from the PARSEC benchmark suite~\cite{Bienia:PhD2011}. We compare these metrics for 
-three different scheduling approaches:
+
+We measure execution time, power, energy and EDP of nine applications from the PARSEC benchmark suite~\cite{Bienia:PhD2011}. 
+We compare these metrics for three different scheduling approaches:
 \begin{itemize}
 \item \textit{Static threading}: scheduling decisions are made at the application level. The OS is not allowed to migrate threads between the clusters of big and little cores. 
 \item \textit{GTS}\footnote{We choose to evaluate GTS instead of CS and IKS because it is the most advanced scheduling approach supported in the Linux kernel.}: dynamic coarse-grained OS scheduling 
@@ -96,6 +141,36 @@ PARSEC benchmarks.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Exploiting Parallelism in AMCs}
 \label{sec:eval:A}
+
+\begin{figure*}[t]%
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/speedup-4.pdf}
+	\caption{Execution time speedup over 1 little core for systems that consist of 4 cores in 
+		total with 0, 2 and 4 big cores. Different schedulers at the application (\textit{static 
+			threading}), OS  (\textit{GTS}) and runtime (\textit{task-based}) levels are considered.}
+	%\caption{Performance improvements on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
+	\label{fig:speedup4}%
+\end{figure*}
+
+
+
+\begin{figure*}[t]%
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/power4.pdf}
+	\caption{Average power measurements on a 4-core system with 0, 2, and 4 big cores.}
+	%\caption{Performance improvements on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
+	\label{fig:power4}%
+\end{figure*}
+
+\begin{figure*}[t]%
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/energy_EDP-4.pdf}
+	\caption{Normalized energy consumption and average EDP on a 4-core system with 0, 2, and 4 big cores. Static threading on 4 little cores is the baseline in both cases. }
+	%\caption{Performance improvements on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
+	\label{fig:energy4}%
+\end{figure*}
+
+
 % \mm{This section should focus on identifying the problems that current applications have on an asymmetric/heterogeneous multicore. For example, static scheduling, homogeneous domain/workload partition. More dynamic applications, will scale better (bodytrack, dedup, ferret, freqmine, vips).}
 
 This section examines the opportunities and challenges that current AMCs offer to emerging parallel applications. With this objective, we first evaluate a system with a constant number of four cores, changing the level of asymmetry to evaluate the characteristics of each configuration. In these experiments, all applications run with the original parallelization strategy that relies on the user to balance the application (\emph{Static threading}). We also evaluate the OS-based dynamic scheduling (\emph{GTS}) and the task-based runtime dynamic scheduling (\emph{Task-based}) for the same applications. 
@@ -127,17 +202,6 @@ For the asymmetric configuration, \emph{Task-based} achieves the best performanc
 
 %\kc{Consider removing this paragraph? It just mentions the obvious results that reviewers are complaining about...} Thus, if the number of cores remains constant, the best configuration in terms of performance and EDP corresponds to a symmetric configuration with big cores (e.g. \texttt{4+0}), while in terms of power and energy the best configuration corresponds to a symmetric configuration with little cores (e.g. \texttt{0+4}). 
 % From the average energy-delay product (EDP) results in Figure~\ref{fig:energy4} we can approximate the configuration that achieves the highest performance with the best possible energy consumption. The configuration with the lowest EDP is the one with four big cores (\texttt{4+0}) since all the scheduling approaches manage to compensate the additional energy consumption with the speedup that can be achieved on this set-up. However, it is interesting to note that for the asymmetric configuration the \emph{Task-based} approach achieves the best combination of performance and energy since its dynamic scheduling approach is effectively utilizing the little cores. 
-
-\begin{figure*}[t]%
-	\centering
-	\includegraphics[width=\textwidth]{figures/averages_4plus.pdf}
-	\vspace{-0.5cm}
-	\caption{Average results when running on 4 to  8 cores with 4 of them big. Speedup is over 1 little core. Static threading on 4 little cores is the baseline of energy consumption and EDP}
-	%\caption{Performance improvements on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
-	\label{fig:averages4plus}%
-	\vspace{-0.3cm}
-\end{figure*}
-
 
 Next, we focus on the obtained results per benchmark. 
 For applications with an extensive use of barriers (blackscholes, facesim, fluidanimate, streamcluster and swaptions) or with a memory intensive pattern (canneal), the extra computational power offered by the big cores in configuration \texttt{2+2} is not exploited. 
@@ -185,22 +249,25 @@ Consequently, for some benchmarks, the OS is making decisions without coordinati
 \fi
 \begin{figure*}[t]%
 	\centering
+	\includegraphics[width=\textwidth]{figures/averages_4plus.pdf}
+	\caption{Average results when running on 4 to  8 cores with 4 of them big. Speedup is over 1 little core. Static threading on 4 little cores is the baseline of energy consumption and EDP}
+	%\caption{Performance improvements on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
+	\label{fig:averages4plus}%
+\end{figure*}
+\begin{figure*}[t]%
+	\centering
 	\includegraphics[width=1.0\textwidth]{figures/speedup-4plus.pdf}
-	\vspace{-0.5cm}
 	\caption{Speedup over 1 little core when running on 4 to 8 cores and 4 of them are big}
 	%\caption{Performance improvements on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
 	\label{fig:speedup4plus}%
-	\vspace{-0.3cm}
 \end{figure*}
 
 \begin{figure*}[t]%
 	\centering
 	\includegraphics[width=1.0\textwidth]{figures/power4plus.pdf}
-	\vspace{-0.5cm}
 	\caption{Average power when running on 4 to 8 cores and 4 of them are big}
 	%\caption{Performance improvements on a big.LITTLE processor with different $(F,N)$ configurations, where $F$ is the total number of big cores and $N$ the total number of cores. Results are normalized to running on four little cores with pinned Pthreads.}%
 	\label{fig:power4plus}%
-	\vspace{-0.5cm}
 \end{figure*}
 
 % \begin{figure*}[t]%
@@ -327,13 +394,11 @@ The answer to the question of which system configuration provides the best power
 \begin{figure}
         \centering
         \includegraphics[width=\columnwidth]{figures/speedup-ompssVSopenmp}
-        \vspace{-0.5cm}
         \caption{Speedup over 1 little core when running on 4 to 8 cores and 4 of them are big. 
 Four different programming models are considered: Static threading using \texttt{pthreads}, 
 parallel loops with static scheduling (loop static), parallel loops with dynamic scheduling (loop 
 dynamic), and a task-based solution with dynamic scheduling (task-based).}%
         \label{fig:prog_models}%
-        \vspace{-0.5cm}
 \end{figure}
 
 As we saw in the previous section, current implementations of parallel applications are not ready to fully take advantage of an AMC system.

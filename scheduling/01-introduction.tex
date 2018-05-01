@@ -2,8 +2,8 @@
 %The use of asymmetric multi-core architectures forms an appealing solution in high-performance computing to tackle the power wall.
 %These architectures increase energy efficiency~\cite{Fedorova2009,Greenhalgh2011,Casas2015} by featuring different types of processing cores designed to target performance or power optimization.
 
-In the previous chapter we showed that the most efficient way to utilize an AMC with HPC applications is by performing scheduling in the runtime system level, i.e. using a parallel programmind model.
-In this capter our goal is to enhance the current parallel programming models and make them more efficient when it comes to AMCs.
+\section{Introduction}
+\label{sec.scheduling.intro}
 
 To effectively utilize AMC systems taking into account their heterogeneity, load balancing and scheduling become two of the main challenges~\cite{Li4}.
 An approach towards these challenges is the use of task-based programming models~\cite{OmpSs_PPL11,OpenMP,StarSs,starpu}.
@@ -65,7 +65,7 @@ Table~\ref{tab.acronyms} shows the acronyms that we use in the next sections.
 %Finally, we provide a set of recommendations on how to configure our scheduler to get the best results depending on the target system size and configuration.
 \begin{table}
 \begin{center}
-\caption{Acronyms used in the paper}
+\caption{Acronyms used in the paper \kc{Move all acronyms at the beginning of the thesis? Or remove them totally?}}
 \label{tab.acronyms}
 \begin{tabular}{|c|c|}
 \hline
