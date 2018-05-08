@@ -39,12 +39,12 @@ If the \textit{task creation rate} is higher than the \textit{task execution rat
 To achieve a high \textit{task creation rate}, we can accelerate the task creation cost.
 Equation~\ref{eq.create} shows the maximum optimal task creation cost, $C_{opt}(x)$ in order to keep $x$ cores busy, without starving due to task creation.
 
-\begingroup\makeatletter\def\f@size{9}\check@mathfonts
+%\begingroup\makeatletter\def\f@size{9}\check@mathfonts
 \begin{equation}
   \text{$C_{opt}(x) = avg.\ task\ duration / x$ }
 \label{eq.create}
 \end{equation}
-\endgroup
+%\endgroup
 
 If $C_{gp}$ is the cost of task creation when it is performed on a general purpose core, then the RTopt has to achieve a speedup of $r = C_{gp}/C_{opt}(x)$ to achieve full utilization of the system. 
 Section~\ref{sec:experimental:simulation} performs an analysis based on these requirements for the evaluated applications. 
