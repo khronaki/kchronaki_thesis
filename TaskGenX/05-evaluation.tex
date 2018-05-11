@@ -1,45 +1,45 @@
 \subsection{Methodology}
 \label{sec.taskgenx.methodology}
 \begin{table*}[t]
+	\scriptsize
 	\begin{center}
 		\caption{Evaluated benchmarks and relevant characteristics}
 		\label{tab.apps}
 		\resizebox{\textwidth}{!}{%
-			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
 				\hline
-				\multirow{3}{*}{\parbox{13mm}{\centering Application}} & 
+				\multirow{3}{*}{\parbox{15mm}{\centering Application}} & 
 				\multirow{3}{*}{Problem size} & 
 				\multirow{3}{*}{\parbox{10mm}{\centering \#Tasks}} & 
 				\multirow{3}{*}{\parbox{17mm}{\centering Avg task CPU cycles (thousands)}} & 
-				\multicolumn{3}{|c|}{\parbox{22mm}{\centering Per task overheads (CPU cycles)}} & & &\\
+				\multicolumn{3}{|c|}{\parbox{22mm}{\centering Per task overheads (CPU cycles)}} & & \\
 				\cline{5-7}
 				& & & & \multirow{2}{*}{\parbox{10mm}{\centering Create}} & \multirow{2}{*}{\parbox{9mm}{\centering All}} & \multirow{2}{*}{\parbox{11mm}{\centering Deps + Sched}} & \multirow{2}{*}{\parbox{15mm}{\centering Measured perf. ratio}} &
-				{\parbox{10mm}{\centering $r$}} &
-				\multirow{2}{*}{\parbox{11mm}{\centering Parallel model}} \\
-				& & & & & & & & & \\ %\hhline{~~~~~~}
+				\multirow{2}{*}{\parbox{10mm}{\centering $r$}} \\
+				& & & & & & & &  \\ %\hhline{~~~~~~}
 				\hline
 				
-				\multirow{2}{*}{\parbox{18mm}{\centering Cholesky factorization}} & 
-				32K 256 & 357\,762  & 753 & 15221 &  73286 &  58065 &  \multirow{2}{*}{\parbox{9mm}{\centering 3.5}} & 10.34 & \multirow{2}{*}{\parbox{17mm}{\centering dependencies}}\\                                              & 32K 128 & 2829058 & 110 & 17992 &  58820 &  40828 & & 83.74 &\\
+				\multirow{2}{*}{\parbox{20mm}{\centering Cholesky factorization}} & 32K 256 & 357\,762  & 753 & 15221 &  73286 &  58065 &  \multirow{2}{*}{\parbox{9mm}{\centering 3.5}} & 10.34 \\                                              
+				& 32K 128 & 2829058 & 110 & 17992 &  58820 &  40828 & & 83.74 \\
 				%& 32$\times$32 blocks of 512$\times$512 floats & 5984 & & 1\,551\,322 & 104.76 &  238.02 &  194.28  & \\ 
 				\hline{}
-				\multirow{2}{*}{\parbox{18mm}{\centering QR factorization}} & 16K 512 & 11\,442 & 518\,570  & 17595 & 63008 &   45413 & \multirow{2}{*}{\parbox{9mm}{\centering 6.8}} & 0.01 &\multirow{2}{*}{\parbox{17mm}{\centering dependencies}}\\
-				&  16K 128 & 707\,265 & 3\,558 & 21642 & 60777 & 39135 & & 3.11 &\\
+				\multirow{2}{*}{\parbox{18mm}{\centering QR factorization}} & 16K 512 & 11\,442 & 518\,570  & 17595 & 63008 &   45413 & \multirow{2}{*}{\parbox{9mm}{\centering 6.8}} & 0.01 \\
+				&  16K 128 & 707\,265 & 3\,558 & 21642 & 60777 & 39135 & & 3.11 \\
 				\hline
-				Blackscholes & native & 488\,202 & 348  &   29141  &  85438 &  56297 & 2.3 & 42.87 & data-parallel \\
+				Blackscholes & native & 488\,202 & 348  &   29141  &  85438 &  56297 & 2.3 & 42.87   \\
 				\hline
-				Bodytrack & native & 329\,123 & 383 &  9\,505 &  18979 & 9474 & 4.2 & 12.70 & pipeline \\ 
+				Bodytrack & native & 329\,123 & 383 &  9\,505 &  18979 & 9474 & 4.2 & 12.70   \\ 
 				%Heat diffusion & Heat &  &  &  &  &  & \\ 
 				\hline
-				Canneal & native & 3\,072\,002 & 67 & 25781 & 50094 &  24313 & 2.0 & 197.01 & unstructured \\
+				Canneal & native & 3\,072\,002 & 67 & 25781 & 50094 &  24313 & 2.0 & 197.01   \\
 				\hline
-				Dedup & native & 20\,248 & 1\,532 & 1294 & 9647 &  8353 & 2.7 & 0.43 & pipeline \\
+				Dedup & native & 20\,248 & 1\,532 & 1294 & 9647 &  8353 & 2.7 & 0.43   \\
 				\hline 
-				Ferret & native$\times$2 & 84\,002 & 29\,088 & 38913 & 98457 &  59544 & 3.6 & 0.68 & pipeline \\
+				Ferret & native$\times$2 & 84\,002 & 29\,088 & 38913 & 98457 &  59544 & 3.6 & 0.68   \\
 				\hline
-				Fluidanimate & native & 128\,502 & 16\,734 & 30210 & 94079 &  64079 & 3.3 & 0.91 & data-parallel \\
+				Fluidanimate & native & 128\,502 & 16\,734 & 30210 & 94079 &  64079 & 3.3 & 0.91   \\
 				\hline
-				Streamcluster & native & 3\,184\,654 & 161 & 6892 & 13693 &  6801 & 3.5 & 21.91 & data-parallel \\
+				Streamcluster & native & 3\,184\,654 & 161 & 6892 & 13693 &  6801 & 3.5 & 21.91   \\
 				\hline
 		\end{tabular}}
 	\end{center}

@@ -3,6 +3,122 @@
 %*******************************************************************************
 
 \chapter{Introduction}
+\label{chapter.introduction}
+
+\section{Definition of AMCs}
+Asymmetric Multi-core (AMC) systems architecture is an interesting case of heterogeneous multi-core architecture. 
+This multi-core systems architecture features cores with different microarchitectures but with a single Instruction Set Architecture (ISA) and potentially shared memory resources.
+Figure~\ref{fig:heterogeneous_classification} shows a classification of multi-core systems and how AMCs relate to the rest of the multi-cores.
+\begin{figure}[t]%
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/AMC_class.pdf}
+	\caption{Classification of multi core system architectures}
+	\label{fig:heterogeneous_classification}
+\end{figure}
+Multi-core systems can be either homogeneous or heterogeneous.
+A homogeneous multi-core consists of multiple identical processing cores that have the same micro-architecture and instruction set architecture.
+A heterogeneous multi-core can fall into two categories. 
+The first category consists multi-cores with different micro-architectures and ISA; systems with GPUs or other compute accelerators fall in this category.
+The second category consists of of multi-cores that have different micro-architecture but a single ISA; AMC systems fall in this category.
+
+%it can either consist of multiple cores that have different micro-architecture but a single ISA, or it can consist of multiple cores with different micro-architectures and ISA.
+%Examples in the latter category include systems with GPUs or other kinds of accelerators that need to explicitly provide the code that executes on them. 
+
+AMCs have been used in different areas of parallel computing. 
+In recent years they made their appearance in the mobile market and are nowadays the most commonly used architecture for mobile processors.
+The most widely used AMC architecture for mobile processors is the Arm big.LITTLE architecture~\cite{Greenhalgh2011} which combines low-power simple in-order cores (\emph{little}) with fast out-of-order cores (\emph{big}) to achieve high performance while keeping power dissipation low.
+Mobile processors are also utilized in HPC platforms aiming to energy savings~\cite{ARMV8}.
+%Asymmetric mobile SoCs combine low-power simple cores (\emph{little}) with fast out-of-order cores (\emph{big}) to achieve high performance while keeping power dissipation low.
+Another area where AMCs have been successful is the supercomputing market.
+The Sunway TaihuLight supercomputer topped the Top500\footnote{We refer to the list published on November 2017} list in 2016 using AMCs. 
+In this setup, big cores, that offer support for speculation to exploit Instruction-Level Parallelism (ILP), run the master tasks such as the OS and runtime system.
+Little cores are equipped with wide Single Instruction Multiple Data (SIMD) units and lean pipeline structures for energy efficient execution of compute-intensive code. 
+
+\section{Challenges Using AMCs}
+AMCs are easy to program as the programmer does not need to express the functionality of an application for many different ISAs. 
+However, there are still challenges that need to be addressed that are mainly related to the performance of the AMC.
+%%Add more challenges
+Like in other heterogeneous systems, load balancing and scheduling are fundamental challenges that must be addressed to effectively exploit all the resources in AMC platforms~\cite{Suleman:APLOS2009,Fedorova2009,Greenhalgh2011,Joao:ASPLOS2012,Joao:ISCA2013,ARM4HPC_SC13}. 
+To preserve load balance, the system has to make sure that the cores of the system remain busy and are fairly loaded depending on their type.
+For example running a barrier-based multi-threaded application where each thread runs on one core on an AMC is challenging as there is a high risk of starvation of the fast cores~\cite{AMC_survey}. %ending up in starvation. 
+%the fast cores of the system will remain idle after they finish their computations waiting for the slow cores to finish execution.
+%This is trivial for multi-threaded applications that run on homogeneous multi-cores but it is not as trivial on an AMC where an equal thread distribution would lead to potential starvation of the fast cores as they 
+Additionally, choosing which threads to execute in each type of core requires runtime information such as task dependencies or whether a task is memory or computationally bound.
+The above challenges require new asymmetry-aware scheduling approaches in order to take advantage of the heterogeneity.
+The state-of-the-art asymmetry-aware scheduling approaches perform thread scheduling within the Linux kernel. 
+The most commonly used example in this category is the Global Task Scheduler (GTS)~\cite{?} that is implemented on top of the Linux Completely Fair Scheduler (CFS) and is aware of the asymmetry of the system.
+However, such approaches lack flexibility due to the high thread-migration overheads~\cite{AMC_survey}.
+%Mobile applications rely on multi-programmed workloads to balance the load in the system, while supercomputer applications rely on hand-tuned code to extract maximum performance. 
+%However, these approaches are not always suitable for general-purpose parallel applications.
+
+
+
+
+\section{Solutions}
+\kc{mention to Task-based models and process scheduling}
+The above challenges can be tackled by using task-based parallel programming models.
+These parallel programming models have been widely used during the last decade in the development of parallel applications.
+They form an appealing solution as they significantly ease the parallel programming by providing a higher level of abstraction to the programmer through a directive-based or language-based interface.
+With these models challenges such as load balancing, scheduling, or thread migration costs are partially solved by using them out-of-the box.
+They allow the programmer to split the application in multiple work units called \textit{tasks} (a function can be a task) that can potentially execute simultaneously\footnote{They can execute simultaneously given there are no task dependencies.}.
+Within a task-based runtime system, there is one thread per core created. 
+
+
+
+%In the last decade, task-parallel programming models have
+%emerged as an interesting solution that combines a correct
+%orchestration of parallel programs and a reduced impact on
+%the complexity of the parallel versions of existing or new
+%codes. These models aim at casting a complete computation in
+%terms of discrete pieces of code (tasks) with data dependences
+%among them with the aid of task annotations provided by the
+%programmer, and rely on a runtime task scheduler (or just
+%runtime in the following) that orchestrates the correct ordering
+%of tasks execution as dependences are satisfied at run time.
+%The extension of these programming models and associated
+%runtimes to heterogeneous architectures, managing data coherency
+%and data transfers among isolated memory spaces has
+%been implemented in a number of software efforts, together
+%with techniques that drive to performance gains in multi-core,
+%many-core, accelerator-based and distributed-memory architectures.
+%The necessary efforts to adapt these programming
+%models to AMPs is also a topic of interest of recent works [1],
+%[2], pursuing the goal of boosting performance by correctly
+%mapping critical tasks to the most appropriate element of the
+%asymmetric architecture. However, the impact and possibilities
+%of task schedulers in terms of improving energy efficiency of
+%task-parallel implementations has not been previously studied
+%in such a level of detail. As of today, similar efforts, together
+%with their impact on performance and energy efficiency, have
+%not been ported or adapted to AMPs.
+
+
+\section{Challenges in Task-based models}
+
+% a class of heterogeneous
+%parallel architectures in which cores that implement
+%different microarchitectures share a common ISA (Instruction
+%Set Architecture) and, possibly, a subset of memory resources.
+%
+%Typically, the available architectural heterogeneity is exploited
+%pursuing energy efficiency and performance restrictions on
+%heterogeneous software environments. One of the most popular
+%implementations of AMPs is the big.LITTLE architectural
+%paradigm present in many ARM SoCs (Systems-on-chip),
+%that combines a number of high performance ARM Cortex-
+%A57/A15 BIG cores with a (possibly different) number of
+%energy-efficient ARM Cortex-A53/A7 LITTLE cores. Leveraging
+%low-power architectures to the HPC (High Performance
+%Computing) arena is one of the main trends in the road
+%towards the Exaflop barrier. Among them, ARM Cortex-A
+%processors, and more specifically, asymmetric SoCs based on
+%this microarchitectural family, are nowadays on the spotlight
+%as the most promising architectures to achieve such a goal.
+
+
+----------------------------------------
+
+
 The use of heterogeneous processing elements is becoming commodity in many aspects of parallel computing. 
 From mobile devices to high performance supercomputers heterogeneous multi-processing is attracting a lot of attention as it achieves high performance and at the same time it maintains energy consumption at low levels. 
 Asymmetric multi-core systems is an interesting type of heterogeneous multi-processor. 

@@ -11,7 +11,8 @@
 % ******************************* PhD Thesis Template **************************
 % Please have a look at the README.md file for info on how to use the template
 
-\documentclass[a4paper,12pt,times,numbered,print,index]{Classes/PhDThesisPSnPDF}
+\documentclass[a4paper,12pt,times,numbered,print,index,customfont]{Classes/PhDThesisPSnPDF}
+%\documentclass[a4paper,12pt,times,custombib,print,index]{Classes/PhDThesisPSnPDF}
 
 % ******************************************************************************
 % ******************************* Class Options ********************************
@@ -67,7 +68,7 @@
 %
 % `authoryear': For author-year citation eg., Krishna (2013)
 %
-% `numbered': (Default Option) For numbered and sorted citation e.g., [1,5,2]
+% `': (Default Option) For numbered and sorted citation e.g., [1,5,2]
 %
 % `custombib': Define your own bibliography style in the `preamble.tex' file.
 %              `\RequirePackage[square, sort, numbers, authoryear]{natbib}'.
@@ -168,8 +169,6 @@
 %\chapter{Conclusions}
 \include{conclusion}
 
-%\chapter{Future Directions}
-\include{future}
 
 
 
@@ -184,8 +183,8 @@
 % Bibliography style previews: http://nodonn.tipido.net/bibstyle.php
 % Reference styles: http://sites.stat.psu.edu/~surajit/present/bib.htm
 
-\bibliographystyle{apalike}
-%\bibliographystyle{plainnat} % use this to have URLs listed in References
+%\bibliographystyle{apalike}
+\bibliographystyle{plainnat} % use this to have URLs listed in References
 \cleardoublepage
 \bibliography{References/references} % Path to your References.bib file
 

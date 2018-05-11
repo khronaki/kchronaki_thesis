@@ -1,4 +1,5 @@
 \chapter{Real-Time Scheduling}
+\label{chapter.RTS}
 This chapter contains a high-level description of the work performed in Samsung Electronics Research Institute UK (SRUK) where I practiced my internship.
 This part of work slightly differs of the rest of this thesis as in this chapter we are focused on thread-level scheduling for asymmetric multi-core (AMC) systems.
 This means that we are no longer using parallel high-performance applications, rather than mobile phone applications that are implemented in parallel and execute on multiple user-level threads.
@@ -93,17 +94,13 @@ RTS scheduling mechanisms are able to maintain load balance among the cores of t
 \label{sec.rts.methodology}
 We evaluate RTS by using it while running commodity mobile games on a state-of-the-art Samsung mobile device featuring a Samsung Exynos octa-core chip-set with Arm big.LITTLE architecture~\cite{samsung,Greenhalgh2011}. 
 We run three mobile games:
-\begin{itemize}
-\item Lineage2~\cite{Lineage}
-\item King of Glory~\cite{KOG}
-\item Dynasty Warriors~\cite{Dynasty}
-\end{itemize}
+\textit{i)} Lineage2~\cite{Lineage}, \textit{ii)} King of Glory~\cite{KOG} and \textit{iii)} Dynasty Warriors~\cite{Dynasty}.
 The selected games are battle play games and they all fulfill the criteria that facilitate the evaluation: \textit{(a):} They all have high FPS up to 60 and demanding graphics, \textit{(b):} they have auto-play mode and \textit{(c):} their automatic game-play occurs without intervals for a long time.
 Our experiments compare our approach (STC + RTS) against two additional scheduling scenarios:
 \begin{itemize}
-	\item GTS: The default Linux CFS scheduler with the GTS support for asymmetric systems
-	\item STC: The CFS scheduler with the STC framework enabled during the game-play
-	\item STC + RTS: The RTS running on top of the STC framework
+	\item \textit{GTS:} The default Linux CFS scheduler with the GTS support for asymmetric systems
+	\item \textit{STC:} The CFS scheduler with the STC framework enabled during the game-play
+	\item \textit{STC + RTS:} The RTS running on top of the STC framework
 \end{itemize}
 %	We conduct experiments using RTS on top of the STC framework. 
 %	We compare our results to the default version of STC and to the default version without using STC. 
@@ -128,14 +125,14 @@ We compute the stability by computing the percentage of FPS readings that are at
 \begin{figure}[t]%
 	\centering
 	\includegraphics[width=0.7\textwidth]{figures/FPS.pdf}
-	\caption{FPS.}
+	\caption{Median frames per second (FPS) results for each game (x axis) and scheduling set-up (series).}
 	\label{fig:FPS}
 \end{figure}
 
-\begin{figure}[t]%
+\begin{figure}[h]%
 	\centering
 	\includegraphics[width=0.7\textwidth]{figures/PST.pdf}
-	\caption{PST.}
+	\caption{Prescribed surface temperature (PST) results for each game (x axis) and scheduling set-up (series).}
 	\label{fig:PST}
 \end{figure}
 
@@ -154,7 +151,7 @@ This is verified by the results of Figure~\ref{fig:PST}: the GTS approach mainta
 \begin{figure}[t]%
 	\centering
 	\includegraphics[width=0.7\textwidth]{figures/stability.pdf}
-	\caption{stability.}
+	\caption{FPS stability observed for each game (x axis) and scheduling set-up (series).}
 	\label{fig:stability}
 \end{figure}
 
@@ -165,27 +162,35 @@ Figure~\ref{fig:stability} shows that FPS stability is not affected by the task 
 \begin{figure}[t]%
 	\centering
 	\includegraphics[width=0.7\textwidth]{figures/intern_comparison.pdf}
-	\caption{Comparison.}
+	\caption{Comparison of the FPS-PST trade-offs for different scheduling policies running on top of STC.}
 	\label{fig:int_comparison}
 \end{figure}
 In this part of the evaluation we compare RTS against two different scheduling approaches that do not involve any sophisticated task migration.
 We implement these schedulers on top of STC and we use them to prove that RTS scheduling is effective due to its correct runtime decisions.
 The schedulers that we compare in this section are all running together with STC and are the following:
 \begin{itemize}
-	\item LittleCls: in this approach all the tasks of the game are constantly maintained in the little-core cluster
-	\item RTS: the presented approach, which migrates a number of tasks to the appropriate core cluster according to current temperature
-	\item BigCls: in this approach all the tasks of the game are constantly maintained in the big-core cluster
+	\item \textit{LittleCls}: in this approach all the tasks of the game are constantly maintained in the little-core cluster
+	\item \textit{RTS}: the presented approach, which migrates a number of tasks to the appropriate core cluster according to current temperature
+	\item \textit{BigCls:} in this approach all the tasks of the game are constantly maintained in the big-core cluster
 \end{itemize} 
 
 Figure~\ref{fig:int_comparison} shows the FPS and temperature results for the aforementioned scheduling approaches when running Lineage2.
 The experimental set-up is the same as described in section~\ref{sec.rts.methodology}. 
-Maintaining the tasks on the little cluster with LittleCls, significantly limits FPS as the little cores are not as powerful to maintain demanding game tasks.
+Maintaining the tasks on the little cluster with LittleCls, significantly limits FPS as the little cores are not as powerful to efficiently process demanding game tasks.
 Due to the lack of the big-core cluster use, device temperature is also maintained to very low levels at 48 Celsius degrees.
-On the other hand, using only the big-core cluster leads to higher FPS but also very increased temperature, even if STC is still operating.
+On the other hand, using only the big-core cluster leads to higher FPS but also increased temperature, even if STC is still operating.
 RTS is able to maintain temperature at reasonable levels while achieving the highest FPS due to its efficient scheduling.
-It is interesting to note here that running tasks on the big cluster is not enough for scheduling in mobile devices as the increased temperature can affect FPS as shown in the case of BigCls.
+It is interesting to note here that running tasks exclusively on the big cluster is not as efficient in terms of FPS.
+The increased temperature can affect the governor decisions so the processing power of big cores is reduced leading to FPS decrease as shown in the case of BigCls.
 
 
-This figure is used to prove that our solution is effective due to the runtime decisions taken according to the current temperature and runtime circumstances.
+%This figure is used to prove that our solution is effective due to the runtime decisions taken according to the current temperature and runtime circumstances.
 
 \section{Conclusions}
+
+In this chapter we showed that there is significant potential in increasing game performance on mobile devices through task scheduling.
+Choosing the right policy is essential as maintaining the tasks to only one core cluster showed its inefficiency.
+To maintain load balance on asymmetric systems it is important to decouple the scheduling from the operating system as the Android framework offers more programming flexibility as well as the appropriate runtime information that can be used for the scheduling decisions.
+Due to the lack of runtime information, GTS either keeps FPS high at the cost of increased temperature or maintains the temperature low at the cost of lower FPS.
+STC+RTS provide a good trade-off between high FPS and reasonable temperature, improving the STC solution. 
+
