@@ -61,7 +61,33 @@ These parallel programming models have been widely used during the last decade i
 They form an appealing solution as they significantly ease the parallel programming by providing a higher level of abstraction to the programmer through a directive-based or language-based interface.
 With these models challenges such as load balancing, scheduling, or thread migration costs are partially solved by using them out-of-the box.
 They allow the programmer to split the application in multiple work units called \textit{tasks} (a function can be a task) that can potentially execute simultaneously\footnote{They can execute simultaneously given there are no task dependencies.}.
-Within a task-based runtime system, there is one thread per core created. 
+\begin{lstlisting}[float, emph={void,if,return}, captionpos=b, caption={Example code using the OmpSs task-based programming model.},label=task-based-example, emph={[2]mat}, emphstyle={[3]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
+#pragma omp task in(a) out(b)
+void task1(int *a, int *b) {
+*b = *a/2 + 3 * (*a);
+return;
+}
+#pragma omp task in(c) inout(d)
+void task2(int *c, int *d) {
+*d = 3 * (*c) + (*d) / 2;
+return;
+}
+int main() { 
+int x = 10, y = 5;
+for(int i = 0; i <3; i++) {
+task1(&x, &y);
+task2(&y, &x);
+}
+return 0;
+}
+\end{lstlisting}
+As an example, Listing~\ref{task-based-example} shows a simple usage of a task-based programming model (the OmpSs programming model~\cite{OmpSs}).
+In this code, the \textit{pragma omp task} directives define the functions that act as tasks, namely \texttt{task1} and \texttt{task2}.
+The input and output dependencies between these tasks are defined using the \textit{in}, \textit{out} and \textit{inout} clauses.
+When these task functions are being called by the main function, the runtime system creates tasks that can run in parallel if there are no task dependencies between them.
+The runtime system of the task-based programming model is responsible to maintain software threads and distribute the tasks to the appropriate thread for execution.
+Typically the number of software threads that the runtime system maintains is equal to the number of available cores in the system and one thread is bound to each core.
+We further explain how the task-based runtime system functions in Section~\ref{sec.background.taskbased}.
 
 
 
@@ -95,6 +121,19 @@ Within a task-based runtime system, there is one thread per core created.
 
 \section{Challenges in Task-based models}
 
+As was illustrated by the example of Listing~\ref{task-based-example} task-based programming models offer a very convenient abstraction layer to the programmer for parallelizing applications.
+However, these parallel programming languages exhibit some challenges when moving to asymmetric systems as their runtime system is platform agnostic.
+The current scheduling implementation in task-based programming models assumes that all tasks can be evenly distributed among the cores of the system and treats all tasks and cores as equal.
+In some cases, a bad scheduling decision on an asymmetric system can lead to significant performance degradation. 
+A simple example is when the scheduler decides to execute a task whose output is important for the execution of a set of other tasks to one of the slow cores of the system.
+This would lead to keeping the threads idle waiting for the little core to finish the execution of this important task.
+
+A second challenge introduced by the task-based programming models is the significant task generation overhead.
+\kc{TODO}
+
+
+ 
+
 % a class of heterogeneous
 %parallel architectures in which cores that implement
 %different microarchitectures share a common ISA (Instruction
@@ -115,7 +154,7 @@ Within a task-based runtime system, there is one thread per core created.
 %this microarchitectural family, are nowadays on the spotlight
 %as the most promising architectures to achieve such a goal.
 
-
+\if 0
 ----------------------------------------
 
 
@@ -189,24 +228,62 @@ The second solution is to transfer the responsibility to the runtime system so i
 We evaluate the impact of using an inherently load-balanced execution model such that of task-based programming models. 
 Recent examples~\cite{Ayguade:TPDS2009, OpenMP4.0:Manual2013, OmpSs_PPL11, vectorMulticore, Bauer.2012.SC,rollback,Vandierendonck:PACT2011, Vandierendonck:Hyperq,spawn} include clauses to specify inter-task dependencies and remove most barriers which are the major source of load imbalance on AMCs.
 Another approach of scheduling in the runtime system is to change the existing statically-scheduled work-sharing constructs for the applications implemented in OpenMP to use dynamic scheduling. 
-
+\fi
 
 \section{Thesis Contributions}
-This paper provides the first to our knowledge comprehensive evaluation of representative parallel applications on a real AMC platform: the Odroid-XU3 development board with ARM big.LITTLE architecture.
-We analyze the effectiveness of the aforementioned scheduling solutions in terms of performance, power and energy.
-We show why parallel applications are not ready to run on AMCs and how OS and runtime schedulers can overcome these issues depending on the application characteristics.
-Further we point out in which aspects the built-in OS scheduler falls short to effectively utilize the AMC.
-Finally, we show how the runtime system approach overcomes these issues, and improves the OS and static threading approaches by 13\% and 23\% respectively.
+\kc{TODO: mention papers and summarize contributions}
 
-%that the commonly used OS scheduler for AMCs 
-%how a runtime-based approach outperforms a commercially available product 
+The performance of task-based programming models can be boosted by providing sophisticated scheduling policies that take into account the platform's asymmetry.
 
-% the effectiveness of these solutions at different levels of the software stack with a comprehensive evaluation of representative parallel applications on a real AMC platform: the Odroid-XU3 development board. 
-%This platform features an eight-core Samsung Exynos 5422 chip with ARM big.LITTLE architecture with four out-of-order Cortex-A15 and four in-order Cortex-A7 cores.
+The contributions made in this thesis rely on the efficient utilization of asymmetric multi-core systems.
+First we study the potential of the AMC systems when running out-of-the-box high performance applications.
+We compare scheduling on different levels of the software stack and we conclude that using a task-based programming model is indeed the most efficient solution as it allows the runtime system to maintain load balance even if the system is asymmetric.
+The paper including this work, named "On the Maturity of Parallel Applications for Asymmetric Multi-Core Processors" is submitted in JPDC journal and is currently under review.
+Additionally this work was published as a poster in the conference of Parallel Architectures and Compilation Techniques in 2016 (PACT'16) with the title "POSTER: Exploiting Asymmetric Multi-Core Processors with Flexible System Sofware"
+
+We then approach the two important challenges of using task-based programming models on AMC platforms.
+First, is the scheduling problem, which we approach by providing three novel scheduling policies that are aware of the system's asymmetry.
+These schedulers have different criteria for rating the importance of the executing tasks of an application.
+According to their distinct criteria, each scheduler identifies the \textit{critical tasks} of the application and executes them on the fast cores of the system. 
+They then leave the \textit{non-critical tasks} to be executed by the slower cores of the system.
+From this contribution we had two publications; first is the "Criticality-Aware Dynamic Task Scheduling for Heterogeneous Architectures" that was presented in International Conference of Supercomputing in 2015 (ICS'15).
+The second paper including these contributions was published in the journal Transactions of Parallel and Distributed Systems in 2016 (TPDS'16) with the title "Task Scheduling Techniques for Asymmetric Multi-Core Systems".
+
+The second challenge of task-based programming models is the high task generation overheads introduced while using these parallel programming tools.
+We tackle this challenge by proposing a software-hardware co-design that accelerates task generation on a specialized hardware.
+In this contribution we implement the TaskGenX runtime system, that decouples the task generation from the other runtime activities and sends it for execution on the runtime optimized accelerator.
+Furthermore, we draw the requirements of the hardware accelerator in terms of performance with the hope to influence hardware designers for the implementation of such a component.
+The paper including this contribution was published in International Supercomputing Conference on 2018 (ISC'18) with the title "TaskGenX: A Hardware-Software Proposal for Accelerating Task Parallelism".
+
+Apart from scheduling within task-based programming models, this thesis includes the high-level description of a thread scheduler for asymmetric systems targeting this time mobile devices.
+Our approach takes scheduling actions depending on the current temperature of the device and manages to increase the frames per second for three game applications while keeping the temperature stable.
+This study is briefly described due to NDA agreement as it was part of my internship in Samsung Electronics Research Institute, UK.
+
+
+
+
+Schedulers: CATS, CPATH, HYBRID
+Runtime system: TaskGenX
+Internship: Real-time scheduler
 
 
 \section{Thesis Organization}
-The rest of this document is organized as follows: Section~\ref{sec:background} describes the evaluated AMC processor, while Section~\ref{sec:scheduling} provides information on 
+The rest of this document is organized as follows: 
+Chapter~\ref{chapter.background} presents the background of tis thesis.
+We first report the characteristics of AMC architectures, we then explain how task-based programming models are organized and how their runtime system operates, we explain a few things about the TaskSim simulator~\cite{AbstrLevels_TACO12}, that is our tool for evaluating the impact of our implementations on larger systems and finally we provide the list of applications used in our evaluation together with a short description for each one.
+
+Chapter~\ref{chapter.study} provides our thorough and detailed study of highly parallel applications on asymmetric systems.
+This study is a proof that scheduling on the runtime system is the most efficient way of utilizing an AMC system.
+Chapter~\ref{chapter.scheduling} describes and evaluates our three novel scheduling approaches (CATS, CPATH and HYBRID). 
+We implement these approaches within the OmpSs programming model and evaluate them using real scientific applications.
+To see their impact on larger systems we use TaskSim simulator.
+
+Chapter~\ref{chapter.taskgenx} presents our software-hardware co-design proposal, TaskGenX.
+We show the implementation done and we evaluate our proposal using TaskSim simulator and real applications.
+Chapter~\ref{chapter.RTS} includes the thread-based scheduling within the Android framework together with its evaluation on a mobile device using three games with intensive graphics.
+Chapter~\ref{chapter.related} presents our related work and Chapter~\ref{chapter.conclusions} concludes this thesis.
+
+describes the evaluated AMC processor, while Section~\ref{sec:scheduling} provides information on 
 scheduling at the OS and runtime system levels. 
 Section~\ref{sec:experimental} describes the experimental framework. 
 Section~\ref{sec:evaluation} shows the performance and energy results and associated insights.% of our experiments. 

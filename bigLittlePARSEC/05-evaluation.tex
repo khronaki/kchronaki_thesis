@@ -6,19 +6,19 @@
 	\caption{Benchmarks used from the PARSEC benchmark suite and their 
 		measured performance ratio between big and little cores}
 	\setlength{\tabcolsep}{3pt}
-	\begin{tabular}{|p{2cm}|p{2.5cm}|c|c|}
+	\begin{tabular}{|p{2cm}|p{5cm}|c|c|}
 		\hline
-		\textbf{Benchmark} & \multicolumn{1}{|c|}{\textbf{Input}} & \textbf{Parallelization} & \multicolumn{1}{|c|}{\textbf{Perf ratio}} \\
+		\textbf{Benchmark} & \multicolumn{1}{|c|}{\textbf{Input Data Set}} & \textbf{Parallelization} & \multicolumn{1}{|c|}{\textbf{Perf ratio}} \\
 		\hline \hline
-		blackscholes & 10,000,000 options & data-parallel &2.18 \\ \hline
-		bodytrack & 4 cameras, 261 frames, 4,000 particles, 5 annealing layers & pipeline & 4.16 \\ \hline
-		canneal & 2.5 million elements, 6,000 steps & unstructured & 1.73 \\ \hline
-		dedup & 351 MB data & pipeline & 2.67 \\ \hline
-		facesim & 100 frames, 372,126 tetrahedra & data-parallel & 3.40 \\ \hline
-		ferret & 3,500 queries, 59,695 images database, find top 50 images & pipeline & 3.59 \\ \hline
-		fluidanimate & 500 frames, 500,000 particles & data-parallel & 3.32 \\ \hline
-		streamcluster & 200K points per block, 5 block & data-parallel & 3.48 \\ \hline
-		swaptions & 128 swaptions, 1 million  simulations & data-parallel & 2.78 \\ \hline
+		Blackscholes & 10,000,000 options & data-parallel &2.18 \\ \hline
+		Bodytrack & 4 cameras, 261 frames, 4,000 particles, 5 annealing layers & pipeline & 4.16 \\ \hline
+		Canneal & 2.5 million elements, 6,000 steps & unstructured & 1.73 \\ \hline
+		Dedup & 351 MB data & pipeline & 2.67 \\ \hline
+		Facesim & 100 frames, 372,126 tetrahedra & data-parallel & 3.40 \\ \hline
+		Ferret & 3,500 queries, 59,695 images database, find top 50 images & pipeline & 3.59 \\ \hline
+		Fluidanimate & 500 frames, 500,000 particles & data-parallel & 3.32 \\ \hline
+		Streamcluster & 200K points per block, 5 block & data-parallel & 3.48 \\ \hline
+		Swaptions & 128 swaptions, 1 million  simulations & data-parallel & 2.78 \\ \hline
 	\end{tabular}
 	\label{tab.AMC.apps}
 \end{table*}
@@ -30,16 +30,28 @@
 
 All the experiments in this chapter are performed on the Hardkernel Odroid XU3 described in Section~\ref{sec.background.arm}. 
 To avoid machine overheating, we make use of the \texttt{cpufreq} driver to set big cores at 1.6GHz and little cores at 800MHz. \kc{repeating the frequencies...}
-Table~\ref{tab.AMC.apps} shows the applications used in this chapter as well as their corresponding inputs, parallelization technique and performance ratio between big and little cores.
+Table~\ref{tab.AMC.apps} shows the applications used in this chapter as well as their corresponding characteristics. These are the input data sets used, the parallelization technique and their \textit{performance ratio} between big and little cores.
+The performance ratio shows how many times faster a big core is compared to a little core.
+The performance ratio differs among applications because each application performs different computations that exhibit different benefits from the micro-architecture of the big or little cores. 
+% in the computations that each application performs, each benchmark exhibits different performance ratios between big and little cores. 
+To compute the performance ratio we obtain the execution time of each workload when it executes sequentially on one big core and on one little core using the task-based model. 
+We then use Equation~\ref{eq.perfRatio} to compute the performance ratio of each workload.
+\begingroup\makeatletter\def\f@size{9}\check@mathfonts
+\begin{equation}
+\text{$Perf. ratio(method)$} = \frac{\text{$Exec. time(0, 1, task-based)$}}{\text{$Exec. time(1, 0, task-based)$}}
+\label{eq.perfRatio}
+\end{equation}
+\endgroup
 
 To estimate the impact of the different kinds of cores, we evaluate seven AMC system configurations with different numbers of \textit{little} (L) and \textit{big} (B) cores, denoted \texttt{L+B}.
 For each configuration and benchmark, we report the average performance of five executions in the application parallel region. 
 Then, we report the application speedup over its execution time on one little core.
 Equation~\ref{eq.speedup} shows the formula to compute this speedup.
+In this Equation, L is the number of little cores, B is the number of big cores and method is the scheduling method used.
+$Exec. time (L, B, method)$ is the execution time of the application when it runs on a system with L little cores, B big cores using a specific scheduling method.
 \begingroup\makeatletter\def\f@size{9}\check@mathfonts
 \begin{equation}
-\text{Speedup(L, B, method)} = \frac{\text{Exec. time(1, 0, method)}}{\text{Exec. time(L, B, 
-		method)}}
+\text{$Speedup(L, B, method)$} = \frac{\text{$Exec. time(1, 0, method)$}}{\text{$Exec. time(L, B, method)$}}
 \label{eq.speedup}
 \end{equation}
 \endgroup
@@ -55,16 +67,33 @@ With the help of timestamps, we correlate the power measurements with the applic
 The reported power consumption is the average power tracked during five executions of each configuration, considering the application parallel region only. 
 We then report average power in Watts along the execution. 
 
-Finally, in terms of energy and Energy Delay Product (EDP), we report the total energy and EDP of the benchmarks region of interest normalized to the run on four little cores with static threading.
-Equations~\ref{eq.energy} and~\ref{eq.edp} show the formulas for these metrics.
-\begingroup\makeatletter\def\f@size{8}\check@mathfonts
+To compute the energy consumption, we use the reported power consumption and we multiply it with the average execution time of the executions performed for the power measurements. 
+Equation~\ref{eq.energy} shows how energy is computed in our evaluation.
+%We compute the energy consumed during the execution of each application by multiplying the average power dissipation of the entire execution by the execution time.
+\begingroup\makeatletter\def\f@size{10}\check@mathfonts
 \begin{equation}
-\text{Normalized Energy(L, B, method)} = \frac{\text{Energy(L, B, method)}}{\text{Energy(4, 0, static-threading)}}
+\text{$Energy(L, B, method) = Avg. Power(L, B, method) \times Avg. exec. time(L, B, method)$}
 \label{eq.energy}
 \end{equation}
+The reported results show the normalized energy with respect to the energy consumed when using four little cores and the static-threading method, as sown in Equation~\ref{eq.normEnergy}.
+\begingroup\makeatletter\def\f@size{10}\check@mathfonts
 \begin{equation}
-\text{Normalized EDP(L, B, method)} = \frac{\text{EDP(L, B, method)}}{\text{EDP(4, 0, static-threading)}}
-\label{eq.edp}
+\text{$Normalized Energy(L, B, method)$} = \frac{\text{$Energy(L, B, method)$}}{\text{$Energy(4, 0, static-threading)$}}
+\label{eq.normEnergy}
+\end{equation}
+
+The Energy Delay Product (EDP) shows the overall efficiency of the different scheduling methods.
+This metric is computed using the Equation~\ref{eq.q.EDP} and is the product of the energy and execution time.
+\begingroup\makeatletter\def\f@size{10}\check@mathfonts
+\begin{equation}
+\text{$EDP(L, B, method) = Energy(L, B, method) \times Avg. exec. time(L, B, method)$}
+\label{eq.EDP}
+\end{equation}
+Our reported results show the normalized EDP with respect to the EDP when using four little cores and the static-threading method as shown in Equation~\ref{eq.normEDP}.
+\begingroup\makeatletter\def\f@size{10}\check@mathfonts
+\begin{equation}
+\text{$Normalized EDP(L, B, method)$} = \frac{\text{$EDP(L, B, method)$}}{\text{$EDP(4, 0, static-threading)$}}
+\label{eq.normEDP}
 \end{equation}
 \endgroup
 
@@ -92,9 +121,9 @@ The task-based implementation is done following two basic ideas: i) remove barri
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\subsection{Performance Ratio Characterization}
 
-When running on the big.LITTLE processor, each benchmark exhibits different performance ratios between big and little cores. 
-These ratios tell us how many times faster a big core is compared to a little core. 
-We measure the performance ratio of each application by executing it first on one big core and then on one little core, which corresponds to Speedup(0, 1, task-based) in Equation~\ref{eq.speedup}. 
+%When running on the big.LITTLE processor, each benchmark exhibits different performance ratios between big and little cores. 
+%These ratios tell us how many times faster a big core is compared to a little core. 
+%We measure the performance ratio of each application by executing it first on one big core and then on one little core, which corresponds to Speedup(0, 1, task-based) in Equation~\ref{eq.speedup}. 
 % The equation for the performance ratio is the following:
 % \begingroup\makeatletter\def\f@size{8}\check@mathfonts
 % \begin{equation}
@@ -102,7 +131,12 @@ We measure the performance ratio of each application by executing it first on on
 %   \label{eq.perf_ratio}
 % \end{equation}
 % \endgroup
-Table~\ref{tab.AMC.apps} also includes the observed performance ratio for each application. Bodytrack is the application that benefits the most from running on the big core with a performance ratio of 4.16$\times$. The out-of-order execution of the big core together with an increased number of in-flight instructions significantly improves the performance of this application. In contrast, canneal is the benchmark with the lowest performance ratio, 1.73$\times$, as this is a memory-intensive benchmark that does not benefit as much from the extra computation power of the big core. In general, performance ratios are above 2.5$\times$ for seven out of nine benchmarks, reaching 3.03$\times$ on average. 
+The performance ratio is an important characteristic of each workload and affects its performance on an asymmetric system.
+Table~\ref{tab.AMC.apps} includes the observed performance ratio for each application. 
+Bodytrack is the application that benefits the most from running on the big core with a performance ratio of 4.16$\times$. 
+The out-of-order execution of the big core together with an increased number of in-flight instructions significantly improves the performance of this application. 
+In contrast, canneal is the benchmark with the lowest performance ratio, 1.73$\times$, as this is a memory-intensive benchmark that does not benefit as much from the extra computation power of the big core. 
+In general, performance ratios are above 2.5$\times$ for seven out of nine benchmarks, reaching 3.03$\times$ on average. 
 
 % In terms of power, the average ratio is significantly higher, 5$\times$, while the observed values vary between X and Y. \mm{Explain a bit more}.
 
@@ -110,9 +144,9 @@ Taking into account these performance ratios, we can estimate the ideal speedup 
 each workload assuming a perfect parallelization strategy. Equation \ref{eq.ideal} shows the 
 equation for the ideal speedup over 1 little core computation according to the number of big (B) and 
 little (L) cores.
-\begingroup\makeatletter\def\f@size{8}\check@mathfonts
+\begingroup\makeatletter\def\f@size{10}\check@mathfonts
 \begin{equation}
-\text{Ideal speedup(workload, B, L)} = \text{B $\times$ Perf\_ratio(workload) $+$ L}
+\text{$Ideal speedup(workload, B, L)$} = \text{$B \times Perf\_ratio(workload) + L$}
 \label{eq.ideal}
 \end{equation}
 \endgroup

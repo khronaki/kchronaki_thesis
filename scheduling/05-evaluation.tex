@@ -9,7 +9,7 @@
 %CATS targets heterogeneous multi-core systems with cores that expose different characteristics in terms of performance and power. We perform experiments on ODROID XU3 8-core platform. The ODROID XU3, features the ARM big.LITTLE technology offering heterogeneous multi-processing. Moreover, we simulate the behaviour of our design to estimate the impact of CATS on heterogeneous systems with a larger amount of cores and different performance ratios.
 %On the simulated platform we are able to set up different performance ratios between fast and slow cores without a restriction.
 
-We measure the execution time of five applications using CATS, CPATH, HYBRID, dHEFT and the default BF scheduler. 
+We measure the execution time of five applications using CATS, CPATH, HYBRID, dHEFT and the default OmpSs BF scheduler that is explained in Section~\ref{sec.background.taskbased.ompss}. 
 The execution time corresponds to the average of 10 executions of the application on each machine set-up.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \if 0 % about strict/flexible
@@ -62,7 +62,7 @@ We set the performance ratio between fast and slow cores to 4.5$\times$ because 
 
 For both real and simulated platforms, each set-up has a given number of \textit{total} and \textit{big} cores.
 %Our metrics are the improvement of CATS over the baseline scheduler, and the 
-For all the scheduling approaches we present their speedup over the execution on one \textit{little} core, shown in Equation~\ref{eq.speedup}. 
+For all the scheduling approaches we present their speedup over the execution on one \textit{little} core, shown in Equation~\ref{eq.sched.speedup}. 
 %Equations~\ref{eq.improvement} and~\ref{eq.speedup} show the improvement and speedup calculations.
 %Equation~\ref{eq.speedup} shows how speedup is calculated in this evaluation.
 \begingroup\makeatletter\def\f@size{8}\check@mathfonts
@@ -72,7 +72,7 @@ For all the scheduling approaches we present their speedup over the execution on
 %\end{equation}
 \begin{equation}
   \text{Speedup(total, big)} = \frac{\text{Exec. time(1, 0)}}{\text{Exec. time(total, big)}}
-  \label{eq.speedup}
+  \label{eq.sched.speedup}
 \end{equation}
 \endgroup
 
@@ -82,7 +82,7 @@ For all the scheduling approaches we present their speedup over the execution on
 	\scriptsize
 	\begin{center}
 		\caption{Evaluated benchmarks and relevant characteristics. The inputs of QR and Heat diffusion are arrays of doubles and the inputs of Cholesky and Int. Histogram are arrays of floats.}
-		\label{tab.apps}
+		\label{tab.sched.apps}
 		\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
 			\hline
 			\multirow{2}{*}{\parbox{10mm}{\centering Application}} & 
@@ -179,21 +179,27 @@ These benchmarks are accessible in the BSC Application Repository~\cite{BAR} and
 %\endgroup
 %END IDEAL SPEEDUP
 
-Table \ref{tab.apps} shows the different configurations and characteristics of the applications.
-From these applications, of QR and Heat diffusion operate on doubles while Cholesky and Integral Histogram operate on floats.
+Table \ref{tab.sched.apps} shows the different configurations and characteristics of the applications.
+For cholesky, QR, heat diffusion and integral histogram the input is a square matrix divided into blocks.
+The \textit{Problem size} column of Table~\ref{tab.sched.apps} shows the dimension of the input matrix and the block size.
+For example cholesky 8K 1024 takes as input a matrix of 8192$\times$8192 and it is then divided to 8$\times$8 blocks of 1024 elements each.
+Each task created in the parallelized versions operates on one block.
+The bigger the block size, the less the number of blocks created, which leads to less tasks. 
+From the applications of Table~\ref{tab.sched.apps}, QR and Heat diffusion operate on doubles while Cholesky and Integral Histogram operate on floats.
 The performance ratio between big and little cores depends on the application. 
-For example, the difference between the issue rate and throughput of double-precision floating point units of both types of cores is larger than the difference for single-precision floating point instructions. Therefore, applications with heavy double-precision operation (e.g. QR) get a larger benefit from running on the big cores, than single-precision dominated applications (e.g integral histogram), as shown in Table~\ref{tab.apps}.
+For example, the difference between the issue rate and throughput of double-precision floating point units of both types of cores is larger than the difference for single-precision floating point instructions. Therefore, applications with heavy double-precision operation (e.g. QR) get a larger benefit from running on the big cores, than single-precision dominated applications (e.g integral histogram), as shown in Table~\ref{tab.sched.apps}.
 
-The average per task overhead for each scheduler is negligible compared to the average task execution time shown in Table~\ref{tab.apps}. Specifically, CATS has the lowest per task overheads. Next is HYBRID and the least efficient is CPATH. This is because of the complexity of the CPATH algorithm that takes place whenever the TDG needs to be updated.
+The average per task overhead for each scheduler is negligible compared to the average task execution time shown in Table~\ref{tab.sched.apps}. Specifically, CATS has the lowest per task overheads. Next is HYBRID and the least efficient is CPATH. This is because of the complexity of the CPATH algorithm that takes place whenever the TDG needs to be updated.
 On the other hand, CATS and HYBRID have negligible overheads caused by the task prioritization.
 For dHEFT, the search of the appropriate worker for a task becomes an obstacle in performance. 
-Table~\ref{tab.apps} lacks the per task overheads of dHEFT because they appear to be too high due to the fact that the most intensive computations of dHEFT take place during the cores' idle time.
+Table~\ref{tab.sched.apps} lacks the per task overheads of dHEFT because they appear to be too high due to the fact that the most intensive computations of dHEFT take place during the cores' idle time.
 Thus, the natural idle time of cores is also encountered as scheduling overhead and could not be separated, so it is unfair to present such results for comparison. 
 Normally these obstacles in heterogeneous schedulers are paid off by the more effective task execution. 
 
 To more precisely characterise the benchmarks, we plot the task cost variability for each benchmark on Figure~\ref{distributions}.
-For each of these plots, the $x$ axis shows the normalized task cost and the $y$ axis the number of tasks that correspond to this task cost (e.g. how many tasks have this cost).
-This is used in the next section to classify how heterogeneous each application is and explain the behaviour of the heterogeneous schedulers that take into account the execution time.
+We normalize the task execution time of the applications with respect to the smaller task observed among all applications so that we can easily compare the task sizes of different applications as shown on the distributions.
+For each of these plots, the $x$ axis shows the normalized task cost (i.e. task execution time) and the $y$ axis the number of tasks that correspond to this task cost (e.g. how many tasks have this cost).
+This is used in the next section to classify how heterogeneous each application is and explain the behavior of the heterogeneous schedulers that take into account the execution time.
 %\subsubsection{Cholesky Factorization}
 
 \subsection{Real Environment Evaluation}
@@ -221,7 +227,7 @@ We classify the benchmarks according to their task cost variability to easier ex
 
 Heat diffusion is the kernel with the lowest task variability (e.g. the most homogeneous benchmark) as shown in Figure~\ref{heat_dist}.
 CATS, HYBRID and dHEFT increase the performance of heat by 10\% on 8 cores and obtain similar results for the other numbers of cores by rearranging the tasks according to the type of the resources.
-Due to its high per-task overheads shown on Table~\ref{tab.apps}
+Due to its high per-task overheads shown on Table~\ref{tab.sched.apps}
 %(CATS: 145.17us per task, CPATH: 748.84us per task, BF: 78.04us per task HYBRID: 170us per task)
  and the homogeneity of the benchmark, CPATH scheduler cannot outperform BF scheduler. 
 Moreover, for this benchmark, CPATH detects only 23\% of the tasks to be critical while CATS and HYBRID detect approximately 54\%, when running on 8 cores.
@@ -274,7 +280,7 @@ QR factorization is the highest task cost variability benchmark as shown in Figu
 This is the reason why HYBRID gradually outperforms CATS as we increase the number of cores.
 With a small additional overhead,
 %(CATS: 1419us while HYBRID: 14514us per-task overhead)
-as Table~\ref{tab.apps} shows, HYBRID manages to detect critical tasks that reside on the critical path and boost their execution reaching 17\% improvement over the baseline.
+as Table~\ref{tab.sched.apps} shows, HYBRID manages to detect critical tasks that reside on the critical path and boost their execution reaching 17\% improvement over the baseline.
 For this benchmark, CPATH also reaches a 13\% improvement over BF since task cost matters in this case. 
 However, CPATH speedup is still limited compared to HYBRID because of the higher scheduling overheads which in this case is 1.8$\times$ higher than CATS overheads.
 dHEFT also improves BF by finding the earliest executor of each task, but the improvement is limited to 11\% which is lower than the other approaches.

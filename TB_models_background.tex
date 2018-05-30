@@ -1,11 +1,4 @@
-\lstset{basicstyle=\small\ttfamily,
-        emphstyle=\bfseries,
-        columns=fixed,
-        numbers=left,xleftmargin=2em,frame=single,framexleftmargin=1.5em,
-        moredelim=*[l][\textit]{//},
-        moredelim=*[l][\bfseries]{\#},
-        literate={...}{\dots}3
-} 
+
 
 Parallel programming models ~\cite{Blumofe:PPoPP1995, Reinders2007, Bauer2012, OmpSs},  are widely used to facilitate the programming of parallel codes for multi-core systems.
 These programming models offer an abstraction layer to the programer so that multi-threaded programming of an application becomes easier.
@@ -38,6 +31,7 @@ All threads have access to this queue which is a first-in-first-out data structu
 In this thesis we make use of OmpSs~\cite{OmpSs}, a mainstream task-based programming model and the main influence of the updated OpenMP~4.0~\cite{OpenMP}.
 
 \subsection{OmpSs Programming Model}
+\label{sec.background.taskbased.ompss}
 \kc{Transform it to OpenMP??}
 The OmpSs programming model is a task-based programming model that offers a high level abstraction to the implementation of parallel applications for various homogeneous and heterogeneous architectures~\cite{OmpSs_PPL11,OmpSs}. 
 As a task-based programming model, OmpSs enables the annotation of function declarations with the task directive, which declares a task. 

@@ -1,6 +1,6 @@
-\section{Dynamic Heterogeneous Earliest Finish Time Scheduler}
+\section{Dynamic Heterogeneous Earliest Finish Time Scheduler (dHEFT)}
 \label{sec.scheduling.heft}
-The Heterogeneous Earliest Finish Time (HEFT) algorithm~\cite{HEFT} is a static scheduling approach for asymmetric systems.
+The Heterogeneous Earliest Finish Time (HEFT) algorithm~\cite{HEFT} is a well-known state-of-the-art static scheduling algorithm for asymmetric systems.
 HEFT consists of two compile-time phases that use profiling information: the \textit{task prioritizing phase} and the \textit{processor selection phase}.
 In the first phase, the algorithm assigns priorities to the tasks based on their \textit{upward rank}, that is, the length of the critical path from a given task to the exit task including task computation and communication costs~\cite{HEFT}.
 When task prioritizing is done, the tasks are sorted according to their priorities.

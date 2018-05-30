@@ -7,7 +7,7 @@
         moredelim=*[l][\bfseries]{\#},
         literate={...}{\dots}3
 } 
-\section{Criticality-Aware Task Scheduler}
+\section{Criticality-Aware Task Scheduler (CATS)}
 \label{sec.scheduling.cats}
 The Criticality-Aware Task Scheduling generally applies to task-based programming models supporting task dependencies, but for simplicity we explain it in the context of the OmpSs programming model.
 CATS uses bottom-level longest-path priorities and consists of three steps:
@@ -18,7 +18,10 @@ CATS uses bottom-level longest-path priorities and consists of three steps:
 
 \textbf{Task submission}: when a task becomes \textit{ready}, i.e., all its predecessors finished their execution, it is submitted to a \textit{ready queue}. At this point, the algorithm decides whether the task is considered \textit{critical} or \textit{non critical}. The task is then inserted in the corresponding ready queue: tasks in the \textit{critical ready queue} will be executed by fast cores, and tasks in the \textit{non-critical ready queue} will be executed by slow cores.
 
-\textbf{Task-to-core assignment}: when a core becomes idle, it tries to retrieve a task from its corresponding ready queue to execute it. If the queue is empty, it might try to steal from the other queue according on the work stealing policy. %Currently, we support two work stealing mechanisms: \textit{simple} work stealing, i.e., fast cores can steal from slow cores; and \textit{bidirectional} (\textit{2DS}) work stealing, i.e., both types can steal from the other. The default policy is \textit{simple}.
+\textbf{Task-to-core assignment}: when a core becomes idle, it retrieves a task from one of the two ready queues to execute. 
+The different policies and scenarios of this step are detailed in Section~\ref{sec.cats.assignment}.
+
+%If the queue is empty, it might try to steal from the other queue according on the work stealing policy. %Currently, we support two work stealing mechanisms: \textit{simple} work stealing, i.e., fast cores can steal from slow cores; and \textit{bidirectional} (\textit{2DS}) work stealing, i.e., both types can steal from the other. The default policy is \textit{simple}.
 %\end{itemize}
 
 These steps are performed dynamically and potentially in parallel in different cores. Thus, while some tasks are being prioritized, previously created tasks may be submitted, and others assigned to available cores or executed.
@@ -29,7 +32,7 @@ To give an overview of the scheduling process, Figure~\ref{botlevels} shows a sc
 \begin{figure}[t]
 \includegraphics[width=\columnwidth]{images/fig_1.pdf} 
 \centering
-\caption{Task submission with CATS. Nodes are marked with the \textit{bottom level} of each task. Pattern-filled nodes mark the critical tasks.}
+\caption{CATS overview. Nodes are marked with the \textit{bottom level} of each task. Pattern-filled nodes mark the critical tasks.}
 \label{botlevels}
 \vspace{-0.5cm}
 \end{figure}
@@ -91,7 +94,7 @@ As a result, the flexible scheduler ends up with more critical tasks than the st
 \begin{figure}[tl!]
 \includegraphics[width=\columnwidth]{images/fig_2.pdf} 
 \centering
-\caption{Task submission. Gray nodes indicate finished tasks and pattern-filled nodes indicate critical tasks.}
+\caption{Task submission with CATS. Gray nodes indicate finished tasks and pattern-filled nodes indicate critical tasks.}
 \label{submitFig}
 \vspace{-0.5cm}
 \end{figure}
