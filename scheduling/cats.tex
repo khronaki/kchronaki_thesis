@@ -82,14 +82,14 @@ To determine the criticality of a task, CATS keeps track of the last discovered 
 \textit{(a)} if the priority of the current ready task is higher or equal to the priority of the last discovered critical task and, \textit{(b)} if the current ready task is the highest-priority immediate successor of the last discovered critical task.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\if 0 %flexible strict explanation
+%flexible strict explanation
 In the first case, the algorithm detects new longest paths that may have been created by the application throughout the execution of a prior longest path. In this case, the scheduler can either be \textit{strict} or \textit{flexible}:
 \begin{itemize}
  \item{\textit{Strict}: marks as critical tasks with priority higher than the priority of the last critical task.}
  \item{\textit{Flexible}: marks as critical tasks with priority higher or equal to the priority of the last critical task.} 
  \end{itemize}
 As a result, the flexible scheduler ends up with more critical tasks than the strict. The flexibility of the scheduler can be set by the programmer through an environment variable.
-\fi % about flexible/strict explanation
+% about flexible/strict explanation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[tl!]
 \includegraphics[width=\columnwidth]{images/fig_2.pdf} 
@@ -130,5 +130,5 @@ Figure~\ref{submitFig} shows an example of a TDG during task submission. The gra
 Task-to-core assignment takes place dynamically and in parallel to the previous steps and its time complexity is \textit{O($n$)}, \textit{$n$} being the number of tasks. When a core becomes idle, it checks the corresponding ready queue (depending on the core type) to get a task to execute. Fast cores retrieve critical tasks from the critical queue, while slow cores retrieve non-critical tasks from the non-critical queue. Each ready queue is shared among the cores of the same type so there is no need for work stealing among cores of the same type. 
 
 If tasks in an application are imbalanced, i.e., the majority are non-critical and only a few tasks are critical, or vice versa, one of the types of processors would be overloaded and the other would starve for work. This can happen in applications with wide graphs and a large amount of tasks, where the ratio between critical tasks and the total amount of tasks may be small. To leverage the resources, the work-stealing mechanism for CATS lets fast cores steal work from slow cores whenever the critical queue becomes empty. 
-%Also, CATS can be configured to perform \textit{bidirectional work stealing} so slow processors can also steal tasks from the critical queue if the non-critical queue is empty. 
-%We evaluate these different options and show the results in the next section.
+Also, CATS can be configured to perform \textit{bidirectional work stealing} so slow processors can also steal tasks from the critical queue if the non-critical queue is empty. 
+We evaluate these different options and show the results in Section~\ref{sec.cats_eval}.

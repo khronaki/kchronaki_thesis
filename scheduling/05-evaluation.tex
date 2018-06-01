@@ -21,8 +21,25 @@
 %CATS targets heterogeneous multi-core systems with cores that expose different characteristics in terms of performance and power. We perform experiments on ODROID XU3 8-core platform. The ODROID XU3, features the ARM big.LITTLE technology offering heterogeneous multi-processing. Moreover, we simulate the behaviour of our design to estimate the impact of CATS on heterogeneous systems with a larger amount of cores and different performance ratios.
 %On the simulated platform we are able to set up different performance ratios between fast and slow cores without a restriction.
 
-We measure the execution time of five applications using CATS, CPATH, HYBRID, dHEFT and the default OmpSs BF scheduler that is explained in Section~\ref{sec.background.taskbased.ompss}. 
+In the first part of our real environment evaluation, we measure the execution time of four criticality-sensitive applications using CATS ad the default OmpSs scheduler. 
+We evaluate four different CATS configurations based on the options explained in Section~\ref{sec.cats} and provide a detailed comparison between them. 
+The options consist of whether the task submission policy is strict or flexible, and the type of the work stealing mechanism. 
+This results in the following configurations:
+\begin{itemize}
+	\itemsep0em
+	\item Flexible with simple work stealing (SS FLEX)
+	\item Flexible with bidirectional work stealing (2DS FLEX)
+	\item Strict with simple work stealing (SS STRICT)
+	\item Strict with bidirectional work stealing (2DS STRICT)
+\end{itemize}
+
+\kc{should it stay or should it go???:}
+The default OmpSs scheduler employs a \textit{breadth-first} policy~(BF)~\cite{Duran_schedulers_08}. The BF scheduler implements a single first-in-first-out ready queue shared among all threads. 
+When a task is ready, it is inserted in the tail of the ready queue and when a core becomes available, it retrieves a task from the head of the queue. Tasks are ordered according to their ready time: the earliest ready task resides at the head of the queue. Since the ready queue is shared, there is no need for work stealing and the load is balanced automatically. BF does not differentiate among core types and assigns tasks in a first-come-first-served basis.
+
+After the analysis of the CATS configurations we measure the execution time of five applications using CATS, CPATH, HYBRID, dHEFT and the default OmpSs BF scheduler that is explained in Section~\ref{sec.background.taskbased.ompss}. 
 The execution time corresponds to the average of 10 executions of the application on each machine set-up.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \if 0 % about strict/flexible
 As it is already shown in previous works~\cite{Chronaki:ICS2015}, the most efficient CATS configuration is when using the simple work stealing and flexible policy (SSFLEX).
@@ -208,7 +225,8 @@ Table~\ref{tab.sched.apps} lacks the per task overheads of dHEFT because they ap
 Thus, the natural idle time of cores is also encountered as scheduling overhead and could not be separated, so it is unfair to present such results for comparison. 
 Normally these obstacles in heterogeneous schedulers are paid off by the more effective task execution. 
 
-Figure~\ref{fig.cholesky_graphs} shows the TDGs for input sizes of (a) 8$\times$8 and (b) 16$\times$16 blocks. Critical tasks are denoted as red nodes. 
+Figure~\ref{fig.cholesky_graphs} shows the TDGs for input sizes of (a) 8$\times$8 and (b) 16$\times$16 blocks.
+Critical tasks are denoted as red nodes. 
 The TDG becomes wider as the number of blocks increases. 
 This reduces the percentage of critical tasks that is 17.5\% in the case of the 8$\times$8 input and 5.51\% in the case of the 16$\times$16 input. 
 The 8$\times$8 blocks case shows a narrower TDG that makes the application more criticality sensitive than the 16$\times$16 blocks case that exposes more parallelism. 
@@ -220,45 +238,125 @@ For each of these plots, the $x$ axis shows the normalized task cost (i.e. task 
 This is used in the next section to classify how heterogeneous each application is and explain the behavior of the heterogeneous schedulers that take into account the execution time.
 %\subsubsection{Cholesky Factorization}
 
-\subsection{Evaluation of CATS}
-\begin{figure*}[!t]
-	\centering
-	\begin{subfigure}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{bf-linear.pdf}
-		\caption{Speedup of CATS, dHEFT and BF on 8 cores compared to the ideal}
-		\label{BFLinear}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{figures/cholesky_8x8_CATS.pdf}
-		\caption{Cholesky 8$\times$8}
-		\label{cholesky8x8_real}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{figures/cholesky_16x16_CATS.pdf}
-		\caption{Cholesky 16$\times$16}
-		\label{cholesky16x16_real}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{figures/QR_CATS.pdf}
-		\caption{QR}
-		\label{qr_real}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{figures/heat_CATS.pdf}
-		\caption{Heat Diffusion}
-		\label{heat_ARM}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{figures/intHist_CATS.pdf}
-		\caption{Integral Histogram}
-		\label{histogram_real16}
-	\end{subfigure}
-	\caption{Schedulers comparison on ODROID-XU3}
-	\label{eval_ARM}
-	\vspace{-0.4cm}
-\end{figure*}
+
+
+%\begin{figure*}[!t]
+%	\centering
+%	
+%		\begin{subfigure}[b]{0.45\textwidth}
+%		\includegraphics[width=\textwidth]{figures/cholesky_8x8_CATS.pdf}
+%		\caption{Cholesky 8$\times$8}
+%		\label{cholesky8x8_real}
+%	\end{subfigure}
+%	\begin{subfigure}[b]{0.45\textwidth}
+%		\includegraphics[width=\textwidth]{figures/cholesky_16x16_CATS.pdf}
+%		\caption{Cholesky 16$\times$16}
+%		\label{cholesky16x16_real}
+%	\end{subfigure}
+%	\begin{subfigure}[b]{0.45\textwidth}
+%		\includegraphics[width=\textwidth]{figures/QR_CATS.pdf}
+%		\caption{QR}
+%		\label{qr_real}
+%	\end{subfigure}
+%	\begin{subfigure}[b]{0.45\textwidth}
+%		\includegraphics[width=\textwidth]{figures/heat_CATS.pdf}
+%		\caption{Heat Diffusion}
+%		\label{heat_ARM}
+%	\end{subfigure}
+%	\begin{subfigure}[b]{0.45\textwidth}
+%		\includegraphics[width=\textwidth]{figures/intHist_CATS.pdf}
+%		\caption{Integral Histogram}
+%		\label{histogram_real16}
+%	\end{subfigure}
+%	\caption{Schedulers comparison on ODROID-XU3}
+%	\label{eval_ARM}
+%	\vspace{-0.4cm}
+%\end{figure*}
 
 \subsection{Real Environment Evaluation}
+This subsection includes all the experiments and results obtained from the real asymmetric system ODROID-XU3.
+It includes one section that explores the different CATS configurations and another section that compares the best CATS configuration among the rest of the schedulers.
+
+\subsubsection{Evaluation of CATS Configurations}
+\label{sec.cats_eval}
+\begin{figure}[!t]
+	\centering
+		\subfloat[Speedup of CATS and BF compared to the ideal]{
+		\includegraphics[width=0.45\textwidth]{figures/ideal_CATS.pdf}
+		\label{BFlinear}
+	}
+	\subfloat[Cholesky 8$\times$8]{
+		\includegraphics[width=0.45\textwidth]{figures/cholesky_8x8_CATS.pdf}
+		\label{cholesky8x8_cats}
+	}
+	\\
+	\subfloat[Cholesky 16$\times$16]{
+		\includegraphics[width=0.45\textwidth]{figures/cholesky_16x16_CATS.pdf}
+		\label{cholesky16x16_cats}
+	}
+	\subfloat[QR]{
+		\includegraphics[width=0.45\textwidth]{figures/QR_CATS.pdf}
+		\label{qr_cats}
+	}
+	\\
+	\subfloat[Heat diffusion]{
+		\includegraphics[width=0.45\textwidth]{figures/heat_CATS.pdf}
+		\label{heat_cats}
+	}
+	\subfloat[Integral Histogram]{
+		\includegraphics[width=0.45\textwidth]{figures/intHist_CATS.pdf}
+		\label{histogram_cats}
+	}
+	%  \vspace{-0.2cm}
+	\caption{Schedulers comparison on ODROID-XU3}
+	%\vspace{-0.5cm}
+\end{figure}
+Figure~\ref{cholesky8x8_cats} shows the improvement of the CATS configurations over BF, and the speedup obtained with CATS and BF, for Cholesky on an 8$\times$8 blocked matrix. 
+CATS consistently achieves better performance than BF and the improvement over BF increases as the number of cores is increased. 
+Specifically, the improvement is observed to be up to 30\% for systems with seven and eight cores. 
+
+Figure~\ref{cholesky16x16_cats} shows the performance on a 16$\times$16 block input matrix, where the improvement of CATS is smaller and ranges from 2 to 9\% and all schedulers perform fairly well. 
+In this case the opportunities for enhancement are limited, since, according to Figure~\ref{BFLinear}, BF performance approaches the ideal speedup. 
+The lower improvement in this case comes from the fact that the application is less sensitive to the critical path. 
+The task graph is wider (as shown in Figure~\ref{fig.cholesky_graphs}) and, accordingly, the percentage of critical tasks is lower. 
+Specifically the percentage of critical tasks for this input is limited to 5.5\% compared to the percentage observed with Cholesky 8$\times$8 that is 17.5\%. 
+However, CATS still outperforms BF by 7\% when using the eight cores in the system.% and performs as good as dHEFT.
+
+%It is interesting to note that the proportion of critical tasks, as shown in Table~\ref{tab.apps}, is lower than in the previous experiment, which leads to a lower utilization of the big cores for critical task execution.
+
+Figure~\ref{qr_real} shows the improvement of CATS over BF and their speedup for QR factorization. 
+QR consists of double precision operations which cause the big cores to be 4.26$\times$ faster than the little cores. Thus, the ideal speedup of the system for QR is 20.1$\times$. 
+CATS achieves a 15$\times$ speedup by shortening the execution of the dynamic longest path in the TDG. 
+%Since dHEFT is not focusing on the longest path of the TDG, and it performs some random scheduling at the beginning of the execution in order to determine the task costs, it becomes less effective than CATS but still better than a BF.
+
+Figure~\ref{heat_cats} shows the improvement of different CATS configurations over BF, and the speedup obtained with CATS and BF, for heat diffusion. 
+%As shown in Table~\ref{tab.apps} heat diffusion consists of 5124 tasks; 5120 tasks of them are tasks of the same type and parameter size. 
+%This limits the effect of dHEFT, that tries to find the earliest executor for each task in comparison to BF in which whenever a core becomes available, it retrieves a task from the ready queue. Thus, dHEFT is better than BF because it uses private ready queues for each core, thing that reduces the congestion of using only one ready queue. 
+CATS consistently improves the scheduling of the asymmetric system from 15\% to 22\%, since the main criterion of scheduling is the TDG structure. 
+CATS achieves a 13$\times$ speedup when using all eight cores, thus getting very close to the ideal 15.3$\times$ shown in Figure~\ref{BFLinear}.
+
+Figure~\ref{histogram_cats} shows the improvement of CATS over BF, and the speedup obtained with CATS and BF, for integral histogram. 
+The impact of CATS is again positive for all configurations, since the improvement is at least 5\% with the peak being 15\% for 8 cores. 
+Experiments on larger systems show that the specific application's scalability saturates beyond 16 cores. 
+This is because the intensive dependencies between tasks reduce the available parallelism that is mainly present among the diagonal-placed blocks due to the cross-weave scanning process. 
+%Since dHEFT does not take into account the dependencies between tasks, the scheduling of an application with limited parallelism due to dependencies becomestrickier. 
+Moreover, the performance ratio of this single-precision application is 1.7$\times$, so the ideal speedup is limited to 10.8$\times$.
+
+An interesting observation is that for single-precision benchmarks the improvement of CATS is proportional to the percentage of critical tasks. 
+Integral histogram achieves greater improvements in comparison to Cholesky 16$\times$16 because it schedules immediately more tasks to the fast cores of the system.
+This is due to the fact that this benchmark has a higher percentage of critical tasks (7.32\%) compared to Cholesky 16$\times$16 that has 5.5\%. 
+%according to the percentage of the critical tasks on Table \ref{tab.apps}. 
+On the other hand, QR and heat diffusion show the opposite effect: QR has the largest performance ratio and a larger percentage of critical tasks than heat diffusion. 
+However, heat diffusion shows higher overall improvement over the different configurations. 
+We attribute this to the larger sensitivity of heat diffusion to the critical path, which allows CATS to achieve a large improvement even for a configuration of one big and one little core. 
+%The dHEFT scheduler outperforms BF but struggles to handle applications with complex TDG. 
+%Applications that consist of multiple instances of the same task type benefit less from dHEFT than applications that process tasks with variable costs, such as Cholesky and QR. 
+
+In all cases, the SS FLEX configuration of CATS achieves the best performance, since it produces a decent amount of critical tasks for the big cores, fact that shortens the longest path of the TDG. 
+A smaller amount of critical tasks is produced by the SS STRICT policy, which causes a slight imbalance that is fixed through the work stealing mechanism but with lower effectiveness. 
+The 2DS FLEX configuration, produces the same amount of critical tasks as the SS FLEX, but the bi-directional work stealing allows little cores to steal critical tasks, which lengthens the critical path execution and directly increases overall execution time.
+
+\subsubsection{Evaluation of CATS CPATH and HYBRID}
 \begin{figure}[!t]
 	\centering
 	\includegraphics[width=0.7\textwidth]{images/8cores.pdf}
@@ -266,7 +364,13 @@ This is used in the next section to classify how heterogeneous each application 
 	\label{BFLinear}
 	\vspace{-0.4cm}
 \end{figure}
-Figure~\ref{BFLinear} shows the speedup of CATS, CPATH, HYBRID, dHEFT and BF when running the applications on all eight cores of the Odroid-XU3. Cholesky and Integral Histogram operate on single-precision data, while QR and Heat Diffusion operate on double-precision. Double-precision applications get larger speedups over one little core because they benefit from a larger performance ratio when running on a big core. In the case of Bodytrack, the out-of-order processing power of the big cores helps on the efficient execution and creates a high performance ratio between big and little cores. For most of the cases, CATS scales better than the rest of the schedulers. The shortening of the critical path by running all critical tasks on big cores effectively reduces total execution time when running on all cores. CPATH scheduler does not achieve as high speedup as the other heterogeneous scheduling approaches but it still outperforms the baseline (BF) approach.
+As it is shown in Section~\ref{sec.cats_eval}, the most efficient CATS configuration is when using the simple work stealing and flexible policy (SSFLEX).
+The same applies for CPATH and HYBRID schedulers, thus the results presented in this section refer to this configuration of the schedulers. 
+Figure~\ref{BFLinear} shows the speedup of CATS, CPATH, HYBRID, dHEFT and BF when running the applications on all eight cores of the Odroid-XU3. Cholesky and Integral Histogram operate on single-precision data, while QR and Heat Diffusion operate on double-precision. 
+Double-precision applications get larger speedups over one little core because they benefit from a larger performance ratio when running on a big core. In the case of Bodytrack, the out-of-order processing power of the big cores helps on the efficient execution and creates a high performance ratio between big and little cores. 
+For most of the cases, CATS scales better than the rest of the schedulers. 
+The shortening of the critical path by running all critical tasks on big cores effectively reduces total execution time when running on all cores. 
+CPATH scheduler does not achieve as high speedup as the other heterogeneous scheduling approaches but it still outperforms the baseline (BF) approach.
 
 Figure~\ref{avg_all} shows the average speedup obtained for each scheduler and machine set-up. 
 Overall, the heterogeneous schedulers outperform the platform-unaware BF scheduler.
