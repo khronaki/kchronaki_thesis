@@ -1,10 +1,38 @@
 \chapter{Conclusions}
+This PhD thesis incorporated flexible software techniques on the runtime system level in order to effectively utilize asymmetric systems.
+The main contributions of the thesis rely on the efficient exploitation of future asymmetric multi-core systems in terms of performance as well as on conceiving future asymmetric architectures that fit the needs of high performance computing.
+\kc{TODO, ellaborate on:}
+	%Our current results have shown that the state-of-the-art asymmetric multi-core systems are not ready to efficiently run out-of-the-box high performance applications and that the most efficient way is by using a task-based approach.
+	%This increases the need of research in this direction through the paths of scheduling and thread migration as described in the previous Chapters.
+	%In our first attempts to follow these paths, we have seen the high potential of the criticality-aware task schedulers to speed up dependency-intensive applications and take advantage of the asymmetric compute resources.
 
-\kc{TODO}
-The goal for this PhD thesis is to incorporate techniques of task and thread scheduling in order to fully utilize asymmetric systems.
-The main contributions of the thesis rely on the efficient exploitation of future asymmetric multi-core systems in terms of performance and energy efficiency as well as on the development of future asymmetric systems that fit the needs of high performance computing.
-Existing parallel scientific applications will become portable when moving from a traditional multi-core to an asymmetric multi-core system. 
-Our useful observations throughout this study will also contribute and give guidelines for the design of the future multi-core asymmetric systems for high performance computing.
+	This thesis showed that current highly parallel applications are not ready to fully utilize an AMC sytem. 
+	Parallelizing on application level requires significant programming effort and results are not always optimal.
+	Using task-based programming models offers a flexible solution for programmability as well as scheduling and performance. 
+	Using task-based programming models on AMC systems increases the need of research for enhancing the runtime system of the task-based programming models to achieve even higher performance. 
+	Scheduling and runtime overheads' acceleration are useful research lines towards this direction.
+	
+	Following these research lines, in this thesis we introduced three novel schedulers for asymmetric systems. 
+	We implemented these schedulers within the OmpSs task-based programming model and used them on a real asymmetric multi-core system.
+	These scheduling approaches do not consist of theoretical results but are implementable and work on real platforms with real applications, contrary to previous approaches that use synthetic TDGs and profiling. 
+	CATS offers a consistent performance improvement of around 10\% to 20\% reaching up to 30\%.
+	By tracking task execution time, CPATH offers a higher accuracy in the identification of critical tasks but this does not imply that it always increases performance. 
+	The number of tasks, task cost variability as well as the TDG structure are vital characteristics of an application that affect performance, especially on AMC systems.
+
+	Furthermore, an important outcome of this thesis is the proof that task creation is a significant bottleneck in parallel runtime systems.
+	To overcome this significant bottleneck of task-based programming models we proposed TaskGenX, a HW-SW proposal for accelerating task creation that achieves up to 15$\times$ increased performance.
+	TaskGenX is excels compared to existing approaches, for two main reasons; first is because it achieves higher performance as the number of cores is increased. 
+	TaskGenX outperforms approaches that accelerate all the runtime activities by 54\% and approaches that accelerate scheduling and dependence analysis  by 70\%.
+	The second reason that TaskGenX solution is optimal compared to other approaches is that it is the most minimalistic solution. 
+	It achieves such results by only requiring the acceleration of task creation, using a simple single-core hardware proposal.
+	Throughout TaskGenX study we also made observations that contribute and give guidelines for the design of the future multi-core asymmetric systems for high performance computing.
+
+	Finally we showed that scheduling is important not only for asymmetric systems that run highly parallel applications, but it is also important and can increase performance when used on mobile devices for running multi-threaded applications such as games.
+	An as simple scheduling approach as RTS of this thesis can achieve up to 7.5\% increase in FPS while maintaining stable temperature and high FPS stability.
+
+
+%Existing parallel scientific applications will become portable when moving from a traditional multi-core to an asymmetric multi-core system. 
+%Our useful observations throughout this study will also contribute and give guidelines for the design of the future multi-core asymmetric systems for high performance computing.
 
 %goals are performance and energy efficiency as well as the portability of existing applications from the traditional homogeneous multi-cores to the new asymmetric multi-core systems.
 
@@ -12,16 +40,12 @@ Our useful observations throughout this study will also contribute and give guid
 %Moreover, we have seen the potential of the criticality-aware task schedulers to speed up dependency-intensive applications and take advantage of the asymmetric compute resources is very high but sometimes comes at the cost of high additional overhead.
 %We expect that adding one more scheduling layer will help eliminate the scheduling overheads of the smart heterogeneous scheduling approaches and boost performance and energy efficiency of such architectures.
 
-Our current results have shown that the state-of-the-art asymmetric multi-core systems are not ready to efficiently run out-of-the-box high performance applications and that the most efficient way is by using a task-based approach.
-This increases the need of research in this direction through the paths of scheduling and thread migration as described in the previous Chapters.
-In our first attempts to follow these paths, we have seen the high potential of the criticality-aware task schedulers to speed up dependency-intensive applications and take advantage of the asymmetric compute resources.
+%We are optimistic that following our second research approach of runtime thread migration will also contribute positively.
+%The greatest challenge will be to increase performance without sacrificing energy, thus the dynamic search for the appropriate assistant core for the runtime thread has to consider all these obstacles.
+%We expect that this approach will also influence designers to consider the use of assistant cores in the future asymmetric multi-cores.
+%Finally, in our last and most complete approach we will need to synchronize all of our tools (e.g. scheduling and thread migration) to adapt to the runtime circumstances and boost performance with decent energy consumption.
 
-We are optimistic that following our second research approach of runtime thread migration will also contribute positively.
-The greatest challenge will be to increase performance without sacrificing energy, thus the dynamic search for the appropriate assistant core for the runtime thread has to consider all these obstacles.
-We expect that this approach will also influence designers to consider the use of assistant cores in the future asymmetric multi-cores.
-Finally, in our last and most complete approach we will need to synchronize all of our tools (e.g. scheduling and thread migration) to adapt to the runtime circumstances and boost performance with decent energy consumption.
-
-Since a part of this work is already complete, we expect that our goals will be successfully accomplished and this study will be a useful reference for the future research.
+%Since a part of this work is already complete, we expect that our goals will be successfully accomplished and this study will be a useful reference for the future research.
 
 
 

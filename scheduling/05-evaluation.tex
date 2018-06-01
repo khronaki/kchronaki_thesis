@@ -3,7 +3,19 @@
 
 
 \subsection{Methodology}
-
+\begin{figure}[t]
+	\centering
+	\subfloat[Cholesky 8$\times$8]{
+		\includegraphics[width=0.26\textwidth]{images/cholesky_8_white.pdf}
+		\label{cholesky8x8_TDG}
+	}
+	\subfloat[Cholesky 16$\times$16]{
+		\includegraphics[width=0.6\textwidth]{images/cholesky_16_white.pdf}	
+		\label{cholesky16x16_TDG}
+	}
+	\label{cholesky_graphs}
+	\caption{Cholesky factorization task dependency graphs.}
+\end{figure}
 % For example, a multi-core chip with some in-order cores and some out-of-order cores. The evaluation part of this paper contains real machine evaluation as well as evaluation through simulation.
 
 %CATS targets heterogeneous multi-core systems with cores that expose different characteristics in terms of performance and power. We perform experiments on ODROID XU3 8-core platform. The ODROID XU3, features the ARM big.LITTLE technology offering heterogeneous multi-processing. Moreover, we simulate the behaviour of our design to estimate the impact of CATS on heterogeneous systems with a larger amount of cores and different performance ratios.
@@ -78,6 +90,7 @@ For all the scheduling approaches we present their speedup over the execution on
 
 
 \subsubsection{Applications}
+
 \begin{table*}
 	\scriptsize
 	\begin{center}
@@ -151,7 +164,6 @@ For all the scheduling approaches we present their speedup over the execution on
 We use five scientific applications implemented in the OmpSs programming model: Cholesky factorization, QR factorization, Heat diffusion, Integral Histogram and Bodytrack, also described in Section~\ref{sec.background}. 
 These benchmarks are accessible in the BSC Application Repository~\cite{BAR} and in the PARSECSs library~\cite{Chasapis:TACO2016}. 
 
-\kc{Added in the background}
 
 %\subsubsection{Bodytrack}
 %\textbf{Bodytrack} is an application that tracks a marker-less human body using multiple cameras through an image sequence. 
@@ -196,11 +208,55 @@ Table~\ref{tab.sched.apps} lacks the per task overheads of dHEFT because they ap
 Thus, the natural idle time of cores is also encountered as scheduling overhead and could not be separated, so it is unfair to present such results for comparison. 
 Normally these obstacles in heterogeneous schedulers are paid off by the more effective task execution. 
 
+Figure~\ref{fig.cholesky_graphs} shows the TDGs for input sizes of (a) 8$\times$8 and (b) 16$\times$16 blocks. Critical tasks are denoted as red nodes. 
+The TDG becomes wider as the number of blocks increases. 
+This reduces the percentage of critical tasks that is 17.5\% in the case of the 8$\times$8 input and 5.51\% in the case of the 16$\times$16 input. 
+The 8$\times$8 blocks case shows a narrower TDG that makes the application more criticality sensitive than the 16$\times$16 blocks case that exposes more parallelism. 
+We evaluate both configurations to show the impact of scheduling on different criticality sensitiveness of the application configuration.
+
 To more precisely characterise the benchmarks, we plot the task cost variability for each benchmark on Figure~\ref{distributions}.
 We normalize the task execution time of the applications with respect to the smaller task observed among all applications so that we can easily compare the task sizes of different applications as shown on the distributions.
 For each of these plots, the $x$ axis shows the normalized task cost (i.e. task execution time) and the $y$ axis the number of tasks that correspond to this task cost (e.g. how many tasks have this cost).
 This is used in the next section to classify how heterogeneous each application is and explain the behavior of the heterogeneous schedulers that take into account the execution time.
 %\subsubsection{Cholesky Factorization}
+
+\subsection{Evaluation of CATS}
+\begin{figure*}[!t]
+	\centering
+	\begin{subfigure}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{bf-linear.pdf}
+		\caption{Speedup of CATS, dHEFT and BF on 8 cores compared to the ideal}
+		\label{BFLinear}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{figures/cholesky_8x8_CATS.pdf}
+		\caption{Cholesky 8$\times$8}
+		\label{cholesky8x8_real}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{figures/cholesky_16x16_CATS.pdf}
+		\caption{Cholesky 16$\times$16}
+		\label{cholesky16x16_real}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{figures/QR_CATS.pdf}
+		\caption{QR}
+		\label{qr_real}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{figures/heat_CATS.pdf}
+		\caption{Heat Diffusion}
+		\label{heat_ARM}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{figures/intHist_CATS.pdf}
+		\caption{Integral Histogram}
+		\label{histogram_real16}
+	\end{subfigure}
+	\caption{Schedulers comparison on ODROID-XU3}
+	\label{eval_ARM}
+	\vspace{-0.4cm}
+\end{figure*}
 
 \subsection{Real Environment Evaluation}
 \begin{figure}[!t]
@@ -343,22 +399,25 @@ This benchmark creates a small amount of critical tasks in the 32$\times$32 inpu
 %\end{figure*}
 
 \begin{figure}[!t]
+	\centering
 	\subfloat[Cholesky 32$\times$32]{
-  		\includegraphics[width=0.33\textwidth]{images/cholesky_TS_tall.pdf}
+  		\includegraphics[width=0.65\textwidth]{images/cholesky_TS_tall.pdf}
   		\label{cholesky_ts}
 	}
+\\
 %    \vspace{-0.2cm}
 	\subfloat[QR]{
-  		\includegraphics[width=0.33\textwidth]{images/QR_TS_tall.pdf}
+  		\includegraphics[width=0.65\textwidth]{images/QR_TS_tall.pdf}
   		\label{qr_ts}
   	}
+\\
     %\vspace{-0.2cm}
 	\subfloat[Heat diffusion]{
-  		\includegraphics[width=0.33\textwidth]{images/heat_TS_tall.pdf}
+  		\includegraphics[width=0.65\textwidth]{images/heat_TS_tall.pdf}
   		\label{heat_ts}
   	}
 %  \vspace{-0.2cm}
-	%\caption{Improvement of heterogeneous schedulers over BF for simulated 16 and 32 core heterogeneous systems}
+	\caption{Improvement of heterogeneous schedulers over BF for simulated 16 and 32 core heterogeneous systems}
 %\vspace{-0.5cm}
 \end{figure}
 
