@@ -11,7 +11,7 @@ Accelerating task creation, {\proposal} achieves up to 15.8$\times$ improvement 
 %achieve higher improvements in these cases where task creation is more important.
 %7$\times$ on asymmetric systems when the application is launched on a little core.
 % 6$\times$ average improvement
-Using {\proposal} on asymmetric systems offers a portable solution, as the task creation is not affected by the type of core that the master thread is bound to.
+Using {\proposal} on asymmetric systems offers a portable solution, as the task creation is not affected by the type of core that the master thread is bound to. \kc{TODO: add conclusion for TaskGenX+CATS}
 
 
 We further showed that for some cases like Canneal where task creation needs to be accelerated as much as 197$\times$ in order to steadily provide enough created tasks for execution.
@@ -20,6 +20,8 @@ However, even by using a realistic and implementable hardware approach that offe
 Comparing {\proposal} against other approaches such as Carbon, Nexus, Picos++ or TaskSuperscalar that manage to transfer different parts of the runtime to the RTopt proves that {\proposal} is the most minimalistic and effective approach.
 Even if {\proposal} transfers the least possible runtime activity to the RTopt hardware it achieves better results.
 This implies that {\proposal} requires a less complicated hardware accelerator, as it is specialized for only a small part of the runtime, unlike the other approaches that need specialization for task creation, dependency tracking and scheduling.
+
+
 
 %FUTURE work...
 We expect that combining {\proposal} with an asymmetry-aware task scheduler will achieve even better results, as asymmetry introduces load imbalance.
