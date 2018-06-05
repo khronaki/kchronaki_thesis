@@ -40,7 +40,7 @@ However, there are still challenges that need to be addressed that are mainly re
 %%Add more challenges
 Like in other heterogeneous systems, load balancing and scheduling are fundamental challenges that must be addressed to effectively exploit all the resources in AMC platforms~\cite{Suleman:APLOS2009,Fedorova2009,Greenhalgh2011,Joao:ASPLOS2012,Joao:ISCA2013,ARM4HPC_SC13}. 
 To preserve load balance, the system has to make sure that the cores of the system remain busy and are fairly loaded depending on their type.
-For example running a barrier-based multi-threaded application where each thread runs on one core on an AMC might result to performance degradation as there is a high risk of starvation of the fast cores~\cite{AMC_survey}. %ending up in starvation. 
+For example running a barrier-based multi-threaded application where each thread runs on one core on an AMC might result in performance degradation as there is a high risk of starvation of the fast cores~\cite{AMC_survey}. %ending up in starvation. 
 %the fast cores of the system will remain idle after they finish their computations waiting for the slow cores to finish execution.
 %This is trivial for multi-threaded applications that run on homogeneous multi-cores but it is not as trivial on an AMC where an equal thread distribution would lead to potential starvation of the fast cores as they 
 
@@ -49,7 +49,7 @@ Due to the different benefits offered by each core type, such decisions require 
 An interesting approach against the above challenges is to take advantage of the heterogeneity of an AMC by providing novel asymmetry-aware schedulers. 
 %The above challenges require new asymmetry-aware scheduling approaches in order to take advantage of the heterogeneity.
 The state-of-the-art asymmetry-aware scheduling approaches perform thread scheduling within the Linux kernel. 
-The most commonly used example in this category is the Global Task Scheduler (GTS)~\cite{?} that is implemented on top of the Linux Completely Fair Scheduler (CFS) and is aware of the asymmetry of the system.
+The most commonly used example in this category is the Global Task Scheduler (GTS)~\cite{samsung} that is implemented on top of the Linux Completely Fair Scheduler (CFS) and is aware of the asymmetry of the system.
 However, such approaches lack flexibility due to the high thread-migration overheads~\cite{AMC_survey}.
 %Mobile applications rely on multi-programmed workloads to balance the load in the system, while supercomputer applications rely on hand-tuned code to extract maximum performance. 
 %However, these approaches are not always suitable for general-purpose parallel applications.
@@ -83,9 +83,9 @@ return 0;
 \end{lstlisting}
 As an example, Listing~\ref{task-based-example} shows a simple usage of a directive-based task-based programming model (the OmpSs programming model~\cite{OmpSs}).
 In this code, the \textit{pragma omp task} directives define the functions that act as tasks, namely \texttt{task1} and \texttt{task2}.
-The input and output dependencies between these tasks are defined using the \textit{in}, \textit{out} and \textit{inout} clauses.
+The input and output dependencies between these tasks are derived at execution time from the \textit{in}, \textit{out} and \textit{inout} directionality clauses.
 When these task functions are being called by the main function, the runtime system creates tasks that can run in parallel if there are no task dependencies between them.
-The runtime system of the task-based programming model is responsible to maintain software threads and distribute the tasks to the appropriate thread for execution.
+The runtime system of the task-based programming model is responsible of maintaining software threads and distribute the tasks to the appropriate thread for execution.
 Typically the number of software threads that the runtime system maintains is equal to the number of available cores in the system and one thread is bound to each core.
 We further explain how the task-based runtime system functions in Section~\ref{sec.background.taskbased}.
 
@@ -94,7 +94,7 @@ We further explain how the task-based runtime system functions in Section~\ref{s
 \begin{figure}[t]%
 	\centering
 	\includegraphics[width=\textwidth]{figures/thesis_motivation.pdf}
-	\caption{Increased idle time when moving from homogeneous multi-core to asymmetric multi-core}
+	\caption{Increased idle time when moving from homogeneous multi-core to asymmetric multi-core. The directions of the arrows indicate the data dependencies.}
 	\label{fig:thesis_motivation}
 \end{figure}
 
@@ -105,14 +105,14 @@ In some cases, a bad scheduling decision on an asymmetric system can lead to sig
 
 Figure~\ref{fig:thesis_motivation} shows the execution representation of a simple example using a task-based programming model.
 This example consists of three types of tasks that have different execution times.
-In this example the tasks of type taskA have dependencies between them wich means that the taskA tasks cannot execute simultaneously. 
+In this example the tasks of type taskA have dependencies between them as the arrows indicate which means that the taskA tasks cannot execute simultaneously.
 The leftmost representation shows how a task-based programming model would execute this set of tasks on a homogeneous multi-core (where all cores are the same) while the representation on the right shows how the same example would execute on an asymmetric multi-core where the cores number three and four are faster than the cores number one and two.
 As we can see the idle time of the cores three and four is increased when using this scheduling but this is something that can be addressed if we provide a better scheduling policy in our task-based runtime system.
 Figure~\ref{fig:thesis_motivation2} shows one solution to improve this scheduling while respecting the inter-task dependencies.
 \begin{figure}[t]%
 	\centering
 	\includegraphics[width=0.65\textwidth]{figures/thesis_motivation2.pdf}
-	\caption{Changing the scheduling leads to improvement for AMC systems}
+	\caption{Changing the scheduling leads to improvement for AMC systems. The directions of the arrows indicate the data dependencies.}
 	\label{fig:thesis_motivation2}
 \end{figure}
 %A simple example is when the scheduler decides to execute a task whose output is important for the execution of a set of other tasks to one of the slow cores of the system.
@@ -120,7 +120,7 @@ Figure~\ref{fig:thesis_motivation2} shows one solution to improve this schedulin
 
 Another challenge introduced by the task-based programming models is the significant task generation overhead.
 The high task generation overheads occur on both homogeneous and asymmetric multi-core systems.
-Spending a lot of time on task generation can result to decreased performance as the scheduler is unable to detect the tasks and send them to the appropriate core.
+Spending a lot of time on task generation can result in decreased performance as the scheduler is unable to detect the tasks and send them to the appropriate core.
 The leftmost representation of Figure~\ref{fig:taskgenx_motivation} shows how the task generation affects the scheduling and increases the idle time.
 The black rectangles indicate the time spent to create one task and the number inside these boxes show the task that was just created.
 Looking at the yellow rectangles we can see that the execution of each task is delayed due to the delay in task generation.
@@ -139,39 +139,75 @@ The performance of task-based programming models can be boosted by providing sop
 The contributions made in this thesis rely on the efficient utilization of asymmetric multi-core systems.
 Figure~\ref{fig:research_areas} shows the research areas around performance of AMC systems.
 The areas shown in yellow color indicate the fields of our study.
-
-First we study the potential of the AMC systems when running out-of-the-box HPC applications.
-We compare scheduling on different levels of the software stack and we conclude that using a task-based programming model is indeed the most efficient solution as it allows the runtime system to maintain load balance even if the system is asymmetric.
-This study serves as a verification that for HPC, scheduling through task-based programming models is indeed more efficient compared to app-based scheduling, ash shown on Figure~\ref{fig:research_areas}.
-The paper including this work, named "On the Maturity of Parallel Applications for Asymmetric Multi-Core Processors" is submitted in JPDC journal and is currently under review.
-Additionally this work was published as a poster in the conference of Parallel Architectures and Compilation Techniques in 2016 (PACT'16) with the title "POSTER: Exploiting Asymmetric Multi-Core Processors with Flexible System Software"
 \begin{figure}[t]%
 	\centering
 	\includegraphics[width=\textwidth]{figures/taskgenx_motivation.pdf}
 	\caption{Task generation overheads leads to increased idle time. Numbers inside the boxes show the task ID that is either being created or executed}
 	\label{fig:taskgenx_motivation}
 \end{figure}
-
+This thesis starts with a wide experimental evaluation of highly parallel applications on AMC systems. 
 We then approach the two important challenges of using task-based programming models on AMC platforms.
-First, is the scheduling problem, which we approach by providing three novel scheduling policies that are aware of the system's asymmetry.
-These schedulers have different criteria for rating the importance of the executing tasks of an application.
-According to their distinct criteria, each scheduler identifies the \textit{critical tasks} of the application and executes them on the fast cores of the system. 
-They then leave the \textit{non-critical tasks} to be executed by the slower cores of the system.
-The research areas that were studied during at this part of the thesis are the scheduling and dependence analysis of the runtime system as shown on Figure~\ref{fig:research_areas}.
-From this contribution we had two publications; first is the "Criticality-Aware Dynamic Task Scheduling for Heterogeneous Architectures" that was presented in International Conference of Supercomputing in 2015 (ICS'15).
-The second paper including these contributions was published in the journal Transactions of Parallel and Distributed Systems in 2016 (TPDS'16) with the title "Task Scheduling Techniques for Asymmetric Multi-Core Systems".
-
-The second challenge of task-based programming models is the high task generation overheads introduced while using these parallel programming tools.
-We tackle this challenge by proposing a software-hardware co-design that accelerates task generation on a specialized hardware.
-In this contribution we implement the TaskGenX runtime system, that decouples the task generation from the other runtime activities and sends it for execution on the runtime optimized accelerator.
-Furthermore, we draw the requirements of the hardware accelerator in terms of performance with the hope to influence hardware designers for the implementation of such a component.
-The research area that is related to this contribution is the resource allocation from Figure~\ref{fig:research_areas} of the runtime systems.
-The paper including this contribution was published in International Supercomputing Conference on 2018 (ISC'18) with the title "TaskGenX: A Hardware-Software Proposal for Accelerating Task Parallelism".
-
+These challenges include first, the scheduling problem, and second the high task generation overheads introduced while using these parallel programming tools.
+%which we approach by providing asymmetry-aware scheduling policies.
+%The second challenge of task-based programming models is the high task generation overheads introduced while using these parallel programming tools.
+%We tackle this challenge by proposing a software-hardware co-design that accelerates task generation on a specialized hardware.
 Apart from scheduling within task-based programming models, this thesis includes the high-level description of a thread scheduler for asymmetric systems targeting this time mobile devices.
-Our approach takes scheduling actions depending on the current temperature of the device and manages to increase the frames per second for three game applications while keeping the temperature stable.
-This study is briefly described due to NDA agreement as it was part of my internship in Samsung Electronics Research Institute, UK.
-This part of the thesis is within the Android framework as shown in Figure~\ref{fig:research_areas}.
+We tackle the above challenges and provide the following contributions:
+%Below we list the contributions of this thesis:
+
+\begin{enumerate}
+	\item A thorough study of the potential of the AMC systems when running out-of-the-box HPC applications.
+	We compare scheduling on different levels of the software stack and we conclude that using a task-based programming model is indeed the most efficient solution as it allows the runtime system to maintain load balance even if the system is asymmetric.
+	This study serves as a verification that for HPC, scheduling through task-based programming models is indeed more efficient compared to app-based scheduling, as shown on Figure~\ref{fig:research_areas}.
+	\item The design, implementation and evaluation of three novel scheduling policies that are aware of the system's asymmetry.
+	These schedulers have different criteria for rating the importance of the executing tasks of an application.
+	According to their distinct criteria, each scheduler identifies the \textit{critical tasks} of the application and executes them on the fast cores of the system. 
+	They then leave the \textit{non-critical tasks} to be executed by the slower cores of the system.
+	The research areas that were studied during at this part of the thesis are the scheduling and dependence analysis of the runtime system as shown on Figure~\ref{fig:research_areas}.
+	\item The TaskGenX proposal, a hardware-software co-design scheme to reduce task generation overheads of task-based programming models.
+	We implement the TaskGenX runtime system, that decouples the task generation from the other runtime activities and sends it for execution on the runtime optimized accelerator.
+	Furthermore, we draw the requirements of the hardware accelerator in terms of performance with the hope to influence hardware designers for the implementation of such a component.
+	The research area that is related to this contribution is the resource allocation from Figure~\ref{fig:research_areas} of the runtime systems.
+	\item A high-level description of a thread scheduler for AMC systems that targets mobile devices.
+	Our approach takes scheduling actions depending on the current temperature of the device and manages to increase the frames per second for three game applications while keeping the temperature stable.
+	This study is briefly described due to NDA agreement as it was part of my internship in Samsung Electronics Research Institute, UK.
+	This part of the thesis is within the Android framework as shown in Figure~\ref{fig:research_areas}.
+\end{enumerate}
+
+
+The publications that support this thesis are listed below:
+\begin{enumerate}
+	\item \textbf{Kallia Chronaki}, Miquel Moreto, Marc Casas, Alejandro Rico, Rosa M. Badia, Eduard Ayguade, Mateo Valero: "On the Maturity of Parallel Applications for Asymmetric Multi-Core Processors", \textit{under review, JPDC}.
+	\item \cite{PACT_poster} \textbf{Kallia Chronaki}, Miquel Moreto, Marc Casas, Alejandro Rico, Rosa M. Badia, Eduard Ayguade, Mateo Valero: "POSTER: Exploiting Asymmetric Multi-Core Processors with Flexible System Software". Poster presentation in International Conference on Parallel Architecture and Compilation Techniques (PACT) 2016, Haifa, Israel.
+	\item \cite{Chronaki:ICS2015} \textbf{Kallia Chronaki}, Alejandro Rico, Rosa M. Badia, Eduard Ayguade, Jesus Labarta, Mateo Valero: "Criticality-Aware Dynamic Task Scheduling for Heterogeneous Architectures".
+	Paper presentation in International Conference of Supercomputing (ICS) 2015, Newport Beach, California.
+	\item \cite{Chronaki:TPDS} \textbf{Kallia Chronaki}, Alejandro Rico, Marc Casas, Miquel Moreto, Rosa M. Badia, Eduard Ayguade, Jesus Labarta, Mateo Valero: "Task Scheduling Techniques for Asymmetric Multi-Core Systems". 
+	Published in IEEE Transactions on Parallel and Distributed Systems (TPDS) 2017 volume 28 number 7.
+	\item \cite{Chronaki:ISC} \textbf{Kallia Chronaki}, Marc Casas, Miquel Moreto, Jaume Bosch, Rosa M. Badia "TaskGenX: A Hardware-Software Proposal for Accelerating Task Parallelism".
+	Paper presentation in International Supercomputing Conference (ISC) 2018, Frankfurt, Germany.
+\end{enumerate}
+
+The contributions of this paper have also been used as part of other relevant publication:
+\begin{itemize}
+	\item \cite{CATA} Emilio Castillo, Miquel Moreto, Marc Casas, Lluc Alvarez, Enrique Vallejo, \textbf{Kallia Chronaki}, Rosa M. Badia, Jose Luis Bosque, Ramon Beivide, Eduard Ayguade, Jesus Labarta, Mateo Valero: "CATA: Criticality Aware Task Acceleration for Multicore Processors".
+	Paper presentation in IEEE International Parallel and Distributed Processing Symposium (IPDPS) 2016.
+\end{itemize}
+%The paper including this work, named "On the Maturity of Parallel Applications for Asymmetric Multi-Core Processors" is submitted in JPDC journal and is currently under review.
+%Additionally this work was published as a poster in the conference of Parallel Architectures and Compilation Techniques in 2016 (PACT'16) with the title "POSTER: Exploiting Asymmetric Multi-Core Processors with Flexible System Software"
+%
+%From this contribution we had two publications; first is the "Criticality-Aware Dynamic Task Scheduling for Heterogeneous Architectures" that was presented in International Conference of Supercomputing in 2015 (ICS'15).
+%The second paper including these contributions was published in the journal Transactions of Parallel and Distributed Systems in 2016 (TPDS'16) with the title "Task Scheduling Techniques for Asymmetric Multi-Core Systems".
+%
+%
+%In this contribution 
+%
+%
+%The paper including this contribution was published in International Supercomputing Conference on 2018 (ISC'18) with the title "TaskGenX: A Hardware-Software Proposal for Accelerating Task Parallelism".
+
+%Apart from scheduling within task-based programming models, this thesis includes the high-level description of a thread scheduler for asymmetric systems targeting this time mobile devices.
+%Our approach takes scheduling actions depending on the current temperature of the device and manages to increase the frames per second for three game applications while keeping the temperature stable.
+%This study is briefly described due to NDA agreement as it was part of my internship in Samsung Electronics Research Institute, UK.
+%This part of the thesis is within the Android framework as shown in Figure~\ref{fig:research_areas}.
 
 
 \section{Thesis Organization}
@@ -196,11 +232,11 @@ We show the implementation done and we evaluate our proposal using TaskSim simul
 Chapter~\ref{chapter.RTS} includes the thread-based scheduling within the Android framework together with its evaluation on a mobile device using three games with intensive graphics.
 Chapter~\ref{chapter.related} presents our related work and Chapter~\ref{chapter.conclusions} concludes this thesis.
 
-describes the evaluated AMC processor, while Section~\ref{sec:scheduling} provides information on 
-scheduling at the OS and runtime system levels. 
-Section~\ref{sec:experimental} describes the experimental framework. 
-Section~\ref{sec:evaluation} shows the performance and energy results and associated insights.% of our experiments. 
-Finally, Section~\ref{sec:related} discusses related work and Section~\ref{sec:conclusions} concludes this work. 
+%describes the evaluated AMC processor, while Section~\ref{sec:scheduling} provides information on 
+%scheduling at the OS and runtime system levels. 
+%Section~\ref{sec:experimental} describes the experimental framework. 
+%Section~\ref{sec:evaluation} shows the performance and energy results and associated insights.% of our experiments. 
+%Finally, Section~\ref{sec:related} discusses related work and Section~\ref{sec:conclusions} concludes this work. 
 
 
 
