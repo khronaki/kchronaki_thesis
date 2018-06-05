@@ -303,26 +303,26 @@ This makes our proposal more portable for asymmetric systems as the programmer d
 		\caption{Evaluated benchmarks and relevant characteristics}
 		\label{tab.taskgenx_cats}
 		%\resizebox{\textwidth}{!}{%
-		\begin{tabular}{|c|c|c|}
+		\begin{tabular}{|c|c|}
 			\hline
-			{\parbox{60mm}{\centering Application}} & {Min improvement} & {\parbox{20mm}{\centering Max Improvement}} \\
+			Workload & Avg improvement \\%& {\parbox{50mm}{\centering Per-task CREATE overheads (CPU cycles)}} \\
 			\hline
-			{\parbox{60mm}{\centering Cholesky 32K 256 (128$\times$128)}} & 0 & 3\% \\                                 
+			{\parbox{60mm}{\centering Cholesky 32K 256 (128$\times$128)}} & 0.3\% \\%& 24369 \\                                 
 			\hline
-			{\parbox{60mm}{\centering Cholesky 32K 128 (256$\times$256)}} & 0 & 2\%  \\
+			{\parbox{60mm}{\centering Cholesky 32K 128 (256$\times$256)}} & 0.8\% \\%& 31033  \\
 			\hline
-			{\parbox{60mm}{\centering Cholesky 16K 512 (32$\times$32)}} & 1\% & 22\% \\
+			{\parbox{60mm}{\centering Cholesky 16K 512 (32$\times$32)}} & 12\% \\%& 19133 \\
 			\hline
-			QR 512 & 0 & 61\% \\
+			QR 16K 512 & 19\% \\%& 20109 \\
 			\hline
-			QR 128 & 0 & 2\% \\
+			QR 16K 128 & 0.5\% \\%& 27620 \\
 			\hline
-			Bodytrack & 0 & 21\% \\ 
+			Bodytrack & 6\% \\%& 10009 \\ 
 			%Heat diffusion & Heat &  &  &  &  &  & \\ 
 			\hline
-			Dedup & 212\% & 395\%  \\
+			Dedup & 335\% \\%& 1310  \\
 			\hline 
-			Ferret & 0 & 12\%  \\
+			Ferret & 2\% \\%& 42429  \\
 			\hline 
 		\end{tabular}%}
 	\end{center}
@@ -342,8 +342,8 @@ Figure~\ref{fig:taskgenx_cats} shows the average improvement of TaskGenX+CATS ov
 The average shown on Figure~\ref{fig:taskgenx_cats} is the average of the dependency-synchronized workloads used in this chapter which are: cholesky256, cholesky128, QR512, QR128, bodytrack, dedup and ferret.
 As we can see, using an asymmetry-aware dynamic task scheduler on top of TaskGenX further improves the average performance of TaskGenX by up to 46\%.
 
-Moving in more detail, Table~\ref{tab.taskgenx_cats} shows the minimum and maximum improvements obtained from each workload.
-TaskGenX+CATS improves TaskGenX+BF by around 2\% for the two cholesky workloads used here. 
+Moving in more detail, Table~\ref{tab.taskgenx_cats} shows the average improvements obtained from each workload.
+TaskGenX+CATS improves TaskGenX+BF by up to 2\% for the two cholesky workloads used here, with the average improvement being 0.3\%. 
 %have an improvement from the use of CATS around 3\%. 
 Even if cholesky is a dependency intensive application, the benefits of using CATS in combination with TaskGenX are not significant.
 This is due to the fact that the specific inputs result at very wide TDGs in which the critical path is not as important.
