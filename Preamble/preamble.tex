@@ -23,14 +23,26 @@
 \usepackage{pifont}
 \usepackage{multirow}
 \usepackage{url}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{xcolor}
+\usepackage{textcomp}
 
+\definecolor{mygray}{rgb}{0.4,0.4,0.4}
+\definecolor{mygreen}{rgb}{0,0.8,0.6}
+\definecolor{myorange}{rgb}{1.0,0.4,0}
 
-\lstset{basicstyle=\small\ttfamily,
+\lstset{%language=C,%basicstyle=\small\ttfamily,
+	basicstyle=\tttfamily,
 	emphstyle=\bfseries,
 	columns=fixed,
+	commentstyle=\color{mygray},
+	keywordstyle=\color{RoyalBlue}\bfseries,
+	morekeywords={void,return,if,else,for,int},
 	numbers=left,xleftmargin=2em,frame=single,framexleftmargin=1.5em,
 	moredelim=*[l][\textit]{//},
 	moredelim=*[l][\bfseries]{\#},
+%	morecomment=[l][{\color[rgb]{0.1, 0.2, 0.8}}]{\#},
+	morecomment=[l][{\color{YellowOrange}\bfseries}]{\#},
 	literate={...}{\dots}3
 } 
 %\usepackage[sort]{cite}

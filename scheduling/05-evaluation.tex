@@ -13,8 +13,8 @@
 		\includegraphics[width=0.6\textwidth]{images/cholesky_16_white.pdf}	
 		\label{cholesky16x16_TDG}
 	}
-	\label{fig.cholesky_graphs}
 	\caption{Cholesky factorization task dependency graphs.}
+	\label{fig.cholesky_graphs}
 \end{figure}
 % For example, a multi-core chip with some in-order cores and some out-of-order cores. The evaluation part of this paper contains real machine evaluation as well as evaluation through simulation.
 
@@ -324,7 +324,7 @@ However, CATS still outperforms BF by 7\% when using the eight cores in the syst
 
 %It is interesting to note that the proportion of critical tasks, as shown in Table~\ref{tab.apps}, is lower than in the previous experiment, which leads to a lower utilization of the big cores for critical task execution.
 
-Figure~\ref{qr_real} shows the improvement of CATS over BF and their speedup for QR factorization. 
+Figure~\ref{qr_cats} shows the improvement of CATS over BF and their speedup for QR factorization. 
 QR consists of double precision operations which cause the big cores to be 4.26$\times$ faster than the little cores. Thus, the ideal speedup of the system for QR is 20.1$\times$. 
 CATS achieves a 15$\times$ speedup by shortening the execution of the dynamic longest path in the TDG. 
 %Since dHEFT is not focusing on the longest path of the TDG, and it performs some random scheduling at the beginning of the execution in order to determine the task costs, it becomes less effective than CATS but still better than a BF.

@@ -22,7 +22,7 @@ CFS maintains load balance among the cores of the system by providing equal port
 Taking into account the asymmetry of current mobile processors and the different types of running applications we can see that CFS contradicts to the needs of an asymmetric system.
 This is because a fair distribution of the tasks on an AMC system leads to load imbalance and wrong scheduling decisions. 
 Surprisingly enough, CFS is the main scheduler currently used in the mobile market.
-Heterogeneous Multi-Processing (HMP) with Global Task Scheduling (GTS) (described in Section\ref{sec:scheduling}) is an enhancement in CFS towards the efficient scheduling of the AMC system. 
+Heterogeneous Multi-Processing (HMP) with Global Task Scheduling (GTS) (described in Section\ref{sec.study.scheduling.gts}) is an enhancement in CFS towards the efficient scheduling of the AMC system. 
 
 Even though HMP solutions take into account the system's asymmetry they fall short on achieving efficient schedules.
 The main reason that these attempts fail is that in the kernel level there is not enough information for the scheduler in order to take efficient scheduling decisions.

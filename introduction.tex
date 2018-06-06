@@ -30,7 +30,7 @@ The most widely used AMC architecture for mobile processors is the Arm big.LITTL
 Mobile processors are also utilized in HPC platforms aiming to energy savings~\cite{ARMV8}.
 %Asymmetric mobile SoCs combine low-power simple cores (\emph{little}) with fast out-of-order cores (\emph{big}) to achieve high performance while keeping power dissipation low.
 Another area where AMCs have been successful is the supercomputing market.
-The Sunway TaihuLight supercomputer topped the Top500\footnote{We refer to the list published on November 2017} list in 2016 using AMCs. 
+The Sunway TaihuLight supercomputer topped the Top500\footnote{We refer to the list published inn November 2017} list in 2016 using AMCs. 
 In this setup, big cores, that offer support for speculation to exploit Instruction-Level Parallelism (ILP), run the master tasks such as the OS and runtime system.
 Little cores are equipped with wide Single Instruction Multiple Data (SIMD) units and lean pipeline structures for energy efficient execution of compute-intensive code. 
 
@@ -61,24 +61,29 @@ These parallel programming models have been widely used during the last decade i
 They form an appealing solution as they significantly ease the parallel programming by providing a higher level of abstraction to the programmer through a directive-based or language-based interface.
 With these models challenges such as load balancing, scheduling, or thread migration costs are partially solved by using them out-of-the box.
 They allow the programmer to split the application in multiple work units called \textit{tasks} (a function can be a task) that can potentially execute simultaneously\footnote{They can execute simultaneously given there are no task dependencies.}.
-\begin{lstlisting}[float, emph={void,if,return}, captionpos=b, caption={Example code using the OmpSs task-based programming model.},label=task-based-example, emph={[2]mat}, emphstyle={[3]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
+%[float, captionpos=b, caption={Pseudo-code of the task$_$finish runtime activity.},label=task_finish, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
+%[float, captionpos=b, caption={Example code using the OmpSs task-based programming model.}, label=task-based-example, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
+\begin{lstlisting}[float, captionpos=b, caption={Example code using the OmpSs task-based programming model.},
+label=task_finish, emph={[2]mat}, emphstyle={[2]}, 
+aboveskip={0\baselineskip}, 
+frame=tb]
 #pragma omp task in(a) out(b)
 void task1(int *a, int *b) {
-*b = *a/2 + 3 * (*a);
-return;
+  *b = *a/2 + 3 * (*a);
+  return;
 }
 #pragma omp task in(c) inout(d)
 void task2(int *c, int *d) {
-*d = 3 * (*c) + (*d) / 2;
-return;
+  *d = 3 * (*c) + (*d) / 2;
+  return;
 }
 int main() { 
-int x = 10, y = 5;
-for(int i = 0; i <3; i++) {
-task1(&x, &y);
-task2(&y, &x);
-}
-return 0;
+  int x = 10, y = 5;
+  for(int i = 0; i <3; i++) {
+    task1(&x, &y);
+    task2(&y, &x);
+  }
+  return 0;
 }
 \end{lstlisting}
 As an example, Listing~\ref{task-based-example} shows a simple usage of a directive-based task-based programming model (the OmpSs programming model~\cite{OmpSs}).

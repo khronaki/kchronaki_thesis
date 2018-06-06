@@ -49,7 +49,25 @@ The master thread starts executing the code of Listing~\ref{task_clause} sequent
 The allocation of the task takes place first.
 What follows is the task creation, that includes the analysis of the dependencies of the created task and the connection to the rest of the existing dependencies.
 Then, if there are no task dependencies, which means that the task is \textit{ready}, the task is also inserted in the ready queue and waits for execution.
-
+\begin{lstlisting}[float, emph={is, void,if,return,Dependency,DepList,Data,Task,not,for,true,and,break}, captionpos=b, caption={Pseudo-code for TDG insertion},label=insertTDG, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
+void insertToTDG(DepList dList, Task t) {
+  if( dList is empty ) {
+    readyQ->push(t);
+    return;
+  }
+  Dependency entry;
+  for( d in dList ) {
+    entry = depMap[d.address()];
+    if(entry==NULL) depMap.add(entry, t);
+    if(d.accessType() == "write")
+      entry.addLastWriter(t);
+    if(d.accessType() == "read") {
+        entry.addReader(t);
+        entry.lastWriter()->addSuccessor(t);
+    }
+  }
+}
+\end{lstlisting}
 Listing~\ref{taskCreation} shows the pseudo-code for the task creation step within the runtime.
 The \texttt{createTask} function is first initializing the task by copying the corresponding data to the allocated memory as well as connecting the task to its parent task (\texttt{initAndSetupTask}).
 After this step, the task is ready to be inserted in the TDG. 
@@ -70,6 +88,20 @@ The \textit{successors} of a task are all the tasks with inputs depending on the
 The \textit{predecessors} of a task are the tasks whose output is used as input for the current task.
 When a \texttt{read} access is identified, the task that is being created is added to the list of successors of the last writer task, as shown on line 20 of Listing~\ref{taskCreation}.
 
+\begin{lstlisting}[float, emph={void,if,return,Task,for,not,true,and,break}, captionpos=b, caption={Pseudo-code for task$\_$finish runtime activity.},label=taskFinish, emph={[2]mat}, emphstyle={[5]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
+void task_finish(Task *t) {
+  depMap.removeReaderWriter(t);
+  if(t->successors.empty()) delete t;
+  else {
+    for( succ in t->successors ) {
+        succ.decreasePredecessors();
+        if(succ.numPredecessors == 0) 
+            readyQ->push(succ);
+    }
+  }
+}
+\end{lstlisting}
+
 As tasks are executed, the dependencies between them and their successors are satisfied. 
 So the successor tasks that are waiting for input, eventually become \textit{ready} and are inserted to the ready queue.
 When a task goes to the \textit{finished} state, the runtime has to perform some actions in order to prepare the successor tasks for execution.
@@ -78,25 +110,7 @@ The runtime first updates the \texttt{depMap} to remove the possible references 
 Then, if the task does not have any successors, it can safely be deleted (line 3).
 If the task has successors, the runtime traverses the successor list and for each successor task it decreases its predecessor counter (lines 5-6).
 If for a successor task its predecessor counter reaches zero, then this task becomes \textit{ready} and it is inserted in the \textit{ready queue} (lines 7-8).
-\begin{lstlisting}[float, emph={is, void,if,return,Dependency,DepList,Data,Task,not,for,true,and,break}, captionpos=b, caption={Pseudo-code for TDG insertion},label=insertTDG, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
-void insertToTDG(DepList dList, Task t) {
- if( dList is empty ) {
-   readyQ->push(t);
-   return;
- }
- Dependency entry;
- for( d in dList ) {
-   entry = depMap[d.address()];
-   if(entry==NULL) depMap.add(entry, t);
-   if(d.accessType() == "write")
-     entry.addLastWriter(t);
-   if(d.accessType() == "read") {
-     entry.addReader(t);
-     entry.lastWriter()->addSuccessor(t);
-   }
- }
-}
-\end{lstlisting}
+
 The runtime activity takes place at the task state changes. 
 One state change corresponds to the task creation, so a task from being just allocated it becomes \textit{created}. 
 At this point the runtime prepares all the appropriate task and dependency tracking data structures as well as inserts the task into the TDG.
@@ -175,6 +189,7 @@ void TDG_submission(Task *task, Data *dependencies) {
 }
 \end{lstlisting}
 \fi
+
 \if 0
 \begin{lstlisting}[float, emph={void,if,return,rQueue_submission, not,true,and,break}, captionpos=b, caption={Pseudo-code of the task$_$finish runtime activity.},label=task_finish, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
 
@@ -205,7 +220,7 @@ task_finish:
 	\label{fig:master_thread}%
 \end{figure}
 
-Figure~\ref{fig:master_thread} shows the runtime activity of the master thread during the execution of the Cholesky{\footnote{Details about the benchmarks used are in Section~\ref{sec:experimental}} benchmark on 8, 16, 32, 64 and 128 cores\footnote{The experimental set-up is explained in Section~\ref{sec:experimental}}.
+Figure~\ref{fig:master_thread} shows the runtime activity of the master thread during the execution of the Cholesky{\footnote{Details about the benchmarks used are in Section~\ref{sec.background.applications}} benchmark on 8, 16, 32, 64 and 128 cores\footnote{The experimental set-up is explained in Section~\ref{sec.background.arm}}.
 The execution time represented here is the wall clock time during the parallel region of the benchmark.
 Each one of the series represents a different runtime overhead from the ones described above.
 %\textit{Create} represents the \textit{Creation} step, 
@@ -221,19 +236,6 @@ This is because this part of the runtime takes place once the tasks finish execu
 So the more the resources, the less the runtime activity per thread, therefore less activity for the master thread.
 %\kc{explain that this is wall clock time. The \textit{Runtime} activity is actually the part of the master thread but also the worker threads are performing this activity while the Create is only within the master thread.}
 
-\begin{lstlisting}[float, emph={void,if,return,Task,for,not,true,and,break}, captionpos=b, caption={Pseudo-code for task$\_$finish runtime activity.},label=taskFinish, emph={[2]mat}, emphstyle={[5]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
-void task_finish(Task *t) {
-  depMap.removeReaderWriter(t);
-  if(t->successors.empty()) delete t;
-  else {
-    for( succ in t->successors ) {
-      succ.decreasePredecessors();
-      if(succ.numPredecessors == 0) 
-        readyQ->push(succ);
-    }
-  }
-}
-\end{lstlisting}
 
 Our motivation for this work is the bottleneck introduced by task creation as shown in Figure~\ref{fig:master_thread}.
 Our runtime proposal decouples this piece of the runtime and accelerates it on a specialized hardware resulting in higher performance.
