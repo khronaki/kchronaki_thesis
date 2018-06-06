@@ -61,7 +61,9 @@ The OmpSs version groups and merges the pipeline stages into two and each stage 
 This method helps in overlapping the communication with the computation.
 
 \textbf{Facesim} takes as input a 3D model of a human face and a time sequence of muscle activation and computes a visually realistic animation of the modeled face. 
-\kc{TODO: add info}
+The OmpSs implementation uses data parallelism with the task clause. 
+The tasks are dynamically scheduled to the available cores and the synchronization is achieved through barriers.
+
 
 \textbf{Ferret} is a content-based similarity search application of feature-rich data (audio, images, video, etc.).
 It takes as input a number of image queries and a database where the similarity search is performed.

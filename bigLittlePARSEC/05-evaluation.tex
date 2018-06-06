@@ -29,7 +29,7 @@
 %\label{sec:metrics}
 
 All the experiments in this chapter are performed on the Hardkernel Odroid XU3 described in Section~\ref{sec.background.arm}. 
-To avoid machine overheating, we make use of the \texttt{cpufreq} driver to set big cores at 1.6GHz and little cores at 800MHz. \kc{repeating the frequencies...}
+As mentioned earlier, to avoid machine overheating, we make use of the \texttt{cpufreq} driver to set big cores at 1.6GHz and little cores at 800MHz. 
 Table~\ref{tab.AMC.apps} shows the applications used in this chapter as well as their corresponding characteristics. These are the input data sets used, the parallelization technique and their \textit{performance ratio} between big and little cores.
 The performance ratio shows how many times faster a big core is compared to a little core.
 The performance ratio differs among applications because each application performs different computations that exhibit different benefits from the micro-architecture of the big or little cores. 
@@ -83,7 +83,7 @@ The reported results show the normalized energy with respect to the energy consu
 \end{equation}
 
 The Energy Delay Product (EDP) shows the overall efficiency of the different scheduling methods.
-This metric is computed using the Equation~\ref{eq.q.EDP} and is the product of the energy and execution time.
+This metric is computed using the Equation~\ref{eq.EDP} and is the product of the energy and execution time.
 \begingroup\makeatletter\def\f@size{10}\check@mathfonts
 \begin{equation}
 \text{$EDP(L, B, method) = Energy(L, B, method) \times Avg. exec. time(L, B, method)$}
@@ -113,7 +113,8 @@ Our reported results show the normalized EDP with respect to the EDP when using 
 	\label{fig:ideal}%
 \end{figure}
 
-The original codes make use of the \texttt{pthreads} parallelization model for all the selected benchmarks. The taskified applications follow the same parallelization strategy implemented with OpenMP~4.0 (similar to OmpSs) \kc{OpenMP or OmpSs?} task annotations.
+The original codes make use of the \texttt{pthreads} parallelization model for all the selected benchmarks. 
+The taskified applications follow the same parallelization strategy implemented with OmpSs (similar to OpenMP~4.0)  task annotations.
 The task-based implementation is done following two basic ideas: i) remove barriers where possible, by adding explicit data-dependencies; and ii) remove application-specific load balancing mechanisms, such as application-specific pools of threads implemented in \texttt{pthreads} and delegate this responsibility to the runtime.
 %As a result, both codes achieve the same performance on homogeneous processors with a reduced number of cores~\cite{Chasapis:TACO2016}, while significantly reducing the total number of lines of code for benchmarks with application-specific load balancing mechanisms (bodytrack, dedup and ferret).
 
@@ -375,7 +376,7 @@ based} approaches do so by 24\% and 36\% respectively.
 %---
 
 Figure~\ref{fig:speedup4plus} shows a more detailed exploration of the performance results. 
-As Table~\ref{tab:parsec} shows, the applications with barrier synchronization are blackscholes, facesim, fluidanimate, streamcluster and swaptions. 
+As Table~\ref{tab.AMC.apps} shows, the applications with barrier synchronization are blackscholes, facesim, fluidanimate, streamcluster and swaptions. 
 For these applications the most efficient system configuration with the \emph{Static threading} approach is the \texttt{4+0}. Little cores increase execution time due to load imbalance effects. 
 Since the big cores reach barriers earlier, power is reduced for these applications, as shown in Figure~\ref{fig:power4plus}. Energy reduction is less 
 significant with a few extra little cores as the performance degradation is higher, but as the 

@@ -21,12 +21,8 @@ Furthermore, the described policies are expected to be applicable to other task-
 
 %From our simulation experiments, we found out that the improvement of CATS increases over the baseline with larger differences of performance among fast and slow cores. We explored performance ratios between two and four times faster fast cores over slow cores, with improvements ranging from 30\% to 170\%. 
 
-In conclusion, this paper shows the potential of different heterogeneous schedulers to speed up dependency-intensive applications and take advantage of the asymmetric compute resources.
-%As future work, we aim to provide a single smart scheduler that dynamically adapts the most appropriate scheduling policy depending to the application's characteristics and availability of resources.
-As future work, we aim to provide a single smart scheduler that dynamically adapts the most appropriate scheduling policy depending to the application's characteristics and availability of resources, with the possibility of tracking the task costs on all the core types to cover the case when a core type is not always faster, and potentially using off-line profiling to alleviate the overhead of task cost tracking at runtime. 
-In addition, these schedulers could be extended to assume more than two core types. This can be done by applying multiple levels of criticality to the tasks, and assign each task to the corresponding core type depending on its performance.
+In conclusion, this chapter showed the potential of different heterogeneous schedulers to speed up dependency-intensive applications and take advantage of the asymmetric compute resources.
 
-%Moreover, we could enhance our CPATH approach so that it tracks the task costs on all the core types, as the current implementation assumes similar behaviour of the cores among tasks. 
 
 %For future work, we aim to extend the scheduling policy to be adaptive so it can dynamically adjust its flexibility and work stealing policy depending on the application characteristics and availability of resources at runtime.
 

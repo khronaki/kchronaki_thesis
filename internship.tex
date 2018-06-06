@@ -17,7 +17,7 @@ The state-of-the-art leading asymmetric processor architecture is the ARM big.LI
 Even though AMC systems are being used in the mobile market since the early 2013 there is still a lot of work to be done in order to efficiently utilize them.
 
 As we saw in Chapter~\ref{chapter.study} the current thread scheduling techniques take place in the Linux kernel.
-The state of the art Linux scheduler “Completely Fair Scheduler” (CFS) \kc{add reference!} manages to be fair by allowing tasks to execute for the same amount of time on each processor. 
+The state of the art Linux scheduler “Completely Fair Scheduler” (CFS)~\cite{CFS} manages to be fair by allowing tasks to execute for the same amount of time on each processor. 
 CFS maintains load balance among the cores of the system by providing equal portions of processor time to the running tasks. 
 Taking into account the asymmetry of current mobile processors and the different types of running applications we can see that CFS contradicts to the needs of an asymmetric system.
 This is because a fair distribution of the tasks on an AMC system leads to load imbalance and wrong scheduling decisions. 

@@ -2,7 +2,7 @@
 \label{chapter.conclusions}
 This PhD thesis incorporated flexible software techniques on the runtime system level in order to effectively utilize asymmetric systems.
 The main contributions of the thesis rely on the efficient exploitation of future asymmetric multi-core systems in terms of performance as well as on conceiving future asymmetric architectures that fit the needs of high performance computing.
-\kc{TODO, ellaborate on:}
+
 	%Our current results have shown that the state-of-the-art asymmetric multi-core systems are not ready to efficiently run out-of-the-box high performance applications and that the most efficient way is by using a task-based approach.
 	%This increases the need of research in this direction through the paths of scheduling and thread migration as described in the previous Chapters.
 	%In our first attempts to follow these paths, we have seen the high potential of the criticality-aware task schedulers to speed up dependency-intensive applications and take advantage of the asymmetric compute resources.
@@ -67,4 +67,36 @@ The main contributions of the thesis rely on the efficient exploitation of futur
 
 \section{Future Directions}
 
-TaskGenX+CATS
+Our studies have opened paths for future research on both software and hardware areas.
+On the software side, the proposed scheduling policies can be enhanced on many different levels.
+First, there is the opportunity of providing a single smart scheduler that dynamically adapts the most appropriate scheduling policy depending to the application's characteristics and availability of resources.
+This smart scheduler can include not only the policies proposed in this thesis, but also policies implemented in other studies.
+The choice of the appropriate scheduling policy can be based on profiling or training (through machine learning) data.
+Moreover, the scheduling proposals that track task execution time, can be enhanced so that they track the task execution time on all the core types to cover the case when a core type is not always faster.
+The use of off-line profiling data would also be beneficial to these schedulers, to alleviate the overhead of task cost tracking at runtime.
+
+It is expected in the near future to have asymmetric multi-core systems that incorporate more than two core types.
+For these systems our scheduling policies can be extended in order to benefit from the increased asymmetry.
+This can be done by applying multiple levels of criticality to the tasks, and assign each task to the corresponding core type depending on its performance.
+
+Another enhancement and research path that can be taken from this thesis is the incorporation of asymmetry-aware schedulers with TaskGenX. 
+It is expected that using an asymmetry-aware scheduler on top of TaskGenX will provide further performance improvements.
+In this case, dependency synchronized applications with TDGs that show long critical paths will benefit, contrary to barrier-based applications that do not have a long critical path.
+TaskGenX is beneficial for such cases as in these schedulers the task creation overheads are even higher due to the additional time spent on task prioritization.
+%Accelerate task execution profiling ?
+
+Furthermore, it sounds reasonable to conduct research on the actual hardware design to accelerate task generation costs.
+Based on our hardware requirements study we can analyze and design all the task generation steps and provide a hardware implementation.
+This hardware can be either single core, to support a single level of parallelism (which is the case in most applications) or multi-core in order to support nested parallelism.
+In this case, the number of cores of this accelerator would indicate the nesting level that TaskGenX could support.
+
+
+
+%1. TaskGenX+CATS, TaskGenX+CPATH OK
+%2. Support for more types of cores -- increased asymmetry OK
+%3. Hardware design for task generation (single core or multi core to support nested parallelism)
+%4. Temperature-aware task scheduling in OmpSs ??
+
+
+
+
