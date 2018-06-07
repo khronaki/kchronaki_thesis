@@ -1,21 +1,21 @@
-\lstset{basicstyle=\small\ttfamily,
-        emphstyle=\bfseries,
-        columns=fixed,
-        numbers=left,xleftmargin=2em,frame=single,framexleftmargin=1.5em,
-        moredelim=*[l][\textit]{//},
-        moredelim=*[l][\bfseries]{\#},
-        literate={...}{\dots}3
-} 
+%\lstset{basicstyle=\small\ttfamily,
+%        emphstyle=\bfseries,
+%        columns=fixed,
+%        numbers=left,xleftmargin=2em,frame=single,framexleftmargin=1.5em,
+%        moredelim=*[l][\textit]{//},
+%        moredelim=*[l][\bfseries]{\#},
+%        literate={...}{\dots}3
+%} 
 \subsection{Task-based Programming Models}
 \label{sec.background}
-\begin{lstlisting}[float, emph={void,if,return,Dependency,DepList,Data,not,true,and,break}, captionpos=b, caption={Compiler generated pseudo-code equivalence for task annotation.},label=task_clause, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
+\begin{lstlisting}[float, emph={Dependency,DepList,Data}, captionpos=b, caption={Compiler generated pseudo-code equivalence for task annotation.},label=task_clause]
      ...
   //task_clause
   memalloc(&task, args, size);
   createTask(deps, task, parent, taskData);
      ...
 \end{lstlisting}
-\begin{lstlisting}[float, emph={is, void,if,return,Dependency,DepList,Data,Task,not,true,and,break}, captionpos=b, caption={Pseudo-code for task creation.},label=taskCreation, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
+\begin{lstlisting}[float, emph={createTask}, captionpos=b, caption={Pseudo-code for task creation.},label=taskCreation, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
 void createTask(DepList dList, Task t,  
                 Task parent, Data args) {
   initAndSetupTask(task1, parent, args);
@@ -49,10 +49,10 @@ The master thread starts executing the code of Listing~\ref{task_clause} sequent
 The allocation of the task takes place first.
 What follows is the task creation, that includes the analysis of the dependencies of the created task and the connection to the rest of the existing dependencies.
 Then, if there are no task dependencies, which means that the task is \textit{ready}, the task is also inserted in the ready queue and waits for execution.
-\begin{lstlisting}[float, emph={is, void,if,return,Dependency,DepList,Data,Task,not,for,true,and,break}, captionpos=b, caption={Pseudo-code for TDG insertion},label=insertTDG, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
+\begin{lstlisting}[float, emph={insertToTDG}, caption={Pseudo-code for TDG insertion},label=insertTDG]
 void insertToTDG(DepList dList, Task t) {
-  if( dList is empty ) {
-    readyQ->push(t);
+  if( dList.isEmpty() ) {
+    readyQ$\rightarrow$push(t);
     return;
   }
   Dependency entry;
@@ -63,7 +63,7 @@ void insertToTDG(DepList dList, Task t) {
       entry.addLastWriter(t);
     if(d.accessType() == "read") {
         entry.addReader(t);
-        entry.lastWriter()->addSuccessor(t);
+        entry.lastWriter()$\rightarrow$addSuccessor(t);
     }
   }
 }
@@ -88,15 +88,15 @@ The \textit{successors} of a task are all the tasks with inputs depending on the
 The \textit{predecessors} of a task are the tasks whose output is used as input for the current task.
 When a \texttt{read} access is identified, the task that is being created is added to the list of successors of the last writer task, as shown on line 20 of Listing~\ref{taskCreation}.
 
-\begin{lstlisting}[float, emph={void,if,return,Task,for,not,true,and,break}, captionpos=b, caption={Pseudo-code for task$\_$finish runtime activity.},label=taskFinish, emph={[2]mat}, emphstyle={[5]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
+\begin{lstlisting}[float, emph={task_finish}, caption={Pseudo-code for task$\_$finish runtime activity.},label=taskFinish]
 void task_finish(Task *t) {
   depMap.removeReaderWriter(t);
-  if(t->successors.empty()) delete t;
+  if(t$\rightarrow$successors.empty()) delete t;
   else {
-    for( succ in t->successors ) {
+    for( succ in t$\rightarrow$successors ) {
         succ.decreasePredecessors();
         if(succ.numPredecessors == 0) 
-            readyQ->push(succ);
+            readyQ$\rightarrow$push(succ);
     }
   }
 }

@@ -1,7 +1,7 @@
 \section{Critical Path Scheduler (CPATH)}
 \label{sec.scheduling.cpath}
 \begin{figure}[tr]
-\includegraphics[width=\columnwidth]{images/cpath_priorities.pdf} 
+\includegraphics[width=\columnwidth]{figures/cpath_priorities.pdf} 
 \centering
 \caption{Priority assignment with CPATH taking into account the task costs. Task costs are assumed known and are shown in the tables.}
 \label{cpath}
@@ -63,30 +63,30 @@ Because CPATH needs to discover the unbiased critical path of the TDG, it uses o
 %So at the beginning of the execution tasks are executed on one of the core types during this cost-learning phase.
 In our experiments we chose to use as reference the fast cores since this way the learning phase (that is, the phase where CPATH discovers the task costs) becomes shorter.
 To avoid wrong task cost prediction of future tasks, CPATH ignores the first execution of each tt-is because usually it takes more time. 
-\begin{lstlisting}[float, emph={for,in,void,if,return,updatePriorities,non_critical_queue, critical_queue,submit_task}, captionpos=b, caption={Pseudo-code for taskExit, the function called by the cores used as reference for tracking the task costs},label=cpathExit, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={-0.4cm}]
-1 void taskExit (task* finished) {
-2  if( stateOf(finished) == init ) {
-3    finished->state = in_progress;
-4    return;
-5  }
-6  if( stateOf(finished) == in_progress ) {
-7    timesSet[finished] = finished->execTime;
-8    finished->state = tracked;
-9  }
-10 task* succ;
-11 for( succ in finished->successors ) 
-12   if( numPredecessorsOf(succ) == 1 ) {
-13     lock();
-14     if( succ $\notin$ entryNodes ) 
-15       entryNodes->push(succ);
-16       unlock();
-17   }
-18 list<task>* updatedList = new list<task>();
-19 for( node in entryNodes) 
-20   updatePriorities(node, updatedList);
-21 for( node in updatedList ) 
-22    node->unsetUpdated();
-23}
+\begin{lstlisting}[float, emph={taskExit,updatePriorities,non_critical_queue, critical_queue,submit_task}, caption={Pseudo-code for taskExit, the function called by the cores used as reference for tracking the task costs},label=cpathExit]
+void taskExit (task* finished) {
+  if( stateOf(finished) == init ) {
+    finished$\rightarrow$state = in_progress;
+   return;
+  }
+  if( stateOf(finished) == in_progress ) {
+    timesSet[finished] = finished$\rightarrow$execTime;
+    finished$\rightarrow$state = tracked;
+  }
+  task* succ;
+  for( succ in finished$\rightarrow$successors ) 
+    if( numPredecessorsOf(succ) == 1 ) {
+      lock();
+      if( succ $\notin$ entryNodes ) 
+        entryNodes$\rightarrow$push(succ);
+      unlock();
+    }
+  list<task>* updatedList = new list<task>();
+  for( node in entryNodes) 
+    updatePriorities(node, updatedList);
+  for( node in updatedList ) 
+    node$\rightarrow$unsetUpdated();
+}
 \end{lstlisting}
 
 Listings \ref{cpathExit} and \ref{cpathUpdate} show how the critical path scheduler performs task prioritization.
@@ -113,39 +113,39 @@ This is identified by the fact that the ready-to-be successors have one unique (
 These successors are inserted in the \texttt{entryNodes} list (lines 11-16 of Listing~\ref{cpathExit}).
 For each one of the entry nodes the \texttt{updatePriorities} function is called (line 19 of Listing~\ref{cpathExit}); this performs a top to bottom traversal of the TDG and updates the priorities.
 
-\begin{lstlisting}[float, emph={for,in,void,if,return,non_critical_queue, critical_queue,submit_task}, captionpos=b, caption={Pseudo-code for task prioritization with CPATH},label=cpathUpdate, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={-0.5cm}]
-1 int updatePriorities (task* currT, list* updated) {
-2   if( currT == NULL )  return 0;
-3   if( isVisited(currT) )  
-4     return priorityOf(currT);
-5   successors = currT->successors;
-6   int maxSucc = -1;
-7   bool succVisited = true;
-8  
-9   for(succ in successors) {
-10    int succPriority;
-11    //Avoid double update
-12    if( !isUpdated(succ) || !isVisited(succ) ) {
-13      succPriority = updatePriorities(succ, updated);
-14      succ->setUpdated();
-15      updated->push(succ);
-16    }
-17    else 
-18      succPriority = priorityOf(succ);
-19    if(succPriority > maxSucc)
-20       maxSucc = succPriority;
-21    succVisited = succVisited && isVisited(succ);   
-22  }
-23  if( timeIsTracked(currT) ) {
-24    currT->priority = (maxSucc + timesSet[currT]);
-25    if(succVisited && groupOf(currT) < twDetected) 
-26      currT->setVisited();
-27  }  
-28  else
-29    currT->priority = maxSucc + 1;
-30    
-31  return priorityOf(currT);  
-32}
+\begin{lstlisting}[float, emph={updatePriorities,non_critical_queue, critical_queue,submit_task}, caption={Pseudo-code for task prioritization with CPATH},label=cpathUpdate]
+int updatePriorities (task* currT, list* updated) {
+  if( currT == NULL )  return 0;
+  if( isVisited(currT) )  
+    return priorityOf(currT);
+  successors = currT$\rightarrow$successors;
+  int maxSucc = -1;
+  bool succVisited = true;
+  
+  for(succ in successors) {
+    int succPriority;
+    //Avoid double update
+    if( (not isUpdated(succ)) or (not isVisited(succ)) ) {
+      succPriority = updatePriorities(succ, updated);
+      succ$\rightarrow$setUpdated();
+      updated$\rightarrow$push(succ);
+    }
+    else 
+      succPriority = priorityOf(succ);
+    if(succPriority > maxSucc)
+       maxSucc = succPriority;
+    succVisited = succVisited and isVisited(succ);   
+  }
+  if( timeIsTracked(currT) ) {
+    currT$\rightarrow$priority = (maxSucc + timesSet[currT]);
+    if(succVisited and groupOf(currT) < twDetected) 
+      currT$\rightarrow$setVisited();
+  }  
+  else
+    currT$\rightarrow$priority = maxSucc + 1;
+    
+  return priorityOf(currT);  
+}
 \end{lstlisting}
 
 Due to the properties of the top-to-bottom TDG traversal, the algorithm has to make sure that every node is prioritized only once per \texttt{updatePriorities} call.

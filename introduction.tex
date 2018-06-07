@@ -63,10 +63,8 @@ With these models challenges such as load balancing, scheduling, or thread migra
 They allow the programmer to split the application in multiple work units called \textit{tasks} (a function can be a task) that can potentially execute simultaneously\footnote{They can execute simultaneously given there are no task dependencies.}.
 %[float, captionpos=b, caption={Pseudo-code of the task$_$finish runtime activity.},label=task_finish, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
 %[float, captionpos=b, caption={Example code using the OmpSs task-based programming model.}, label=task-based-example, aboveskip={0\baselineskip}, frame=tb, belowskip={0\baselineskip}]
-\begin{lstlisting}[float, captionpos=b, caption={Example code using the OmpSs task-based programming model.},
-label=task_finish, emph={[2]mat}, emphstyle={[2]}, 
-aboveskip={0\baselineskip}, 
-frame=tb]
+\begin{lstlisting}[float, caption={Example code using the OmpSs task-based programming model.},
+label=task-based-example]
 #pragma omp task in(a) out(b)
 void task1(int *a, int *b) {
   *b = *a/2 + 3 * (*a);

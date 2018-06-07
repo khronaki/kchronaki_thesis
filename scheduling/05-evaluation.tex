@@ -504,26 +504,36 @@ This benchmark creates a small amount of critical tasks in the 32$\times$32 inpu
 
 \begin{figure}[!t]
 	\centering
-	\subfloat[Cholesky 32$\times$32]{
+	%\subfloat[Cholesky 32$\times$32]{
   		\includegraphics[width=0.65\textwidth]{images/cholesky_TS_tall.pdf}
+		\caption{Improvement of heterogeneous schedulers over BF for simulated 16 and 32 core heterogeneous systems for Cholesky 32$\times$32.}
   		\label{cholesky_ts}
-	}
-\\
-%    \vspace{-0.2cm}
-	\subfloat[QR]{
-  		\includegraphics[width=0.65\textwidth]{images/QR_TS_tall.pdf}
-  		\label{qr_ts}
-  	}
-\\
-    %\vspace{-0.2cm}
-	\subfloat[Heat diffusion]{
-  		\includegraphics[width=0.65\textwidth]{images/heat_TS_tall.pdf}
-  		\label{heat_ts}
-  	}
-%  \vspace{-0.2cm}
-	\caption{Improvement of heterogeneous schedulers over BF for simulated 16 and 32 core heterogeneous systems}
-%\vspace{-0.5cm}
+	%}
 \end{figure}
+%    \vspace{-0.2cm}
+%	\subfloat[QR]{
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.65\textwidth]{images/QR_TS_tall.pdf}
+	\caption{Improvement of heterogeneous schedulers over BF for simulated 16 and 32 core heterogeneous systems for QR.}
+	\label{qr_ts}
+	
+\end{figure}
+%  	}
+%\\
+    %\vspace{-0.2cm}
+%	\subfloat[Heat diffusion]{
+\begin{figure}
+	\centering
+  		\includegraphics[width=0.65\textwidth]{images/heat_TS_tall.pdf}
+  		\caption{Improvement of heterogeneous schedulers over BF for simulated 16 and 32 core heterogeneous systems for heat diffusion.}
+  		\label{heat_ts}
+\end{figure}
+%  	}
+%  \vspace{-0.2cm}
+%	\caption{Improvement of heterogeneous schedulers over BF for simulated 16 and 32 core heterogeneous systems}
+%\vspace{-0.5cm}
+%\end{figure}
 
 Figure~\ref{qr_ts} shows that the best option for QR, the application with the highest task cost variability, on systems with 16 or 32 cores is the HYBRID scheduler, as was also shown in the real platform evaluation, bringing improvements of 30 and 56\%.
 CATS also performs well but CPATH falls short in detecting an appropriate amount of critical tasks which makes the little cores overloaded and the big cores waste their resources in work stealing.

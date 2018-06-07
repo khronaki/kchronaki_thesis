@@ -1,12 +1,12 @@
 
-\lstset{basicstyle=\footnotesize\ttfamily,
-        emphstyle=\bfseries,
-        columns=fixed,
-        numbers=none,
-        moredelim=*[l][\textit]{//},
-        moredelim=*[l][\bfseries]{\#},
-        literate={...}{\dots}3
-} 
+%\lstset{basicstyle=\footnotesize\ttfamily,
+%        emphstyle=\bfseries,
+%        columns=fixed,
+%        numbers=none,
+%        moredelim=*[l][\textit]{//},
+%        moredelim=*[l][\bfseries]{\#},
+%        literate={...}{\dots}3
+%} 
 \section{Criticality-Aware Task Scheduler (CATS)}
 \label{sec.scheduling.cats}
 The Criticality-Aware Task Scheduling generally applies to task-based programming models supporting task dependencies, but for simplicity we explain it in the context of the OmpSs programming model.
@@ -30,7 +30,7 @@ To give an overview of the scheduling process, Figure~\ref{botlevels} shows a sc
 
 
 \begin{figure}[t]
-\includegraphics[width=\columnwidth]{images/fig_1.pdf} 
+\includegraphics[width=\columnwidth]{figures/fig1.pdf} 
 \centering
 \caption{CATS overview. Nodes are marked with the \textit{bottom level} of each task. Pattern-filled nodes mark the critical tasks.}
 \label{botlevels}
@@ -50,21 +50,21 @@ The priority given to a task is the \textit{bottom level} of the task. The \text
 Listing~\ref{creation} shows the algorithm for task prioritization. The complexity of this is \textit{O($n^2$)}, \textit{$n$} being the number of tasks. This function is called on the creation of a new edge with the successor as argument. The algorithm traverses the \textit{plist} of the successor task (line 5) and if the priority of the current predecessor is lower than the bottom level of the successor plus one, it updates the current predecessor's priority to that value (lines 7-8). If the updated predecessor task is ready (i.e., it sits in one of the ready queues), the scheduler reorders the ready queue so it remains ordered considering the updated priority (lines 9-10). Then, the same actions are performed recursively for each predecessor of the \textit{plist} to update all the possible upward paths from the successor. 
 
 The terminate conditions for the TDG navigation are two: \textit{(a)} if the \textit{plist} of the current task (\texttt{currPred}) is empty, so either we reach an entry node or the predecessors of the task have finished execution; or \textit{(b)} if the priority of the current task (\texttt{currPred}) remains unchanged, which means that the successor task (\texttt{succ}) does not belong to the longest path because its predecessor already has a higher priority. 
-\begin{lstlisting}[float, emph={void,if,return,non_critical_queue, critical_queue,prioritize_task}, captionpos=b, caption={Pseudo-code task prioritization with CATS.},label=creation, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={-0.4cm}]
-1 void prioritize_task(task *succ) {
-2  int blev = succ->priority;
-3  list plist = plistOf(succ);
-4  task *currPred;
-5  while( not isEmpty(plist) ) {
-6    currPred = plist.next();  
-7    if(priorityOf(currPred) < blev+1) {
-8     currPred->priority = blev+1;
-9     if(isReady(currPred)) 
-10     readyQueueOf(currPred)->reorder();
-11    prioritize_task(currPred);
-12   }
-13 }
-14}
+\begin{lstlisting}[float, emph={non_critical_queue, critical_queue,prioritize_task}, caption={Pseudo-code task prioritization with CATS.},label=creation, frame=tb]
+void prioritize_task(task *succ) {
+  int blev = succ$\rightarrow$priority;
+  list plist = plistOf(succ);
+  task *currPred;
+  while( not isEmpty(plist) ) {
+    currPred = plist.next();  
+    if(priorityOf(currPred) < blev+1) {
+      currPred$\rightarrow$priority = blev+1;
+      if(isReady(currPred)) 
+        readyQueueOf(currPred)$\rightarrow$reorder();
+      prioritize_task(currPred);
+    }
+  }
+}
 \end{lstlisting}
 \subsection{Task Submission}
 
@@ -92,7 +92,7 @@ As a result, the flexible scheduler ends up with more critical tasks than the st
 % about flexible/strict explanation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[tl!]
-\includegraphics[width=\columnwidth]{images/fig_2.pdf} 
+\includegraphics[width=\columnwidth]{figures/fig2.pdf} 
 \centering
 \caption{Task submission with CATS. Gray nodes indicate finished tasks and pattern-filled nodes indicate critical tasks.}
 \label{submitFig}
@@ -106,23 +106,23 @@ If the priority of the submitted task is equal to \texttt{maxPriority - 1}, we c
 
 Figure~\ref{submitFig} shows an example of a TDG during task submission. The gray nodes in the graph are tasks that have finished execution and the pattern-filled nodes are critical tasks. The numbers inside the nodes indicate their priority and the numbers outside the nodes show the task id, which is assigned in task creation order. The variable \texttt{maxPriority} corresponds to the priority of the last critical task and the \texttt{maxTaskSucc} is the list of the successors of the last critical task, filled with the task ids of the successors. Initially, \texttt{maxPriority} is set to~1 and \texttt{maxTaskSucc} is empty. When task~2 is about to be submitted, it is inserted in the critical queue because its priority is higher than the maximum, which at the beginning is~1. Then, the value of \texttt{maxPriority} is set to~6 (priority of task~2), and the \texttt{maxTaskSucc} list is updated with the successors of task~2. At the point where all the gray tasks have finished execution, the values of \texttt{maxPriority} and \texttt{maxTaskSucc} are updated as shown  in Figure~\ref{submitFig}. For every newly-ready task, the conditions listed above are evaluated. When task~7 is submitted, it is not considered as critical because it does not belong to the \texttt{maxTaskSucc} list and its priority is not equal to \texttt{maxPriority-1}. Contrarily, task 8 satisfies both conditions and so the task is inserted in the critical queue.
 
-\begin{lstlisting}[float, emph={void,if,return,non_critical_queue, critical_queue,submit_task}, captionpos=b, caption={Pseudo-code for task submission with CATS.},label=submission, emph={[2]mat}, emphstyle={[2]}, aboveskip={0\baselineskip}, frame=tb, belowskip={-0.4cm}]
-1 int maxPriority = 1;
-2 task *maxPriorityTask = NULL;
-3
-4 void submit_task(task *t) {
-5  if( t->priority >= maxPriority or
-6     (t->priority == maxPriority-1 and
-7      t $\in$ succListOf(maxPriorityTask)) )
-8  { //the task is critical
-9    critical_queue.push(t);
-10   maxPriority = priorityOf(t);
-11   maxPriorityTask = t;
-12   return;
-13 }
-14 //the task is non-critical
-15 non_critical_queue.push(t);     
-16}
+\begin{lstlisting}[float, emph={non_critical_queue, critical_queue,submit_task}, caption={Pseudo-code for task submission with CATS.},label=submission]
+int maxPriority = 1;
+task *maxPriorityTask = NULL;
+
+void submit_task(task *t) {
+  if( t$\rightarrow$priority >= maxPriority or
+    ( t$\rightarrow$priority == maxPriority-1 and
+      t $\in$ succListOf(maxPriorityTask)) )
+  { //the task is critical
+    critical_queue.push(t);
+    maxPriority = priorityOf(t);
+    maxPriorityTask = t;
+    return;
+  }
+  //the task is non-critical
+  non_critical_queue.push(t);     
+}
 \end{lstlisting}
 
 \subsection{Task-to-Core Assignment}
