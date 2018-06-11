@@ -59,6 +59,13 @@ The ready tasks of the application at a given point in time are inserted in the 
 Ready queues can be thread-private or shared among multiple threads. 
 When a thread becomes idle, the scheduling policy picks a task from the ready queues for that thread to execute. 
 
+The default scheduling policy of Nanos++ employs a \textit{breadth-first} policy~(BF)~\cite{Duran_schedulers_08}. 
+The BF scheduler implements a single first-in-first-out ready queue shared among all threads. 
+When a task is ready, it is inserted in the tail of the ready queue and when a core becomes available, it retrieves a task from the head of the queue. 
+Tasks are ordered according to their ready time: the earliest ready task resides at the head of the queue. 
+Since the ready queue is shared, there is no need for work stealing and the load is balanced automatically. 
+BF does not differentiate among core types and assigns tasks in a first-come-first-served basis.
+
 The Nanos++ internal data structures support task prioritization. 
 The task priority is an integer field inside the task descriptor that rates the importance of the task. 
 If the scheduling policy supports priorities, the ready queues are implemented as \textit{priority queues}. 

@@ -33,8 +33,9 @@ This results in the following configurations:
 	\item Strict with bidirectional work stealing (2DS STRICT)
 \end{itemize}
 
-\kc{should it stay or should it go???:}
-The default OmpSs scheduler employs a \textit{breadth-first} policy~(BF)~\cite{Duran_schedulers_08}. The BF scheduler implements a single first-in-first-out ready queue shared among all threads. 
+%\kc{should it stay or should it go???:}
+As mentioned in Section~\ref{sec.background.taskbased.ompss}, the default OmpSs scheduler employs a \textit{breadth-first} policy~(BF)~\cite{Duran_schedulers_08}. 
+The BF scheduler implements a single first-in-first-out ready queue shared among all threads. 
 When a task is ready, it is inserted in the tail of the ready queue and when a core becomes available, it retrieves a task from the head of the queue. Tasks are ordered according to their ready time: the earliest ready task resides at the head of the queue. Since the ready queue is shared, there is no need for work stealing and the load is balanced automatically. BF does not differentiate among core types and assigns tasks in a first-come-first-served basis.
 
 After the analysis of the CATS configurations we measure the execution time of five applications using CATS, CPATH, HYBRID, dHEFT and the default OmpSs BF scheduler that is explained in Section~\ref{sec.background.taskbased.ompss}. 
@@ -359,12 +360,12 @@ The 2DS FLEX configuration, produces the same amount of critical tasks as the SS
 \subsubsection{Evaluation of CATS CPATH and HYBRID}
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=0.7\textwidth]{images/8cores.pdf}
-	\caption{Speedup of CATS, CPATH, HYBRID, dHEFT and BF on 8 cores compared to the ideal}
+	\includegraphics[width=0.7\textwidth]{figures/8cores.pdf}
+	\caption{Speedup of CATS, CPATH, HYBRID, dHEFT and BF on 8 cores.}
 	\label{BFLinear}
 	\vspace{-0.4cm}
 \end{figure}
-As it is shown in Section~\ref{sec.cats_eval}, the most efficient CATS configuration is when using the simple work stealing and flexible policy (SSFLEX).
+As it is shown in Section~\ref{sec.cats_eval}, the most efficient CATS configuration is when using the simple work stealing and flexible policy (SS FLEX).
 The same applies for CPATH and HYBRID schedulers, thus the results presented in this section refer to this configuration of the schedulers. 
 Figure~\ref{BFLinear} shows the speedup of CATS, CPATH, HYBRID, dHEFT and BF when running the applications on all eight cores of the Odroid-XU3. Cholesky and Integral Histogram operate on single-precision data, while QR and Heat Diffusion operate on double-precision. 
 Double-precision applications get larger speedups over one little core because they benefit from a larger performance ratio when running on a big core. In the case of Bodytrack, the out-of-order processing power of the big cores helps on the efficient execution and creates a high performance ratio between big and little cores. 
@@ -415,7 +416,7 @@ On the other hand, dHEFT shows poor performance because of the overheads of anal
 
 \begin{figure}[!tr]
 	\centering
-  	\includegraphics[width=0.7\textwidth]{images/average_all.pdf}
+  	\includegraphics[width=0.7\textwidth]{figures/average_all.pdf}
   	\caption{Average speedups obtained for each scheduler}
   	\label{avg_all}
   	\vspace{-0.5cm}
@@ -445,10 +446,10 @@ For this benchmark, CPATH also reaches a 13\% improvement over BF since task cos
 However, CPATH speedup is still limited compared to HYBRID because of the higher scheduling overheads which in this case is 1.8$\times$ higher than CATS overheads.
 dHEFT also improves BF by finding the earliest executor of each task, but the improvement is limited to 11\% which is lower than the other approaches.
 \begin{figure*}[!t]
-	\includegraphics[width=\textwidth]{images/speedup_apps1.pdf}
+	\includegraphics[width=\textwidth]{figures/speedup_apps1.pdf}
 	\vspace{-0.4cm}
 	
-	\includegraphics[width=\textwidth]{images/speedup_apps2.pdf}
+	\includegraphics[width=\textwidth]{figures/speedup_apps2.pdf}
 	\caption{Speedups obtained for each scheduler and each application}
 	\label{speedup}
 	\vspace{-0.4cm}
@@ -505,7 +506,7 @@ This benchmark creates a small amount of critical tasks in the 32$\times$32 inpu
 \begin{figure}[!t]
 	\centering
 	%\subfloat[Cholesky 32$\times$32]{
-  		\includegraphics[width=0.65\textwidth]{images/cholesky_TS_tall.pdf}
+  		\includegraphics[width=0.65\textwidth]{figures/cholesky_TS_tall.pdf}
 		\caption{Improvement of heterogeneous schedulers over BF for simulated 16 and 32 core heterogeneous systems for Cholesky 32$\times$32.}
   		\label{cholesky_ts}
 	%}
@@ -514,7 +515,7 @@ This benchmark creates a small amount of critical tasks in the 32$\times$32 inpu
 %	\subfloat[QR]{
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.65\textwidth]{images/QR_TS_tall.pdf}
+	\includegraphics[width=0.65\textwidth]{figures/QR_TS_tall.pdf}
 	\caption{Improvement of heterogeneous schedulers over BF for simulated 16 and 32 core heterogeneous systems for QR.}
 	\label{qr_ts}
 	
@@ -525,7 +526,7 @@ This benchmark creates a small amount of critical tasks in the 32$\times$32 inpu
 %	\subfloat[Heat diffusion]{
 \begin{figure}
 	\centering
-  		\includegraphics[width=0.65\textwidth]{images/heat_TS_tall.pdf}
+  		\includegraphics[width=0.65\textwidth]{figures/heat_TS_tall.pdf}
   		\caption{Improvement of heterogeneous schedulers over BF for simulated 16 and 32 core heterogeneous systems for heat diffusion.}
   		\label{heat_ts}
 \end{figure}

@@ -19,6 +19,9 @@ ii) software-hardware co-design
 %Some studies focus on the system design, some others focus on flexible runtime software for scheduling and others on hardware-software co-design. 
 We separate the research studies according to the category the fall to and explain how they relate to our contributions.
 
+Section~\ref{sec.related.AMC} shows the work that has been done on AMCs and is mostly generic and related to either the system design of these systems or exploring the challenges that appear in efficiently utilizing such heterogeneous systems. 
+%Some of the studies focus on the system design~\cite{Kumar_micro_2003,Balakrishnan:ISCA2005, Morad_area_based}, while others explore the challenges that appear in efficiently utilizing such a heterogeneous system~\cite{Kumar:ISCA2004,Joao:ASPLOS2012,Joao:ISCA2013}.
+
 Section~\ref{sec.related.scheduling} shows the work that has been done and relates to scheduling for heterogeneous systems.
 This includes process scheduling as well as task scheduling. 
 The process scheduling works relate more to the work presented in Chapter~\ref{chapter.RTS}, while the works of task scheduling relate to the work presented in Chapter~\ref{chapter.scheduling}.
@@ -47,7 +50,18 @@ In our case the proposed hardware is an asymmetric system with a compute acceler
 
 
 
-
+\section{Asymmetric Multi-Core Systems}
+\label{sec.related.AMC}
+There have been plenty of studies on asymmetric multi-core systems. 
+Some studies focus on the system design, while others explore the challenges that appear in efficiently utilizing such a heterogeneous system~\cite{AMC_survey}.
+Kumar et al~\cite{Kumar_micro_2003} present the idea of an AMC system and proposed a feedback-based way to dynamically migrate processes among the different cores. 
+Their approach led to energy savings but at the cost of performance degradation. 
+To determine the core that most effectively executed a workload, Kumar et al~\cite{Kumar:ISCA2004} proposed the use of sampling. 
+This method minimizes the execution time of each single thread and increases performance. 
+Other studies focused on the pipeline design of such AMCs and the area that should be devoted to each component in the system~\cite{Balakrishnan:ISCA2005, Morad_area_based}. 
+%Other works on AMCs focus on hardware support for critical section detection~\cite{Suleman:APLOS2009} or bottleneck detection~\cite{Joao:ASPLOS2012,Joao:ISCA2013}.
+Other studies on AMCs proposed hardware support to detect critical sections of a parallel application and schedule the most critical ones on the big cores~\cite{Suleman:APLOS2009, Joao:ASPLOS2012,Joao:ISCA2013}. 
+These approaches are orthogonal to the ones evaluated in this thesis and could benefit from them to further improve the final performance of the system.
 
 
 \section{Scheduling for Heterogeneous Systems}
@@ -62,11 +76,14 @@ Bias scheduling~\cite{Koufaty_bias} is an OS scheduler that characterizes the ru
 threads according to their memory or execution intensity. 
 It then schedules the computation intensive threads to the big cores of the system while the memory intensive threads to the little cores of the system.
 The experimental evaluation is done on Intel Xeon processors and the heterogeneous system is emulated by changing the configuration of three out of the four cores of the processor.
+
 Cong et al propose the Energy-Efficient~\cite{Cong_quickIA} OS scheduler based on energy estimation. The evaluation is performed on the Intel QuickIA~\cite{quickIA} platform that integrates an Intel Xeon with an Atom processor. 
-%Code instrumentation is used to schedule different phases of the application on each processor. However, the separate core and memory subsystems in these architectures incur power and performance overheads for application migration, which makes dynamic mapping ineffective for fine-grained migration
+Code instrumentation is used to schedule different phases of the application on each processor. However, the separate core and memory subsystems in these architectures incur power and performance overheads for application migration, which makes dynamic mapping ineffective for fine-grained migration
+
 Van Craeynest et al.~\cite{VanCraeynest_fairness} propose the fairness-aware OS scheduler that focuses on AMC architectures. 
-They focus on heterogeneous single-ISA architectures and they use some of the applications evaluated in our paper but their research lacks the real heterogeneous system; instead they simulate a heterogeneous processor with big and little cores to estimate performance and fairness (not energy).
-The performance impact estimation (PIE) scheduler~\cite{VanCraeynest_PIE} is based on the impact of MLP and ILP on the overall CPI and focuses on improving performance.
+They focus on heterogeneous single-ISA architectures and they use some of the applications evaluated in this thesis but their research lacks the real heterogeneous system; instead they simulate a heterogeneous processor with big and little cores to estimate performance and fairness (not energy).
+
+The performance impact estimation (PIE) scheduler~\cite{VanCraeynest_PIE} is based on the impact of memory-level parallelism (MLP) and instruction-level parallelism (ILP) on the overall cycles per instruction (CPI) and focuses on improving performance.
 The scheduler predicts the impact of each different core-type of the system on the MLP, ILP and it assumes hardware support for CPI. 
 The evaluation of this paper is performed through simulation by mimicking a heterogeneous system like ARM big.LITTLE. 
 Further there are no energy or power measurements.
@@ -74,6 +91,14 @@ Further there are no energy or power measurements.
 
 Rodrigues et al~\cite{Rodrigues_thread_scheduling} propose a thread scheduling technique that estimates power and performance when deciding to assign a thread to a specific core of the heterogeneous system. 
 However their evaluation is based on simulated results and not on a real platform. %They have info for power.
+
+Further to these existing studies there are the state-of-the-art mainstream OS schedulers that are currently used for ARM big.LITTLE systems.
+These include \textit{cluster switching (CS)}~\cite{samsung}, 
+\textit{in-kernel switch (IKS)}~\cite{IKS} and \textit{global task scheduling (GTS)}~\cite{samsung}.
+The CS approach allows only one of the core clusters to be active at any given moment and the OS scheduler acts as if it schedules a symmetric multi-core system.
+In the IKS each little core is paired with one big core; depending on the CPU utilization the system choses which core type will represent each pair of cores.
+In contrast to the above, GTS allows all cores to be active any any given moment and depending on the CPU utilization schedules threads to the appropriate cores.
+These approaches are described in more detail in Chapter~\ref{chapter.study} where GTS is evaluated.
 
 Finally, Energy-Aware Scheduling (EAS) is an on-going effort in the Linux community to introduce the energy factor in the OS scheduler~\cite{EAS, EAS_Linux}. 
 It is based on performance and power profiling to set performance and power capacities and let the Linux completely fair scheduler assign slots to processes considering the different core capacities. 
@@ -99,13 +124,23 @@ Guided-random schedulers~\cite{Gen07, Chemical, Dyn05} randomize their schedules
 
 Duplication-based schedulers~\cite{Dup03, Dup11, Dup09} aim to eliminate communication costs between processors by scheduling tasks and their successors on the same processor. If a task has many successors, it is duplicated and executed in multiple cores prior to its successors so all successor tasks get the data from their predecessors with the lowest communication cost. This scheduling potentially introduces redundant duplications of tasks which may lead to bad schedules. The Heterogeneous Economical Duplication scheduler~\cite{Dup09} performs task duplication in an economical manner as it removes the redundant duplicates if they do not affect performance. 
 
-The above schedulers target scheduling as a generic challenge of on any heterogeneous architecture. 
-Nevertheless, there have been plenty of studies for schedulers that target specific systems with compute accelerators. 
-These works focus mostly on the abstractions provided by the corresponding mixture of programming models for the general-purpose processors and the compute accelerators in the system.
-Most heterogeneous systems with compute accelerators nowadays combine general-purpose CPUs and GPU compute accelerators. There is a set of programming models providing abstractions to ease the development of applications on these platforms. OmpSs~\cite{OmpSs_PPL11, OmpSs} offers this abstraction by allowing multiple implementations of a given task to be executed on different processing units~\cite{Judit}. The scheduler then assigns the execution of a task to the best resource according to its earliest finish time. Another case is StarPU~\cite{starpu}, a library that offers runtime heterogeneity support and provides priority schedulers for task-to-processor allocation. AHP~\cite{AHP} is another framework that generates software pipelines for heterogeneous systems and schedules tasks to their earliest executor, based on profiling information gathered prior to runtime.
-
 These previous works schedule tasks statically and assume the prior knowledge of the task execution times on the different processor types in the heterogeneous system.
 In addition, none of these works, take into account the criticality of tasks with respect to task dependencies.
+
+\subsubsection{Schedulers for Compute Accelerators}
+
+The schedulers in the previous subsection target the scheduling of generic TDGs on generic heterogeneous architectures. In this subsection we cover schedulers that target specific systems with compute accelerators. These works are more focused on the scheduling of tasks on the target platform based on the abstractions provided by the corresponding mixture of programming models for the general-purpose processors and the compute accelerators in the system.
+
+Most heterogeneous systems with compute accelerators nowadays combine general-purpose CPUs and GPU compute accelerators. There is a set of programming models providing abstractions to ease the development of applications on these platforms. OmpSs~\cite{OmpSs_PPL11, OmpSs} offers this abstraction by allowing multiple implementations of a given task to be executed on different processing units~\cite{Judit}. The scheduler then assigns the execution of a task to the best resource according to its earliest finish time. Another case is StarPU~\cite{starpu}, a library that offers runtime heterogeneity support and provides priority schedulers for task-to-processor allocation. AHP~\cite{AHP} is another framework that generates software pipelines for heterogeneous systems and schedules tasks to their earliest executor, based on profiling information gathered prior to runtime.
+
+None of these works, however, take into account the criticality of tasks regarding task dependencies, but they rather focus on the earliest execution time of individual tasks on the processor types in the specific system configuration.
+
+%The above schedulers target scheduling as a generic challenge of on any heterogeneous architecture. 
+%Nevertheless, there have been plenty of studies for schedulers that target specific systems with compute accelerators. 
+%These works focus mostly on the abstractions provided by the corresponding mixture of programming models for the general-purpose processors and the compute accelerators in the system.
+%Most heterogeneous systems with compute accelerators nowadays combine general-purpose CPUs and GPU compute accelerators. There is a set of programming models providing abstractions to ease the development of applications on these platforms. OmpSs~\cite{OmpSs_PPL11, OmpSs} offers this abstraction by allowing multiple implementations of a given task to be executed on different processing units~\cite{Judit}. The scheduler then assigns the execution of a task to the best resource according to its earliest finish time. Another case is StarPU~\cite{starpu}, a library that offers runtime heterogeneity support and provides priority schedulers for task-to-processor allocation. AHP~\cite{AHP} is another framework that generates software pipelines for heterogeneous systems and schedules tasks to their earliest executor, based on profiling information gathered prior to runtime.
+
+
 
 \subsubsection{Criticality-Aware Schedulers}
 \label{sec.relwork_critical}
@@ -139,7 +174,7 @@ This section provides the related work on task-based programming models as well 
 
 %Our approach is a new task-based runtime system design that enables the acceleration of task creation to overcome important bottlenecks in performance.
 Task-based programming models are widely spread as they facilitate the parallel execution on homogeneous or heterogeneous multi-core environments.
-State of the art task-based runtime systems include the OpenMP~\cite{OpenMP}, OmpSs~\cite{OmpSs_PPL11}, StarPU~\cite{starpu} and Swan~\cite{Vandierendonck:PACT2011}.
+State of the art task-based runtime systems include the OpenMP~\cite{OpenMP}, OmpSs~\cite{OmpSs_PPL11}, StarPU~\cite{starpu}, Cilk++~\cite{Cilk,Cilk++} and Swan~\cite{Vandierendonck:PACT2011}.
 All these models support tasks and maintain a TDG specifying the inter-task dependencies.
 This means that the runtime system is responsible for the task creation, the dependence analysis as well as the scheduling of the tasks.
 However, none of these runtime systems offers automatic offloading of task creation.
@@ -152,7 +187,8 @@ Even if their work focuses more on the hardware part of the design, their contri
 Carbon~\cite{Carbon} accelerates the scheduling of tasks by implementing hardware ready queues.
 Carbon maintains one hardware queue per core and accelerates all possible scheduling overheads by using these queues.
 Nexus\#~\cite{Nexus} is also a distributed hardware accelerator capable of executing the \textit{in}, \textit{out}, \textit{inout}, \textit{taskwait} and \textit{taskwait on} pragmas, namely the task dependencies.
-Unlike Carbon and Nexus, {\proposal} accelerates only task creation.
+TDM~\cite{Emilio:HPCA} mitigates runtime system overheads by introducing a distributed hardware unit, denoted Dependence Management Unit (DMU), and minimal ISA extensions that allow the runtime system to offload costly dependence tracking operations.
+Unlike Carbon, TDM and Nexus, {\proposal} accelerates only task creation.
 Moreover, ADM~\cite{Sanchez:2010} is another distributed approach that proposes hardware support for the inter-thread communication to avoid going through the memory hierarchy. 
 This aims to provide a more flexible design as the scheduling policy can be freely implemented in software.
 These designs require the implementation of a hardware component for each core of an SoC.

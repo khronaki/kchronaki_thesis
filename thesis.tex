@@ -118,6 +118,7 @@
 % ******************************** Front Matter ********************************
 \begin{document}
 
+
 \frontmatter
 
 \begin{titlepage}
@@ -130,23 +131,28 @@
 \include{Declaration/declaration}
 \include{Acknowledgement/acknowledgement}
 \include{Abstract/abstract}
-\input{blankpage2}
+%\input{blankpage2}
 \input{advisors/advisors}
 \input{blankpage2}
+\input{symbols}
 % *********************** Adding TOC and List of Figures ***********************
 \tableofcontents
 \listoffigures
+\listoftables
 
-%\listoftables
 
+%\printnomenclature
 % \printnomenclature[space] space can be set as 2.5cm between symbol and
 % description
-%\printnomencl
+\printnomencl
 
 % ******************************** Main Matter *********************************
 \mainmatter
 %\chapter{Introduction}
 \include{introduction}
+
+%\chapter{Related Work}
+\include{related}
 
 %\chapter{Background}
 \include{background}
@@ -162,9 +168,6 @@
 
 %\chapter{Real-Time Scheduling}
 \include{internship}
-
-%\chapter{Related Work}
-\include{related}
 
 %\chapter{Conclusions}
 \include{conclusion}

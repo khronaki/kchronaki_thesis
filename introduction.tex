@@ -30,7 +30,7 @@ The most widely used AMC architecture for mobile processors is the Arm big.LITTL
 Mobile processors are also utilized in HPC platforms aiming to energy savings~\cite{ARMV8}.
 %Asymmetric mobile SoCs combine low-power simple cores (\emph{little}) with fast out-of-order cores (\emph{big}) to achieve high performance while keeping power dissipation low.
 Another area where AMCs have been successful is the supercomputing market.
-The Sunway TaihuLight supercomputer topped the Top500\footnote{We refer to the list published inn November 2017} list in 2016 using AMCs. 
+The Sunway TaihuLight supercomputer topped the Top500\footnote{We refer to the list published in November 2017} list in 2016 using AMCs. 
 In this setup, big cores, that offer support for speculation to exploit Instruction-Level Parallelism (ILP), run the master tasks such as the OS and runtime system.
 Little cores are equipped with wide Single Instruction Multiple Data (SIMD) units and lean pipeline structures for energy efficient execution of compute-intensive code. 
 
@@ -156,15 +156,15 @@ We tackle the above challenges and provide the following contributions:
 %Below we list the contributions of this thesis:
 
 \begin{enumerate}
-	\item A thorough study of the potential of the AMC systems when running out-of-the-box HPC applications.
+	\item A thorough study~\cite{PACT_poster} of the potential of the AMC systems when running out-of-the-box HPC applications.
 	We compare scheduling on different levels of the software stack and we conclude that using a task-based programming model is indeed the most efficient solution as it allows the runtime system to maintain load balance even if the system is asymmetric.
 	This study serves as a verification that for HPC, scheduling through task-based programming models is indeed more efficient compared to app-based scheduling, as shown on Figure~\ref{fig:research_areas}.
-	\item The design, implementation and evaluation of three novel scheduling policies that are aware of the system's asymmetry.
+	\item The design, implementation and evaluation of three novel scheduling policies that are aware of the system's asymmetry~\cite{Chronaki:ICS2015,Chronaki:TPDS}.
 	These schedulers have different criteria for rating the importance of the executing tasks of an application.
 	According to their distinct criteria, each scheduler identifies the \textit{critical tasks} of the application and executes them on the fast cores of the system. 
 	They then leave the \textit{non-critical tasks} to be executed by the slower cores of the system.
 	The research areas that were studied during at this part of the thesis are the scheduling and dependence analysis of the runtime system as shown on Figure~\ref{fig:research_areas}.
-	\item The TaskGenX proposal, a hardware-software co-design scheme to reduce task generation overheads of task-based programming models.
+	\item The TaskGenX proposal~\cite{Chronaki:ISC}, a hardware-software co-design scheme to reduce task generation overheads of task-based programming models.
 	We implement the TaskGenX runtime system, that decouples the task generation from the other runtime activities and sends it for execution on the runtime optimized accelerator.
 	Furthermore, we draw the requirements of the hardware accelerator in terms of performance with the hope to influence hardware designers for the implementation of such a component.
 	The research area that is related to this contribution is the resource allocation from Figure~\ref{fig:research_areas} of the runtime systems.
@@ -187,7 +187,7 @@ The publications that support this thesis are listed below:
 	Paper presentation in International Supercomputing Conference (ISC) 2018, Frankfurt, Germany.
 \end{enumerate}
 
-The contributions of this paper have also been used as part of other relevant publication:
+The contributions of this thesis have also been used as part of other relevant publication:
 \begin{itemize}
 	\item \cite{CATA} Emilio Castillo, Miquel Moreto, Marc Casas, Lluc Alvarez, Enrique Vallejo, \textbf{Kallia Chronaki}, Rosa M. Badia, Jose Luis Bosque, Ramon Beivide, Eduard Ayguade, Jesus Labarta, Mateo Valero: "CATA: Criticality Aware Task Acceleration for Multicore Processors".
 	Paper presentation in IEEE International Parallel and Distributed Processing Symposium (IPDPS) 2016.
@@ -218,6 +218,7 @@ The contributions of this paper have also been used as part of other relevant pu
 	\label{fig:research_areas}
 \end{figure}
 The rest of this document is organized as follows: 
+Chapter~\ref{chapter.related} presents the related work of this thesis.
 Chapter~\ref{chapter.background} presents the background of tis thesis.
 We first report the characteristics of AMC architectures, we then explain how task-based programming models are organized and how their runtime system operates, we explain a few things about the TaskSim simulator~\cite{AbstrLevels_TACO12}, that is our tool for evaluating the impact of our implementations on larger systems and finally we provide the list of applications used in our evaluation together with a short description for each one.
 
@@ -230,7 +231,7 @@ To see their impact on larger systems we use TaskSim simulator.
 Chapter~\ref{chapter.taskgenx} presents our software-hardware co-design proposal, TaskGenX.
 We show the implementation done and we evaluate our proposal using TaskSim simulator and real applications.
 Chapter~\ref{chapter.RTS} includes the thread-based scheduling within the Android framework together with its evaluation on a mobile device using three games with intensive graphics.
-Chapter~\ref{chapter.related} presents our related work and Chapter~\ref{chapter.conclusions} concludes this thesis.
+Finally, Chapter~\ref{chapter.conclusions} concludes this thesis.
 
 %describes the evaluated AMC processor, while Section~\ref{sec:scheduling} provides information on 
 %scheduling at the OS and runtime system levels. 

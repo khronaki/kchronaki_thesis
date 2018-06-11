@@ -1,0 +1,76 @@
+\begin{thenomenclature} 
+
+ \nomgroup{A}
+
+  \item [{2D SFLEX}]\begingroup Bidirectional Work Stealing and Flexible\nomeqref {0}
+		\nompageref{ix}
+  \item [{2DS STRICT}]\begingroup Bidirectional Work Stealing and Strict\nomeqref {0}
+		\nompageref{ix}
+  \item [{AMC}]\begingroup Asymmetric Multi-Core System\nomeqref {0}
+		\nompageref{ix}
+  \item [{BAR}]\begingroup BSC Application Repository\nomeqref {0}
+		\nompageref{ix}
+  \item [{BF}]\begingroup Breadth-First Scheduler\nomeqref {0}
+		\nompageref{ix}
+  \item [{BSC}]\begingroup Barcelona Supercomputing Center\nomeqref {0}
+		\nompageref{ix}
+  \item [{CATS}]\begingroup Criticality-Aware Task Scheduler\nomeqref {0}
+		\nompageref{ix}
+  \item [{CFS}]\begingroup Completely Fair Scheduler\nomeqref {0}
+		\nompageref{ix}
+  \item [{CPATH}]\begingroup Critical Path-Aware Scheduler\nomeqref {0}
+		\nompageref{ix}
+  \item [{CPI}]\begingroup Cycles Per Instruction\nomeqref {0}
+		\nompageref{ix}
+  \item [{dHEFT}]\begingroup Dynamic Heterogeneous Earliest Finish Time Scheduler\nomeqref {0}
+		\nompageref{ix}
+  \item [{EDP}]\begingroup Energy Delay Product\nomeqref {0}
+		\nompageref{ix}
+  \item [{FIFO}]\begingroup First-In First-Out\nomeqref {0}
+		\nompageref{ix}
+  \item [{FPS}]\begingroup Frames Per Second\nomeqref {0}
+		\nompageref{ix}
+  \item [{GTS}]\begingroup Global Task Scheduler\nomeqref {0}
+		\nompageref{ix}
+  \item [{HEFT}]\begingroup Heterogeneous Earliest Finish Time Scheduler\nomeqref {0}
+		\nompageref{ix}
+  \item [{HPC}]\begingroup High Performance Computing\nomeqref {0}
+		\nompageref{ix}
+  \item [{HYBRID}]\begingroup Hybrid Criticality-Aware Scheduler\nomeqref {0}
+		\nompageref{ix}
+  \item [{ILP}]\begingroup Instruction Level Parallelism\nomeqref {0}
+		\nompageref{ix}
+  \item [{ILP}]\begingroup Instruction-Level Parallelism\nomeqref {0}
+		\nompageref{ix}
+  \item [{ISA}]\begingroup Instruction Set Architecture\nomeqref {0}
+		\nompageref{ix}
+  \item [{MLP}]\begingroup Memory-Level Parallelism\nomeqref {0}
+		\nompageref{ix}
+  \item [{OS}]\begingroup Operating System\nomeqref {0}\nompageref{ix}
+  \item [{plist}]\begingroup Predecessors' List\nomeqref {0}
+		\nompageref{ix}
+  \item [{PST}]\begingroup Perscribed Surface Temperature\nomeqref {0}
+		\nompageref{ix}
+  \item [{RTS}]\begingroup Real-Time Scheduler\nomeqref {0}
+		\nompageref{ix}
+  \item [{SIMD}]\begingroup Single Instruction Multiple Data\nomeqref {0}
+		\nompageref{ix}
+  \item [{slist}]\begingroup Successors' List\nomeqref {0}
+		\nompageref{ix}
+  \item [{SMC}]\begingroup Symmetric Multi-Core System\nomeqref {0}
+		\nompageref{ix}
+  \item [{SoC}]\begingroup System on Chip\nomeqref {0}\nompageref{ix}
+  \item [{SS FLEX}]\begingroup Simple Work Stealing and Flexible\nomeqref {0}
+		\nompageref{ix}
+  \item [{SS STRICT}]\begingroup Simple Work Stealing and Strict\nomeqref {0}
+		\nompageref{ix}
+  \item [{STC}]\begingroup Samsung Temperature Controller\nomeqref {0}
+		\nompageref{ix}
+  \item [{TaskGenX}]\begingroup Task Generation Express\nomeqref {0}
+		\nompageref{ix}
+  \item [{TDG}]\begingroup Task Dependency Graph\nomeqref {0}
+		\nompageref{ix}
+  \item [{tt-is}]\begingroup Task Type - Input Size\nomeqref {0}
+		\nompageref{ix}
+
+\end{thenomenclature}

@@ -55,7 +55,7 @@ The results show that all heterogeneous schedulers improve overall performance r
 
 % \item{An evaluation of our implementation of CATS in the OmpSs programming model compared to a dynamic implementation of Heterogeneous Earliest Finish Time \cite{HEFT} and the default OmpSs scheduler. We evaluate the effectiveness of CATS on different numbers of cores and shares of fast and slow cores on an Odroid-XU3 development board featuring an eight-core Samsung Exynos 5422 chip with ARM big.LITTLE architecture including four Cortex-A15 and four Cortex-A7 cores. We also evaluate the effectiveness of CATS on different speed ratios between fast and slow cores using simulation of heterogeneous multi-cores with up to 128 cores. The results show that CATS improves overall performance up to 1.3$\times$ on the real eight-core platform, and up to 2.7$\times$ on a simulated 128-core~system.}
 \end{itemize}
-Table~\ref{tab.acronyms} shows the acronyms that we use in the next sections.
+%Table~\ref{tab.acronyms} shows the acronyms that we use in the next sections.
 % We describe a set of configurations for our scheduler regarding the work stealing capabilities of the different core types and the flexibility to define a task as critical or non-critical. 
  
 % We implement this scheduler in OmpSs and evaluate its effectiveness on different numbers of cores and shares of fast and slow cores on a real system. 
@@ -63,26 +63,29 @@ Table~\ref{tab.acronyms} shows the acronyms that we use in the next sections.
 % We also evaluate the effectiveness of our scheduler depending on the speed ratio between fast and slow cores using simulation.  The results show that the effectiveness of our scheduler increases with larger numbers of fast cores over slow cores, and with larger differences of performance between fast and slow cores.
 
 %Finally, we provide a set of recommendations on how to configure our scheduler to get the best results depending on the target system size and configuration.
-\begin{table}
-\begin{center}
-\caption{Acronyms used in the paper \kc{Move all acronyms at the beginning of the thesis? Or remove them totally?}}
-\label{tab.acronyms}
-\begin{tabular}{|c|c|}
-\hline
- \textbf{Acronym} & \textbf{Meaning}\\\hline\hline
-TDG & Task Dependency Graph \\
-CATS & Criticality-Aware Task Scheduler\\
-CPATH & Critical Path-Aware Scheduler\\
-HEFT & Heterogeneous Earliest Finish Time\\
-dHEFT & Dynamic Heterogeneous Earliest Finish Time\\
-BF & Breadth-First\\
-HYBRID & Hybrid Criticality-Aware Scheduler\\
-FIFO & First-In First-Out\\
-\texttt{plist} & Predecessors' List\\
-\texttt{slist} & Successors' List\\
-tt-is & Task Type - Input Size\\
-\hline
-\end{tabular} 
-\end{center}
-\vspace{-0.4cm}
-\end{table}
+
+
+
+%\begin{table}
+%\begin{center}
+%\caption{Acronyms used in the paper \kc{Move all acronyms at the beginning of the thesis? Or remove them totally?}}
+%\label{tab.acronyms}
+%\begin{tabular}{|c|c|}
+%\hline
+% \textbf{Acronym} & \textbf{Meaning}\\\hline\hline
+%TDG & Task Dependency Graph \\
+%CATS & Criticality-Aware Task Scheduler\\
+%CPATH & Critical Path-Aware Scheduler\\
+%HEFT & Heterogeneous Earliest Finish Time\\
+%dHEFT & Dynamic Heterogeneous Earliest Finish Time\\
+%BF & Breadth-First\\
+%HYBRID & Hybrid Criticality-Aware Scheduler\\
+%FIFO & First-In First-Out\\
+%\texttt{plist} & Predecessors' List\\
+%\texttt{slist} & Successors' List\\
+%tt-is & Task Type - Input Size\\
+%\hline
+%\end{tabular} 
+%\end{center}
+%\vspace{-0.4cm}
+%\end{table}
