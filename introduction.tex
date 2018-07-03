@@ -5,7 +5,7 @@
 \chapter{Introduction}
 \label{chapter.introduction}
 
-\kc{Definition of AMCs:}
+%\kc{Definition of AMCs:}
 Asymmetric Multi-core (AMC) systems architecture is an interesting case of heterogeneous multi-core architecture. 
 This multi-core systems architecture features cores with different microarchitectures but with a single Instruction Set Architecture (ISA) and potentially shared memory resources.
 Figure~\ref{fig:heterogeneous_classification} shows a classification of multi-core systems and how AMCs relate to the rest of the multi-cores.
@@ -34,7 +34,7 @@ The Sunway TaihuLight supercomputer topped the Top500\footnote{We refer to the l
 In this setup, big cores, that offer support for speculation to exploit Instruction-Level Parallelism (ILP), run the master tasks such as the OS and runtime system.
 Little cores are equipped with wide Single Instruction Multiple Data (SIMD) units and lean pipeline structures for energy efficient execution of compute-intensive code. 
 
-\kc{Challenges Using AMCs:}
+%\kc{Challenges Using AMCs:}
 AMCs are generally easy to program as the programmer does not need to express the functionality of an application for many different ISAs. 
 However, there are still challenges that need to be addressed that are mainly related to the performance of the AMC.
 %%Add more challenges
@@ -55,7 +55,7 @@ However, such approaches lack flexibility due to the high thread-migration overh
 %However, these approaches are not always suitable for general-purpose parallel applications.
 
 
-\kc{Solutions -- mention to Task-based models and process scheduling}
+%\kc{Solutions -- mention to Task-based models and process scheduling}
 The above challenges can be tackled by using task-based parallel programming models.
 These parallel programming models have been widely used during the last decade in the development of parallel applications.
 They form an appealing solution as they significantly ease the parallel programming by providing a higher level of abstraction to the programmer through a directive-based or language-based interface.
